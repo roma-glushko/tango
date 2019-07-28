@@ -5,9 +5,7 @@ import (
 	"tango/internal/domain/entity"
 )
 
-var urlPartList = []string{
-	"cab_m2_admin",
-}
+var urlPartList = []string{}
 
 //
 type UrlFilter struct {
