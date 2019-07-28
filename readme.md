@@ -6,7 +6,9 @@
 
 Tango is a command-line tool for "dancing" with access logs 💃
 
-## Use Cases
+Currently, work on this project is in progress. No stable or workable release yet.
+
+## Use Cases (To cover)
 
 ### Reports
 
