@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-var timeFormat = "02/Jan/2006:03:04:05 -0700"
+var timeFormat = "02/Jan/2006:15:04:05 -0700"
 var combinedLogFormat = `^(?P<ip_list>[\S, ]+) (\-) \[(?P<time>[\w:/]+\s[+\-]\d{4})\] "(?P<request_method>\S+)\s?(?P<uri>\S+)?\s?(?P<protocol>\S+)?" (?P<response_code>\d{3}|-) (?P<response_size>\d+|-)\s?"?(?P<referer_url>[^"]*)"?\s?"?(?P<user_agent>[^"]*)?"?$`
 
 func filter(s []string, r string) []string {
@@ -47,6 +47,7 @@ func MapAccessLogRecord(accessLogRecord string) entity.AccessLogRecord {
 	)
 
 	time, _ := time.Parse(timeFormat, accessRecordInformation["time"])
+
 	responseCode, _ := strconv.ParseUint(accessRecordInformation["response_code"], 10, 64)
 	responseSize, _ := strconv.ParseUint(accessRecordInformation["response_size"], 10, 64)
 

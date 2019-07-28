@@ -33,3 +33,10 @@ func InitGeoReportUsecase() *report.GeoReportUsecase {
 
 	return report.NewGeoReportUsecase(geoReportWriter)
 }
+
+//
+func InitCustomReportUsecase() *report.CustomReportUsecase {
+	customReportWriter := writer.NewCustomReportCsvWriter()
+
+	return report.NewCustomReportUsecase(customReportWriter)
+}
