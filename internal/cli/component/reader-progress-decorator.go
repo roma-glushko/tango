@@ -40,6 +40,10 @@ func (r *ReaderProgressDecorator) Read(filePath string, readAccessLogFunc usecas
 
 	r.progressBar = pb.New64(fileSize)
 
+	r.progressBar.Format("[=>_]")
+	r.progressBar.SetUnits(pb.U_BYTES)
+	r.progressBar.SetMaxWidth(100)
+
 	r.start()
 
 	r.accessLogReader.Read(filePath, func(accessLogRecord string, byteCount int) {

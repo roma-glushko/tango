@@ -4,8 +4,8 @@ import (
 	"tango/internal/domain/entity"
 )
 
-var ip = []string{
-	// todo ip filter data
+var keepIpList = []string{
+	"127.0.0.1",
 }
 
 //
@@ -18,14 +18,28 @@ func NewIPFilter() *IPFilter {
 }
 
 //
-func (f *IPFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
-	//ipList := accessLogRecord.IP
+func contains(ipList []string, ip string) bool {
+	for _, ipItem := range ipList {
+		if ipItem == ip {
+			return true
+		}
+	}
+	return false
+}
 
-	//for _, ip := range ipList {
-	//if  {
-	// ip filter logic
-	//}
-	//}
+//
+func (f *IPFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
+	if len(keepIpList) == 0 {
+		return false
+	}
+
+	ipList := accessLogRecord.IP
+
+	for _, keepIP := range keepIpList {
+		if contains(ipList, keepIP) {
+			return true
+		}
+	}
 
 	return false
 }

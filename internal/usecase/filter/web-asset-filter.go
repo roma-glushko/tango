@@ -21,6 +21,10 @@ func NewWebAssetFilter() *WebAssetFilter {
 
 //
 func (f *WebAssetFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
+	if len(webAssetPatterns) == 0 {
+		return false
+	}
+
 	uri := accessLogRecord.URI
 
 	for _, webAssetPattern := range webAssetPatterns {

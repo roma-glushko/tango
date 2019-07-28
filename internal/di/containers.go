@@ -12,7 +12,10 @@ import (
 //
 func InitFilterAccessLogUsecase() usecase.FilterAccessLogUsecase {
 	filters := []usecase.AccessLogFilter{
+		filter.NewIPFilter(),
+		filter.NewUrlFilter(),
 		filter.NewWebAssetFilter(),
+		filter.NewUserAgentFilter(),
 	}
 
 	return usecase.NewFilterAccessLogUsecase(filters)
