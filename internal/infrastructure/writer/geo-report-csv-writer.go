@@ -1,15 +1,23 @@
-package saver
+package writer
 
 import (
 	"encoding/csv"
 	"log"
 	"os"
 	"strconv"
-	"tango/internal/usecase"
+	"tango/internal/usecase/report"
 )
 
+type GeoReportCsvWriter struct {
+}
+
+//
+func NewGeoReportCsvWriter() *GeoReportCsvWriter {
+	return &GeoReportCsvWriter{}
+}
+
 // Save GeoLocation Report to CSV file
-func Save(filePath string, geolocationReport map[string]*usecase.Geolocation) {
+func (w *GeoReportCsvWriter) Save(filePath string, geolocationReport map[string]*report.Geolocation) {
 	file, err := os.Create(filePath)
 
 	if err != nil {

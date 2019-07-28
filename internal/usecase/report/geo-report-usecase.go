@@ -15,15 +15,22 @@ type Geolocation struct {
 }
 
 type GeoReportWriter interface {
-	Save(filePath string, geolocationReport map[string]*Geolocation) error
+	Save(reportPath string, geolocationReport map[string]*Geolocation)
 }
 
 type GeoReportUsecase struct {
 	geoReportWriter GeoReportWriter
 }
 
+//
+func NewGeoReportUsecase(geoReportWriter GeoReportWriter) *GeoReportUsecase {
+	return &GeoReportUsecase{
+		geoReportWriter: geoReportWriter,
+	}
+}
+
 // Process access logs and collect geo reports
-func (u GeoReportUsecase) GetReport(filePath string, accessRecords []entity.AccessLogRecord) map[string]*Geolocation {
+func (u *GeoReportUsecase) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
 	var geoReport = make(map[string]*Geolocation)
 
 	db, err := geoip2.Open("assets/GeoLite2-City.mmdb")
@@ -55,5 +62,5 @@ func (u GeoReportUsecase) GetReport(filePath string, accessRecords []entity.Acce
 		}
 	}
 
-	return geoReport
+	u.geoReportWriter.Save(reportPath, geoReport)
 }

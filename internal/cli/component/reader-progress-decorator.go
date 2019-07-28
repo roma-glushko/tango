@@ -15,9 +15,9 @@ type ReaderProgressDecorator struct {
 }
 
 //
-func NewReaderProgressDecorator(accessLogReader reader.AccessLogReader) *ReaderProgressDecorator {
+func NewReaderProgressDecorator(accessLogReader *reader.AccessLogReader) *ReaderProgressDecorator {
 	return &ReaderProgressDecorator{
-		accessLogReader: accessLogReader,
+		accessLogReader: *accessLogReader,
 		progressBar:     nil,
 	}
 }

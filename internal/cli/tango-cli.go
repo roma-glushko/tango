@@ -2,11 +2,12 @@ package cli
 
 import (
 	"log"
-	"tango/internal/di"
+	"tango/internal/cli/command"
 
 	"github.com/urfave/cli"
 )
 
+//
 type TangoCli struct {
 	cliApp *cli.App
 }
@@ -15,23 +16,15 @@ func getTangoCommands() []cli.Command {
 	return []cli.Command{
 		{
 			Name:    "custom",
-			Aliases: []string{},
+			Aliases: []string{"custom-report"},
 			Usage:   "Process Access Logs applying custom filtering",
-			Action: func(c *cli.Context) error {
-				return nil
-			},
+			Action:  command.CustomReportCommand,
 		},
 		{
 			Name:    "geo",
 			Aliases: []string{"geo-report"},
 			Usage:   "Generate Geo report from Access Logs",
-			Action: func(c *cli.Context) error {
-				readAccessLogUsecase := di.InitReadAccessLogUsecase()
-
-				readAccessLogUsecase.Read("tmp/2019-07-08-transfer.log")
-
-				return nil
-			},
+			Action:  command.GeoReportCommand,
 		},
 	}
 }

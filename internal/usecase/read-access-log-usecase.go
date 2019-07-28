@@ -15,13 +15,15 @@ type AccessLogReader interface {
 
 //
 type ReadAccessLogUsecase struct {
-	accessLogReader AccessLogReader
+	accessLogReader        AccessLogReader
+	filterAccessLogUsecase FilterAccessLogUsecase
 }
 
 // Create a new ReadAccessLogUsecase
-func NewReadAccessLogUsecase(accessLogReader AccessLogReader) *ReadAccessLogUsecase {
+func NewReadAccessLogUsecase(accessLogReader AccessLogReader, filterAccessLogUsecase FilterAccessLogUsecase) *ReadAccessLogUsecase {
 	return &ReadAccessLogUsecase{
-		accessLogReader: accessLogReader,
+		accessLogReader:        accessLogReader,
+		filterAccessLogUsecase: filterAccessLogUsecase,
 	}
 }
 
@@ -31,6 +33,10 @@ func (u *ReadAccessLogUsecase) Read(filePath string) []entity.AccessLogRecord {
 
 	u.accessLogReader.Read(filePath, func(accessLogRecord string, bytes int) {
 		accessRecord := mapper.MapAccessLogRecord(accessLogRecord)
+
+		if u.filterAccessLogUsecase.Filter(accessRecord) {
+			return
+		}
 
 		accessRecords = append(
 			accessRecords,

@@ -2,6 +2,7 @@ package filter
 
 import (
 	"strings"
+	"tango/internal/domain/entity"
 )
 
 var webAssetPatterns = []string{
@@ -10,7 +11,18 @@ var webAssetPatterns = []string{
 }
 
 //
-func FilterWebAsset(uri string) bool {
+type WebAssetFilter struct {
+}
+
+//
+func NewWebAssetFilter() *WebAssetFilter {
+	return &WebAssetFilter{}
+}
+
+//
+func (f *WebAssetFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
+	uri := accessLogRecord.URI
+
 	for _, webAssetPattern := range webAssetPatterns {
 		if strings.HasPrefix(uri, webAssetPattern) {
 			return true
