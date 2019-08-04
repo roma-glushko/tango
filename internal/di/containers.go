@@ -13,6 +13,7 @@ import (
 func InitFilterAccessLogUsecase() usecase.FilterAccessLogUsecase {
 	filters := []usecase.AccessLogFilter{
 		filter.NewIPFilter(),
+		filter.NewTimeFilter(),
 		filter.NewUrlFilter(),
 		filter.NewWebAssetFilter(),
 		filter.NewUserAgentFilter(),
