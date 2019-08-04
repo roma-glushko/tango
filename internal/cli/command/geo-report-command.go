@@ -8,7 +8,8 @@ import (
 )
 
 //
-func GeoReportCommand(c *cli.Context) error {
+func GeoReportCommand(cliContext *cli.Context) error {
+	generalConfig := di.InitGeneralConfig(cliContext)
 	readAccessLogUsecase := di.InitReadAccessLogUsecase()
 	geoReportUsecase := di.InitGeoReportUsecase()
 
@@ -16,11 +17,11 @@ func GeoReportCommand(c *cli.Context) error {
 	fmt.Println("💃 started to generate a geo report...")
 	fmt.Println("💃 reading access logs...")
 
-	accessLogRecords := readAccessLogUsecase.Read("tmp/2019-07-08-transfer.log")
+	accessLogRecords := readAccessLogUsecase.Read(generalConfig.LogFile)
 
 	fmt.Println("💃 saving the geo report...")
 
-	geoReportUsecase.GenerateReport("output/geo.csv", accessLogRecords)
+	geoReportUsecase.GenerateReport(generalConfig.ReportFile, accessLogRecords)
 
 	fmt.Println("🎉 geo report has been generated")
 

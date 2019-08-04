@@ -8,7 +8,8 @@ import (
 )
 
 //
-func CustomReportCommand(c *cli.Context) error {
+func CustomReportCommand(cliContext *cli.Context) error {
+	generalConfig := di.InitGeneralConfig(cliContext)
 	readAccessLogUsecase := di.InitReadAccessLogUsecase()
 	customReportUsecase := di.InitCustomReportUsecase()
 
@@ -16,11 +17,11 @@ func CustomReportCommand(c *cli.Context) error {
 	fmt.Println("💃 started to generate a custom report...")
 	fmt.Println("💃 reading access logs...")
 
-	accessLogRecords := readAccessLogUsecase.Read("tmp/2019-07-08-transfer.log")
+	accessLogRecords := readAccessLogUsecase.Read(generalConfig.LogFile)
 
 	fmt.Println("💃 saving the custom report...")
 
-	customReportUsecase.GenerateReport("output/custom.csv", accessLogRecords)
+	customReportUsecase.GenerateReport(generalConfig.ReportFile, accessLogRecords)
 
 	fmt.Println("🎉 custom report has been generated")
 

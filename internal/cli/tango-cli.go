@@ -5,6 +5,7 @@ import (
 	"tango/internal/cli/command"
 
 	"github.com/urfave/cli"
+	"github.com/urfave/cli/altsrc"
 )
 
 //
@@ -29,6 +30,25 @@ func getTangoCommands() []cli.Command {
 	}
 }
 
+func getTangoGlobalFlags() []cli.Flag {
+	return []cli.Flag{
+		// general
+		cli.StringFlag{Name: "log-file, l", Usage: "Access log file to analyze", Required: true},
+		cli.StringFlag{Name: "report-file, r", Usage: "Output report file", Required: true},
+		cli.StringFlag{Name: "config-file, c", Usage: "Configuration file for storing preset of filters", Value: ".tango.yaml"},
+
+		// filters
+		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "asset-filter", Usage: "Filter js, css, image files from access logs"}),
+		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "keep-time-filter", Usage: "Keep only specified time frame"}),
+		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "uri-filter", Usage: "Filter URIs"}),
+		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "keep-uri-filter", Usage: "Keep only specified URIs"}),
+		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "ip-filter", Usage: "Filter IPs from access logs"}),
+		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "keep-ip-filter", Usage: "Keep only specified IPs"}),
+		altsrc.NewStringFlag(cli.StringFlag{Name: "ua-filter", Usage: "Filter specified user agents"}),
+		altsrc.NewStringFlag(cli.StringFlag{Name: "keep-ua-filter", Usage: "Keep only specified user agents"}),
+	}
+}
+
 // Create a main Tango CLI application
 func NewTangoCli() TangoCli {
 	cliApp := cli.NewApp()
@@ -37,7 +57,10 @@ func NewTangoCli() TangoCli {
 	cliApp.Usage = "Access Logs Analyzing Tool"
 	cliApp.Version = "1.0.0-beta"
 
+	cliApp.Flags = getTangoGlobalFlags()
 	cliApp.Commands = getTangoCommands()
+
+	cliApp.Before = altsrc.InitInputSourceWithContext(cliApp.Flags, altsrc.NewYamlSourceFromFlagFunc("config-file"))
 
 	return TangoCli{
 		cliApp: cliApp,

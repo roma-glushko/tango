@@ -2,12 +2,26 @@ package di
 
 import (
 	"tango/internal/cli/component"
+	"tango/internal/cli/factory"
 	"tango/internal/infrastructure/reader"
 	"tango/internal/infrastructure/writer"
 	"tango/internal/usecase"
+	"tango/internal/usecase/config"
 	"tango/internal/usecase/filter"
 	"tango/internal/usecase/report"
+
+	"github.com/urfave/cli"
 )
+
+//
+func InitGeneralConfig(cliContext *cli.Context) config.GeneralConfig {
+	return factory.NewGeneralConfig(cliContext)
+}
+
+//
+func InitFilterConfig(cliContext *cli.Context) config.FilterConfig {
+	return factory.NewFilterConfig(cliContext)
+}
 
 //
 func InitFilterAccessLogUsecase() usecase.FilterAccessLogUsecase {
@@ -15,7 +29,7 @@ func InitFilterAccessLogUsecase() usecase.FilterAccessLogUsecase {
 		filter.NewIPFilter(),
 		filter.NewTimeFilter(),
 		filter.NewUrlFilter(),
-		filter.NewWebAssetFilter(),
+		filter.NewAssetFilter(),
 		filter.NewUserAgentFilter(),
 	}
 
