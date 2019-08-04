@@ -3,29 +3,31 @@ package filter
 import (
 	"strings"
 	"tango/internal/domain/entity"
+	"tango/internal/usecase/config"
 )
-
-var assetPatterns = []string{}
 
 //
 type AssetFilter struct {
+	assetFilters []string
 }
 
 //
-func NewAssetFilter() *AssetFilter {
-	return &AssetFilter{}
+func NewAssetFilter(filterConfig config.FilterConfig) *AssetFilter {
+	return &AssetFilter{
+		assetFilters: filterConfig.AssetFilters,
+	}
 }
 
 //
 func (f *AssetFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
-	if len(assetPatterns) == 0 {
+	if len(f.assetFilters) == 0 {
 		return false
 	}
 
 	uri := accessLogRecord.URI
 
-	for _, webAssetPattern := range assetPatterns {
-		if strings.HasPrefix(uri, webAssetPattern) {
+	for _, assetPattern := range f.assetFilters {
+		if strings.HasPrefix(uri, assetPattern) {
 			return true
 		}
 	}

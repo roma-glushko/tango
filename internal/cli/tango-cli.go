@@ -44,8 +44,9 @@ func getTangoGlobalFlags() []cli.Flag {
 		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "keep-uri-filter", Usage: "Keep only specified URIs"}),
 		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "ip-filter", Usage: "Filter IPs from access logs"}),
 		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "keep-ip-filter", Usage: "Keep only specified IPs"}),
-		altsrc.NewStringFlag(cli.StringFlag{Name: "ua-filter", Usage: "Filter specified user agents"}),
-		altsrc.NewStringFlag(cli.StringFlag{Name: "keep-ua-filter", Usage: "Keep only specified user agents"}),
+		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "ua-filter", Usage: "Filter specified user agents"}),
+		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "keep-ua-filter", Usage: "Keep only specified user agents"}),
+		altsrc.NewStringFlag(cli.StringFlag{Name: "base-url", Usage: "Website Base Url"}),
 	}
 }
 

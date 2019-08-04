@@ -8,8 +8,8 @@ type FilterConfig struct {
 	KeepUriFilters []string
 	IpFilters      []string
 	KeepIpFilters  []string
-	UaFilter       string
-	KeepUaFilter   string
+	UaFilters      []string
+	KeepUaFilters  []string
 }
 
 //
@@ -20,8 +20,8 @@ func NewFilterConfig(
 	keepUriFilters []string,
 	ipFilters []string,
 	keepIpFilters []string,
-	uaFilter string,
-	keepUaFilter string,
+	uaFilters []string,
+	keepUaFilters []string,
 ) FilterConfig {
 	return FilterConfig{
 		AssetFilters:   assetFilters,
@@ -30,7 +30,7 @@ func NewFilterConfig(
 		KeepUriFilters: keepUriFilters,
 		IpFilters:      ipFilters,
 		KeepIpFilters:  keepIpFilters,
-		UaFilter:       uaFilter,
-		KeepUaFilter:   keepUaFilter,
+		UaFilters:      uaFilters,
+		KeepUaFilters:  keepUaFilters,
 	}
 }

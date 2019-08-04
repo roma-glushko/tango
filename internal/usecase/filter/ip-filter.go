@@ -2,19 +2,21 @@ package filter
 
 import (
 	"tango/internal/domain/entity"
+	"tango/internal/usecase/config"
 )
-
-var keepIpList = []string{
-	"127.0.0.1",
-}
 
 //
 type IPFilter struct {
+	ipFilters     []string
+	keepIpFilters []string
 }
 
 //
-func NewIPFilter() *IPFilter {
-	return &IPFilter{}
+func NewIPFilter(filterConfig config.FilterConfig) *IPFilter {
+	return &IPFilter{
+		ipFilters:     filterConfig.IpFilters,
+		keepIpFilters: filterConfig.KeepIpFilters,
+	}
 }
 
 //
@@ -29,14 +31,26 @@ func contains(ipList []string, ip string) bool {
 
 //
 func (f *IPFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
-	if len(keepIpList) == 0 {
+	if len(f.keepIpFilters) == 0 && len(f.ipFilters) == 0 {
 		return false
 	}
 
 	ipList := accessLogRecord.IP
 
-	for _, keepIP := range keepIpList {
-		if contains(ipList, keepIP) {
+	// if keep filter is enabled, than keep only specified 
+	if len(f.keepIpFilters) > 0 {
+		for _, keepIP := range f.keepIpFilters {
+			if contains(ipList, keepIP) {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	// if keep filter is not enabled, then try to filter ips
+	for _, ip := range f.ipFilters {
+		if contains(ipList, ip) {
 			return true
 		}
 	}

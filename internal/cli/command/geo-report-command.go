@@ -10,7 +10,8 @@ import (
 //
 func GeoReportCommand(cliContext *cli.Context) error {
 	generalConfig := di.InitGeneralConfig(cliContext)
-	readAccessLogUsecase := di.InitReadAccessLogUsecase()
+	filterConfig := di.InitFilterConfig(cliContext)
+	readAccessLogUsecase := di.InitReadAccessLogUsecase(filterConfig)
 	geoReportUsecase := di.InitGeoReportUsecase()
 
 	fmt.Println("💃 Tango is on the scene!")

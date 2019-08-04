@@ -24,23 +24,23 @@ func InitFilterConfig(cliContext *cli.Context) config.FilterConfig {
 }
 
 //
-func InitFilterAccessLogUsecase() usecase.FilterAccessLogUsecase {
+func InitFilterAccessLogUsecase(filterConfig config.FilterConfig) usecase.FilterAccessLogUsecase {
 	filters := []usecase.AccessLogFilter{
-		filter.NewIPFilter(),
-		filter.NewTimeFilter(),
-		filter.NewUrlFilter(),
-		filter.NewAssetFilter(),
-		filter.NewUserAgentFilter(),
+		filter.NewIPFilter(filterConfig),
+		filter.NewTimeFilter(filterConfig),
+		filter.NewUrlFilter(filterConfig),
+		filter.NewAssetFilter(filterConfig),
+		filter.NewUserAgentFilter(filterConfig),
 	}
 
 	return usecase.NewFilterAccessLogUsecase(filters)
 }
 
 //
-func InitReadAccessLogUsecase() *usecase.ReadAccessLogUsecase {
+func InitReadAccessLogUsecase(filterConfig config.FilterConfig) *usecase.ReadAccessLogUsecase {
 	accessLogReader := reader.NewAccessLogReader()
 	readerProgressDecorator := component.NewReaderProgressDecorator(accessLogReader)
-	filterAccessLogUsecase := InitFilterAccessLogUsecase()
+	filterAccessLogUsecase := InitFilterAccessLogUsecase(filterConfig)
 
 	return usecase.NewReadAccessLogUsecase(readerProgressDecorator, filterAccessLogUsecase)
 }

@@ -17,8 +17,8 @@ func NewFilterConfig(cliContext *cli.Context) config.FilterConfig {
 	ipFilters := cliContext.GlobalStringSlice("ip-filter")
 	keepIpFilters := cliContext.GlobalStringSlice("keep-ip-filter")
 
-	uaFilters := cliContext.GlobalString("ua-filter")
-	keepUaFilters := cliContext.GlobalString("keep-ua-filter")
+	uaFilters := cliContext.GlobalStringSlice("ua-filter")
+	keepUaFilters := cliContext.GlobalStringSlice("keep-ua-filter")
 
 	return config.NewFilterConfig(
 		assetFilters,

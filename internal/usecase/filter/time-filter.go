@@ -2,35 +2,47 @@ package filter
 
 import (
 	"tango/internal/domain/entity"
+	"tango/internal/usecase/config"
 	"time"
 )
-
-var timeFromFilter = "2019-07-08 12:00:00 -0400" // nil
-var timeToFilter = "2019-07-08 13:00:00 -0400"   // nil
 
 var europeFormat = "2006-01-02 15:04:05 -0700"
 
 //
 type TimeFilter struct {
+	timeStart time.Time
+	timeEnd   time.Time
 }
 
 //
-func NewTimeFilter() *TimeFilter {
-	return &TimeFilter{}
+func NewTimeFilter(filterConfig config.FilterConfig) *TimeFilter {
+	timeStart := time.Time{}
+	timeEnd := time.Time{}
+
+	timeFrames := filterConfig.KeepTimeFrames
+
+	// doesn't support multiple time frames by this moment
+	// needs to validate time frames: timeStart should be less than timeEnd
+	if len(timeFrames) == 2 {
+		timeStart, _ = time.Parse(europeFormat, timeFrames[0])
+		timeEnd, _ = time.Parse(europeFormat, timeFrames[1])
+	}
+
+	return &TimeFilter{
+		timeStart: timeStart,
+		timeEnd:   timeEnd,
+	}
 }
 
 //
 func (f *TimeFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
-	if timeFromFilter == "" && timeToFilter == "" {
+	if f.timeStart.IsZero() && f.timeEnd.IsZero() {
 		return false
 	}
 
 	recordTime := accessLogRecord.Time
 
-	timeStart, _ := time.Parse(europeFormat, timeFromFilter)
-	timeEnd, _ := time.Parse(europeFormat, timeToFilter)
-
-	if recordTime.After(timeStart) && recordTime.Before(timeEnd) {
+	if recordTime.After(f.timeStart) && recordTime.Before(f.timeEnd) {
 		return false
 	}
 
