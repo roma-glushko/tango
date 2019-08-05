@@ -53,6 +53,13 @@ func InitGeoReportUsecase() *report.GeoReportUsecase {
 }
 
 //
+func InitBrowserReportUsecase() *report.BrowserReportUsecase {
+	browserReportWriter := writer.NewBrowserReportCsvWriter()
+
+	return report.NewBrowserReportUsecase(browserReportWriter)
+}
+
+//
 func InitCustomReportUsecase() *report.CustomReportUsecase {
 	customReportWriter := writer.NewCustomReportCsvWriter()
 

@@ -27,6 +27,12 @@ func getTangoCommands() []cli.Command {
 			Usage:   "Generate Geo report from Access Logs",
 			Action:  command.GeoReportCommand,
 		},
+		{
+			Name:    "browser",
+			Aliases: []string{"browser-report"},
+			Usage:   "Generate Browser report from Access Logs",
+			Action:  command.BrowserReportCommand,
+		},
 	}
 }
 
