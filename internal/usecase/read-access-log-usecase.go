@@ -3,6 +3,7 @@ package usecase
 import (
 	"tango/internal/domain/entity"
 	"tango/internal/usecase/mapper"
+	"tango/internal/usecase/processor"
 )
 
 //
@@ -17,13 +18,15 @@ type AccessLogReader interface {
 type ReadAccessLogUsecase struct {
 	accessLogReader        AccessLogReader
 	filterAccessLogUsecase FilterAccessLogUsecase
+	ipProcessor            processor.IPProcessor
 }
 
 // Create a new ReadAccessLogUsecase
-func NewReadAccessLogUsecase(accessLogReader AccessLogReader, filterAccessLogUsecase FilterAccessLogUsecase) *ReadAccessLogUsecase {
+func NewReadAccessLogUsecase(accessLogReader AccessLogReader, filterAccessLogUsecase FilterAccessLogUsecase, ipProcessor processor.IPProcessor) *ReadAccessLogUsecase {
 	return &ReadAccessLogUsecase{
 		accessLogReader:        accessLogReader,
 		filterAccessLogUsecase: filterAccessLogUsecase,
+		ipProcessor:            ipProcessor,
 	}
 }
 
@@ -34,6 +37,10 @@ func (u *ReadAccessLogUsecase) Read(filePath string) []entity.AccessLogRecord {
 	u.accessLogReader.Read(filePath, func(accessLogRecord string, bytes int) {
 		accessRecord := mapper.MapAccessLogRecord(accessLogRecord)
 
+		// process parsed access log record
+		accessRecord = u.ipProcessor.Process(accessRecord)
+
+		// filter/skip parsed access log record if needed
 		if u.filterAccessLogUsecase.Filter(accessRecord) {
 			return
 		}

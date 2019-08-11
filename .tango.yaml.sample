@@ -1,4 +1,13 @@
-"asset-filter": true
+# define URL parts which helps to detect web assets (css, js, images, etc) for the asset filter
+"asset-filter":
+  - "/pub/static/"
+  - "/pub/media/"
+
+# keep records which happened in needed time frames
 "keep-time-filter":
   - "2019-07-08 12:00:00 -0400"
   - "2019-07-08 13:00:00 -0400"
+
+# it's possible remove system IPs from reports
+"system-ips":
+  - "1.2.3.0/20"

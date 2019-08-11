@@ -8,6 +8,7 @@ import (
 	"tango/internal/usecase"
 	"tango/internal/usecase/config"
 	"tango/internal/usecase/filter"
+	"tango/internal/usecase/processor"
 	"tango/internal/usecase/report"
 
 	"github.com/urfave/cli"
@@ -16,6 +17,11 @@ import (
 //
 func InitGeneralConfig(cliContext *cli.Context) config.GeneralConfig {
 	return factory.NewGeneralConfig(cliContext)
+}
+
+//
+func InitProcessorConfig(cliContext *cli.Context) config.ProcessorConfig {
+	return factory.NewProcessorConfig(cliContext)
 }
 
 //
@@ -37,12 +43,18 @@ func InitFilterAccessLogUsecase(filterConfig config.FilterConfig) usecase.Filter
 }
 
 //
-func InitReadAccessLogUsecase(filterConfig config.FilterConfig) *usecase.ReadAccessLogUsecase {
+func InitIpProcessor(processorConfig config.ProcessorConfig) processor.IPProcessor {
+	return processor.NewIPProcessor(processorConfig)
+}
+
+//
+func InitReadAccessLogUsecase(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig) *usecase.ReadAccessLogUsecase {
 	accessLogReader := reader.NewAccessLogReader()
 	readerProgressDecorator := component.NewReaderProgressDecorator(accessLogReader)
+	ipProcessor := InitIpProcessor(processorConfig)
 	filterAccessLogUsecase := InitFilterAccessLogUsecase(filterConfig)
 
-	return usecase.NewReadAccessLogUsecase(readerProgressDecorator, filterAccessLogUsecase)
+	return usecase.NewReadAccessLogUsecase(readerProgressDecorator, filterAccessLogUsecase, ipProcessor)
 }
 
 //

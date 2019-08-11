@@ -11,7 +11,8 @@ import (
 func RequestReportCommand(cliContext *cli.Context) error {
 	generalConfig := di.InitGeneralConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
-	readAccessLogUsecase := di.InitReadAccessLogUsecase(filterConfig)
+	processorConfig := di.InitProcessorConfig(cliContext)
+	readAccessLogUsecase := di.InitReadAccessLogUsecase(processorConfig, filterConfig)
 	requestReportUsecase := di.InitRequestReportUsecase()
 
 	fmt.Println("💃 Tango is on the scene!")

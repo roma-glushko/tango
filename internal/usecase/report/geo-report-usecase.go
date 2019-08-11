@@ -9,9 +9,12 @@ import (
 )
 
 type Geolocation struct {
-	Country  string
-	City     string
-	Requests uint64
+	Country       string
+	City          string
+	Continent     string
+	SampleRequest string
+	BrowserAgent  string
+	Requests      uint64
 }
 
 type GeoReportWriter interface {
@@ -55,9 +58,12 @@ func (u *GeoReportUsecase) GenerateReport(reportPath string, accessRecords []ent
 			}
 
 			geoReport[ip] = &Geolocation{
-				Country:  geoLocation.Country.Names["en"],
-				City:     geoLocation.City.Names["en"],
-				Requests: 1,
+				Country:       geoLocation.Country.Names["en"],
+				City:          geoLocation.City.Names["en"],
+				Continent:     geoLocation.Continent.Names["en"],
+				SampleRequest: accessRecord.URI,
+				BrowserAgent:  accessRecord.UserAgent,
+				Requests:      1,
 			}
 		}
 	}
