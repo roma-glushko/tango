@@ -105,7 +105,11 @@ func GetBrowserClassification() []BrowserCategory {
 		{Agent: "AppEngine-Google", Category: "Crawlers"},
 		{Agent: "Mediapartners-Google", Category: "Crawlers"},
 		{Agent: "Googlebot-Image", Category: "Crawlers"},
+		{Agent: "AdsBot-Google", Category: "Crawlers"},
+		{Agent: "Googlebot-News", Category: "Crawlers"},
+		{Agent: "Googlebot-Video", Category: "Crawlers"},
 		{Agent: "Google Favicon", Category: "Crawlers"},
+		{Agent: "Googlebot", Category: "Crawlers"},
 		{Agent: "Google", Category: "Crawlers"},
 		{Agent: "WhatsApp", Category: "Crawlers"},
 
@@ -133,17 +137,18 @@ func GetBrowserClassification() []BrowserCategory {
 		{Agent: "CriOS", Category: "Chrome"},
 
 		/* Crawlers/Bots (Possible Safari based) */
-		{Agent: "AppleBot", Category: "Crawlers"},
+		{Agent: "Applebot", Category: "Crawlers"},
 		{Agent: "Twitter", Category: "Crawlers"},
 		{Agent: "facebookexternalhit", Category: "Crawlers"},
+		{Agent: "bingbot", Category: "Crawlers"},
 
 		{Agent: "Safari", Category: "Safari"},
 
 		/* Crawlers/Bots */
 		{Agent: "BingPreview", Category: "Crawlers"},
 		{Agent: "adidxbot", Category: "Crawlers"},
-		{Agent: "bingbot", Category: "Crawlers"},
 		{Agent: "Sogou", Category: "Crawlers"},
+		{Agent: "Yahoo Ad monitoring", Category: "Crawlers"},
 		{Agent: "Yahoo! Slurp", Category: "Crawlers"},
 		{Agent: "Baiduspider", Category: "Crawlers"},
 		{Agent: "Baidu", Category: "Crawlers"},
@@ -202,6 +207,15 @@ func GetBrowserClassification() []BrowserCategory {
 		{Agent: "ConveraCrawler", Category: "Crawlers"},
 		{Agent: "GrapeshotCrawler", Category: "Crawlers"},
 		{Agent: "Applebot", Category: "Crawlers"},
+		{Agent: "contxbot", Category: "Crawlers"},
+		{Agent: "AdBot", Category: "Crawlers"},
+		{Agent: "AdBot", Category: "Crawlers"},
+		{Agent: "BLEXBot", Category: "Crawlers"},
+		{Agent: "AmazonAdBot", Category: "Crawlers"},
+		{Agent: "Mail.RU", Category: "Crawlers"},
+		{Agent: "coccocbot-web", Category: "Crawlers"},
+		{Agent: "centurybot9", Category: "Crawlers"},
+		{Agent: "Alignabot", Category: "Crawlers"},
 
 		/* Podcast fetchers */
 		{Agent: "Downcast", Category: "Podcasts"},
@@ -235,6 +249,7 @@ func GetBrowserClassification() []BrowserCategory {
 
 		/* Security Scanners */
 		{Agent: "WPScan", Category: "Crawlers"},
+		{Agent: "magereport", Category: "Crawlers"},
 
 		/* Services */
 		{Agent: "okhttp", Category: "Crawlers"},
