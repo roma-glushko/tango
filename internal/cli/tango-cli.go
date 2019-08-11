@@ -33,6 +33,12 @@ func getTangoCommands() []cli.Command {
 			Usage:   "Generate Browser report from Access Logs",
 			Action:  command.BrowserReportCommand,
 		},
+		{
+			Name:    "request",
+			Aliases: []string{"request-report"},
+			Usage:   "Generate Request report from Access Logs",
+			Action:  command.RequestReportCommand,
+		},
 	}
 }
 

@@ -60,6 +60,13 @@ func InitBrowserReportUsecase() *report.BrowserReportUsecase {
 }
 
 //
+func InitRequestReportUsecase() *report.RequestReportUsecase {
+	requestReportWriter := writer.NewRequestReportCsvWriter()
+
+	return report.NewRequestReportUsecase(requestReportWriter)
+}
+
+//
 func InitCustomReportUsecase() *report.CustomReportUsecase {
 	customReportWriter := writer.NewCustomReportCsvWriter()
 
