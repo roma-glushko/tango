@@ -39,6 +39,12 @@ func getTangoCommands() []cli.Command {
 			Usage:   "Generate Request report from Access Logs",
 			Action:  command.RequestReportCommand,
 		},
+		{
+			Name:    "journey",
+			Aliases: []string{"journey-report"},
+			Usage:   "Generate a report based on visitor's journeys",
+			Action:  command.JourneyReportCommand,
+		},
 	}
 }
 
