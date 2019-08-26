@@ -13,8 +13,7 @@ Currently, work on this project is in progress. No stable or workable release ye
 ### Reports
 
 - Generate geo report
-- Generate crawler report
-- Generate user agent reports
+- Generate user agent/crawler reports
 - Generate visitor jorney pathes by IP
 - Generate custom filtered reports
 - Generate security reports (automatically found automated requests from security scanners, exploits)

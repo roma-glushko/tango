@@ -78,7 +78,14 @@ func InitRequestReportUsecase() *report.RequestReportUsecase {
 	return report.NewRequestReportUsecase(requestReportWriter)
 }
 
-//
+// InitJourneyReportUsecase inits a usecase
+func InitJourneyReportUsecase() *report.JourneyReportUsecase {
+	journeyReportWriter := writer.NewJourneyReportHtmlWriter()
+
+	return report.NewJourneyReportUsecase(journeyReportWriter)
+}
+
+// InitCustomReportUsecase inits a usecase
 func InitCustomReportUsecase() *report.CustomReportUsecase {
 	customReportWriter := writer.NewCustomReportCsvWriter()
 

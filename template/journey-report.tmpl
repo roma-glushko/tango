@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Tango | Journey Report</title>
+    <style type="text/css">
+        .tango-journey {
+            width: 1200px;
+            height: 1200px;
+            border: 1px solid lightgray;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-network.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-network.min.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    {{range .}}
+    <h2>Journey of {{.IP}}</h2>
+    <div class="tango-journey" id="journey-{{.ID}}"></div>
+
+    <script type="text/javascript">
+        // create an array with nodes
+        var nodes{{.ID}} = new vis.DataSet([
+            {{range .Places}}
+            {
+                id: "{{.ID}}",
+                label: "{{.Label}}",
+                color: "{{.Color}}",
+            },
+            {{end}}
+        ]);
+
+        // create an array with edges
+        var edges{{.ID}} = new vis.DataSet([
+            {{range .Roads}}
+            {
+                from: "{{.From}}",
+                to: "{{.To}}",
+                arrows: {
+                    to: {
+                        enabled: true,
+                        type: "arrow",
+                    }
+                },
+            },
+            {{end}}
+        ]);
+
+        // create a network
+        var container{{.ID}} = document.getElementById('journey-{{.ID}}');
+
+        var data{{.ID}} = {
+            nodes: nodes{{.ID}},
+            edges: edges{{.ID}}
+        };
+
+        var options{{.ID}} = {
+            interaction: {hover: true},
+            physics: {
+                enabled: false,
+            },
+            nodes: {
+                shape: 'box',
+                margin: 10,
+                widthConstraint: {
+                    maximum: 200
+                },
+            },
+            layout: {
+                hierarchical: {
+                    direction: "UD",
+                    sortMethod: "directed"
+                }
+            },
+        };
+        var network = new vis.Network(container{{.ID}}, data{{.ID}}, options{{.ID}});
+    </script>
+    {{end}}
+</body>
+
+</html>

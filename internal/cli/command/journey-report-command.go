@@ -14,7 +14,7 @@ func JourneyReportCommand(cliContext *cli.Context) error {
 	processorConfig := di.InitProcessorConfig(cliContext)
 	readAccessLogUsecase := di.InitReadAccessLogUsecase(processorConfig, filterConfig)
 
-	requestReportUsecase := di.InitRequestReportUsecase() // todo: replace by actual command
+	journeyReportUsecase := di.InitJourneyReportUsecase()
 
 	fmt.Println("💃 Tango is on the scene!")
 	fmt.Println("💃 started to generate a visitor's journey report...")
@@ -24,7 +24,7 @@ func JourneyReportCommand(cliContext *cli.Context) error {
 
 	fmt.Println("💃 saving the visitor's journey report...")
 
-	requestReportUsecase.GenerateReport(generalConfig.ReportFile, accessLogRecords)
+	journeyReportUsecase.GenerateReport(generalConfig.ReportFile, accessLogRecords)
 
 	fmt.Println("🎉 visitor's journey report has been generated")
 
