@@ -10,6 +10,11 @@ Currently, work on this project is in progress. No stable or workable release ye
 
 ## Use Cases
 
+Legend:
+✅ - completed (MVP is ready)
+👷 - under development (will be available soon!)
+🤔 - no progress so far
+
 ### Reports
 
 - Generate Geo reports ✅
