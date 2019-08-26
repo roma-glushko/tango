@@ -7,7 +7,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-//
+// JourneyReportCommand generates journey report for needed IPs
 func JourneyReportCommand(cliContext *cli.Context) error {
 	generalConfig := di.InitGeneralConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
@@ -22,7 +22,7 @@ func JourneyReportCommand(cliContext *cli.Context) error {
 
 	accessLogRecords := readAccessLogUsecase.Read(generalConfig.LogFile)
 
-	fmt.Println("💃 saving the visitor's journey report...")
+	fmt.Println("💃 saving visitor's journey report...")
 
 	journeyReportUsecase.GenerateReport(generalConfig.ReportFile, accessLogRecords)
 

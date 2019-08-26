@@ -11,3 +11,22 @@
 # it's possible remove system IPs from reports
 "system-ips":
   - "1.2.3.0/20"
+
+# url of the project. Used to find external referers
+"base-url": "https://www.example.com/"
+
+# remove records with URLs that match the following rules
+"uri-filter":
+  - "/customer/section/load"
+
+# keep version of URI filter
+# "keep-uri-filter":
+#   - "paypal/ipn"
+
+# remove records with IPs that are in the following list
+"ip-filter":
+  - "127.0.0.1"
+
+# keep version of IP filter
+# "keep-ip-filter":
+#   - "2.3.4.5"
