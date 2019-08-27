@@ -52,6 +52,12 @@ func getTangoCommands() []cli.Command {
 				},
 			},
 		},
+		{
+			Name:    "pace",
+			Aliases: []string{"request-pace-report"},
+			Usage:   "Generate request pace report from access logs",
+			Action:  command.PaceReportCommand,
+		},
 	}
 }
 

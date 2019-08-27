@@ -29,7 +29,7 @@ func InitFilterConfig(cliContext *cli.Context) config.FilterConfig {
 	return factory.NewFilterConfig(cliContext)
 }
 
-//
+// InitFilterAccessLogUsecase
 func InitFilterAccessLogUsecase(filterConfig config.FilterConfig) usecase.FilterAccessLogUsecase {
 	filters := []usecase.AccessLogFilter{
 		filter.NewIPFilter(filterConfig),
@@ -42,12 +42,12 @@ func InitFilterAccessLogUsecase(filterConfig config.FilterConfig) usecase.Filter
 	return usecase.NewFilterAccessLogUsecase(filters)
 }
 
-//
+// InitIpProcessor
 func InitIpProcessor(processorConfig config.ProcessorConfig) processor.IPProcessor {
 	return processor.NewIPProcessor(processorConfig)
 }
 
-//
+// InitReadAccessLogUsecase inits a usecase
 func InitReadAccessLogUsecase(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig) *usecase.ReadAccessLogUsecase {
 	accessLogReader := reader.NewAccessLogReader()
 	readerProgressDecorator := component.NewReaderProgressDecorator(accessLogReader)
@@ -57,25 +57,32 @@ func InitReadAccessLogUsecase(processorConfig config.ProcessorConfig, filterConf
 	return usecase.NewReadAccessLogUsecase(readerProgressDecorator, filterAccessLogUsecase, ipProcessor)
 }
 
-//
+// InitGeoReportUsecase inits a usecase
 func InitGeoReportUsecase() *report.GeoReportUsecase {
 	geoReportWriter := writer.NewGeoReportCsvWriter()
 
 	return report.NewGeoReportUsecase(geoReportWriter)
 }
 
-//
+// InitBrowserReportUsecase inits a usecase
 func InitBrowserReportUsecase() *report.BrowserReportUsecase {
 	browserReportWriter := writer.NewBrowserReportCsvWriter()
 
 	return report.NewBrowserReportUsecase(browserReportWriter)
 }
 
-//
+// InitRequestReportUsecase inits a usecase
 func InitRequestReportUsecase() *report.RequestReportUsecase {
 	requestReportWriter := writer.NewRequestReportCsvWriter()
 
 	return report.NewRequestReportUsecase(requestReportWriter)
+}
+
+// InitPaceReportUsecase inits a usecase
+func InitPaceReportUsecase() *report.PaceReportUsecase {
+	paceReportWriter := writer.NewPaceReportCsvWriter()
+
+	return report.NewPaceReportUsecase(paceReportWriter)
 }
 
 // InitJourneyReportUsecase inits a usecase
