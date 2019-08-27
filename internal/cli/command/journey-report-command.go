@@ -14,7 +14,7 @@ func JourneyReportCommand(cliContext *cli.Context) error {
 	processorConfig := di.InitProcessorConfig(cliContext)
 	readAccessLogUsecase := di.InitReadAccessLogUsecase(processorConfig, filterConfig)
 
-	journeyReportUsecase := di.InitJourneyReportUsecase()
+	journeyReportUsecase := di.InitJourneyReportUsecase(generalConfig)
 
 	fmt.Println("💃 Tango is on the scene!")
 	fmt.Println("💃 started to generate a visitor's journey report...")

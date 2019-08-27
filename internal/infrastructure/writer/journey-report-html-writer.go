@@ -7,11 +7,11 @@ import (
 	"text/template"
 )
 
-//
+// JourneyReportHtmlWriter
 type JourneyReportHtmlWriter struct {
 }
 
-//
+// JourneyPlaceHtmlReport
 type JourneyPlaceHtmlReport struct {
 	ID    string
 	Label string
@@ -24,6 +24,7 @@ type JourneyRoadHtmlReport struct {
 	To   string
 }
 
+// JourneyHtmlReport
 type JourneyHtmlReport struct {
 	ID     string
 	IP     string
@@ -31,8 +32,8 @@ type JourneyHtmlReport struct {
 	Roads  []JourneyRoadHtmlReport
 }
 
-// NewJourneyReportHtmlWriter inits a new html report writer
-func NewJourneyReportHtmlWriter() *JourneyReportHtmlWriter {
+// NewJourneyReportHTMLWriter inits a new html report writer
+func NewJourneyReportHTMLWriter() *JourneyReportHtmlWriter {
 	return &JourneyReportHtmlWriter{}
 }
 
@@ -82,16 +83,7 @@ func (w *JourneyReportHtmlWriter) getJourneyPlaceHTMLData(journeyPlaces []*entit
 	journeyPlaceHtmlReport := make([]JourneyPlaceHtmlReport, 0)
 
 	for index, journeyPlace := range journeyPlaces {
-		color := "#3498db"
-
-		if !journeyPlace.WasLogged {
-			color = "#95a5a6"
-		}
-
-		// begining of the network will be highlighted by another color
-		if index == 0 {
-			color = "#1abc9c"
-		}
+		color := w.getPlaceColor(index, journeyPlace)
 
 		journeyPlaceHtmlReport = append(journeyPlaceHtmlReport, JourneyPlaceHtmlReport{
 			ID:    journeyPlace.ID,
@@ -117,4 +109,30 @@ func (w *JourneyReportHtmlWriter) getJourneyRoadHTMLData(journeyPlaces []*entity
 	}
 
 	return journeyRoadHtmlReport
+}
+
+// getPlaceColor retrieves color of journey place color
+func (w *JourneyReportHtmlWriter) getPlaceColor(index int, journeyPlace *entity.JourneyPlace) string {
+	color := "#3498db" // blue color
+
+	if !journeyPlace.WasLogged {
+		color = "#95a5a6" // gray color
+	}
+
+	responseCode := journeyPlace.Data.ResponseCode
+
+	if responseCode >= 400 && responseCode < 500 {
+		color = "#f1c40f" // yellow color
+	}
+
+	if responseCode >= 500 {
+		color = "#e74c3c" // red color
+	}
+
+	// begining of the network will be highlighted by another color
+	if index == 0 {
+		color = "#1abc9c" // green color
+	}
+
+	return color
 }

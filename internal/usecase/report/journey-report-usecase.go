@@ -6,6 +6,7 @@ import (
 	"log"
 	"strings"
 	"tango/internal/domain/entity"
+	"tango/internal/usecase/config"
 )
 
 // JourneyReportWriter knows how to save journey report
@@ -20,9 +21,9 @@ type JourneyReportUsecase struct {
 }
 
 // NewJourneyReportUsecase creates a new instance of the usecase
-func NewJourneyReportUsecase(journeyReportWriter JourneyReportWriter) *JourneyReportUsecase {
+func NewJourneyReportUsecase(generalConfig config.GeneralConfig, journeyReportWriter JourneyReportWriter) *JourneyReportUsecase {
 	return &JourneyReportUsecase{
-		baseURL:             "https://www.example.com",
+		baseURL:             generalConfig.BaseURL,
 		journeyReportWriter: journeyReportWriter,
 	}
 }

@@ -13,7 +13,7 @@
   - "1.2.3.0/20"
 
 # url of the project. Used to find external referers
-"base-url": "https://www.example.com/"
+"base-url": "https://www.example.com"
 
 # remove records with URLs that match the following rules
 "uri-filter":
