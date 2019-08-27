@@ -80,7 +80,7 @@ func InitRequestReportUsecase() *report.RequestReportUsecase {
 
 // InitJourneyReportUsecase inits a usecase
 func InitJourneyReportUsecase(generalConfig config.GeneralConfig) *report.JourneyReportUsecase {
-	journeyReportWriter := writer.NewJourneyReportHtmlWriter()
+	journeyReportWriter := writer.NewJourneyReportHTMLWriter()
 
 	return report.NewJourneyReportUsecase(generalConfig, journeyReportWriter)
 }

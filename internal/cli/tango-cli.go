@@ -8,11 +8,12 @@ import (
 	"github.com/urfave/cli/altsrc"
 )
 
-//
+// TangoCli
 type TangoCli struct {
 	cliApp *cli.App
 }
 
+// getTangoCommands returns list of commands
 func getTangoCommands() []cli.Command {
 	return []cli.Command{
 		{
@@ -44,10 +45,17 @@ func getTangoCommands() []cli.Command {
 			Aliases: []string{"journey-report"},
 			Usage:   "Generate a report based on visitor's journeys",
 			Action:  command.JourneyReportCommand,
+			Flags: []cli.Flag{
+				cli.StringSliceFlag{
+					Name:  "uri-filter, uf",
+					Usage: "Remove URIs from visitor's journey, but consider these records during journey preparing",
+				},
+			},
 		},
 	}
 }
 
+// getTangoGlobalFlags returns all global filter flags
 func getTangoGlobalFlags() []cli.Flag {
 	return []cli.Flag{
 		// general
@@ -69,7 +77,7 @@ func getTangoGlobalFlags() []cli.Flag {
 	}
 }
 
-// Create a main Tango CLI application
+// NewTangoCli creates a main Tango CLI application
 func NewTangoCli() TangoCli {
 	cliApp := cli.NewApp()
 
@@ -87,7 +95,7 @@ func NewTangoCli() TangoCli {
 	}
 }
 
-// Execute Tango CLI Application
+// Run executes Tango CLI Application
 func (app *TangoCli) Run(arguments []string) {
 	err := app.cliApp.Run(arguments)
 
