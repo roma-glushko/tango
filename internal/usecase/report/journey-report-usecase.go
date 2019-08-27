@@ -97,7 +97,7 @@ func (u *JourneyReportUsecase) addPlace(journey *entity.Journey, accessLogRecord
 		}
 	}
 
-	if !strings.Contains(accessLogRecord.URI, "/customer/section/load") {
+	if !strings.Contains(accessLogRecord.URI, "/customer/section/load") { // todo: refactor and remove hardcoded uri
 		currentPlace := journey.AddPlace(&entity.JourneyPlace{
 			ID:        getUUID(),
 			WasLogged: true,

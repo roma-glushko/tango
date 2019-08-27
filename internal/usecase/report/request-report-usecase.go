@@ -9,8 +9,9 @@ import (
 
 //
 type RequestReportItem struct {
-	Path     string
-	Requests uint64
+	Path         string
+	Requests     uint64
+	ResponseCode uint64
 }
 
 //
@@ -74,8 +75,9 @@ func (u *RequestReportUsecase) GenerateReport(reportPath string, accessRecords [
 		}
 
 		requestReport[path] = &RequestReportItem{
-			Path:     path,
-			Requests: 1,
+			Path:         path,
+			Requests:     1,
+			ResponseCode: accessRecord.ResponseCode,
 		}
 	}
 

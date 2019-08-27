@@ -31,6 +31,7 @@ func (w *RequestReportCsvWriter) Save(filePath string, requestReport map[string]
 	writer.Write([]string{
 		"Path",
 		"Requests",
+		"Response Code",
 	})
 
 	// Body
@@ -38,6 +39,7 @@ func (w *RequestReportCsvWriter) Save(filePath string, requestReport map[string]
 		err := writer.Write([]string{
 			requestReportItem.Path,
 			strconv.FormatUint(requestReportItem.Requests, 10),
+			strconv.FormatUint(requestReportItem.ResponseCode, 10),
 		})
 
 		if err != nil {
