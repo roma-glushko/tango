@@ -19,7 +19,7 @@ func NewIPFilter(filterConfig config.FilterConfig) *IPFilter {
 	}
 }
 
-//
+// todo: remove duplicated code
 func contains(ipList []string, ip string) bool {
 	for _, ipItem := range ipList {
 		if ipItem == ip {
@@ -37,7 +37,7 @@ func (f *IPFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
 
 	ipList := accessLogRecord.IP
 
-	// if keep filter is enabled, than keep only specified 
+	// if keep filter is enabled, than keep only specified
 	if len(f.keepIpFilters) > 0 {
 		for _, keepIP := range f.keepIpFilters {
 			if contains(ipList, keepIP) {

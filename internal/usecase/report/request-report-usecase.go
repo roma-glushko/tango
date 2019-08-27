@@ -7,19 +7,20 @@ import (
 	"tango/internal/domain/entity"
 )
 
-//
+// RequestReportItem
 type RequestReportItem struct {
 	Path         string
 	Requests     uint64
 	ResponseCode uint64
+	RefererURLs  map[string]bool
 }
 
-//
+// RequestReportWriter
 type RequestReportWriter interface {
 	Save(reportPath string, browserReport map[string]*RequestReportItem)
 }
 
-//
+// RequestReportUsecase
 type RequestReportUsecase struct {
 	requestReportWriter RequestReportWriter
 }
@@ -31,7 +32,7 @@ func NewRequestReportUsecase(requestReportWriter RequestReportWriter) *RequestRe
 	}
 }
 
-// Process access logs and collect request reports
+// GenerateReport processes access logs and collect request reports
 func (u *RequestReportUsecase) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
 	var requestReport = make(map[string]*RequestReportItem)
 
@@ -56,6 +57,7 @@ func (u *RequestReportUsecase) GenerateReport(reportPath string, accessRecords [
 
 	for _, accessRecord := range accessRecords {
 		requestURI := accessRecord.URI
+		refererURL := accessRecord.RefererURL
 
 		parsedURI, err := url.Parse(requestURI)
 
@@ -71,6 +73,12 @@ func (u *RequestReportUsecase) GenerateReport(reportPath string, accessRecords [
 
 		if _, ok := requestReport[path]; ok {
 			requestReport[path].Requests++
+
+			// collect referer URLs
+			if _, found := requestReport[path].RefererURLs[refererURL]; !found {
+				requestReport[path].RefererURLs[refererURL] = true
+			}
+
 			continue
 		}
 
@@ -78,6 +86,7 @@ func (u *RequestReportUsecase) GenerateReport(reportPath string, accessRecords [
 			Path:         path,
 			Requests:     1,
 			ResponseCode: accessRecord.ResponseCode,
+			RefererURLs:  map[string]bool{refererURL: true},
 		}
 	}
 

@@ -8,6 +8,7 @@ import (
 	"github.com/oschwald/geoip2-golang"
 )
 
+// Geolocation report information
 type Geolocation struct {
 	Country       string
 	City          string
@@ -17,10 +18,12 @@ type Geolocation struct {
 	Requests      uint64
 }
 
+// GeoReportWriter is an interface for saving geo location reports
 type GeoReportWriter interface {
 	Save(reportPath string, geolocationReport map[string]*Geolocation)
 }
 
+// GeoReportUsecase knows how to generate geo reports
 type GeoReportUsecase struct {
 	geoReportWriter GeoReportWriter
 }
@@ -32,11 +35,11 @@ func NewGeoReportUsecase(geoReportWriter GeoReportWriter) *GeoReportUsecase {
 	}
 }
 
-// Process access logs and collect geo reports
+// GenerateReport processes access logs and collect geo reports
 func (u *GeoReportUsecase) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
 	var geoReport = make(map[string]*Geolocation)
 
-	db, err := geoip2.Open("assets/GeoLite2-City.mmdb")
+	db, err := geoip2.Open("assets/GeoLite2-City.mmdb") // todo: move working with GeoLite to infrastructure layer
 	if err != nil {
 		log.Fatal(err)
 	}

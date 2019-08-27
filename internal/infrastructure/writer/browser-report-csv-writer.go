@@ -36,7 +36,7 @@ func byteCountDecimal(b uint64) string {
 	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "kMGTPE"[exp])
 }
 
-//
+// todo: remove duplicated code
 func newLineSeparated(boolMap map[string]bool) string {
 	result := ""
 
