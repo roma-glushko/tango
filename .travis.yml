@@ -4,6 +4,10 @@ language: go
 go:
   - 1.12.x
 
+os:
+  - linux
+  - osx
+
 addons:
   apt:
     packages:
@@ -15,8 +19,8 @@ addons:
 env:
 # needed for the snap pipe:
 - PATH=/snap/bin:$PATH
-
 - GO111MODULE=on
+- GOFLAGS='-mod internal'
 
 install:
 # needed for the snap pipe:
@@ -28,6 +32,10 @@ services:
 
 before_script:
   - go get -t -v ./...
+
+script:
+  - go build
+  - go test
 
 after_success:
 # docker login is required if you want to push docker images.
@@ -47,4 +55,3 @@ deploy:
   script: curl -sL https://git.io/goreleaser | bash
   on:
     tags: true
-    condition: $TRAVIS_OS_NAME = linux
