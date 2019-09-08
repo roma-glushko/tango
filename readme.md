@@ -1,6 +1,7 @@
 # Tango
 
 <img src="https://img.shields.io/badge/WIP-Work%20In%20Progress-yellow.svg" />
+<img src="https://travis-ci.com/roma-glushko/tango.svg?branch=master" />
 
 <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" />
 
