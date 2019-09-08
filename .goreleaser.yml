@@ -84,6 +84,10 @@ brews:
       name: tango-release-bot
       email: roman.glushko.m@gmail.com
 
+    # Folder inside the repository to put the formula.
+    # Default is the root folder.
+    folder: Formula
+
     # Caveats for the user of your binary.
     # Default is empty.
     caveats: "How to use this binary"
