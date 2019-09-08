@@ -9,6 +9,10 @@ os:
   - osx
   - windows
 
+# Only clone the most recent commit.
+git:
+  depth: 1
+
 env:
   global:
     # needed for the snap pipe:
