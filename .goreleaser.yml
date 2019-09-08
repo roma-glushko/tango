@@ -84,8 +84,6 @@ brews:
       name: tango-release-bot
       email: roman.glushko.m@gmail.com
 
-    folder: formula
-
     # Caveats for the user of your binary.
     # Default is empty.
     caveats: "How to use this binary"
