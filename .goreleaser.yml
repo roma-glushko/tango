@@ -35,4 +35,73 @@ release:
   # You can change the name of the GitHub release.
   # Default is `{{.Tag}}`
   name_template: "{{.ProjectName}}-v{{.Version}}"
-  disable: true
+  disable: false
+
+brews:
+  -
+    # Name template of the recipe
+    # Default to project name
+    name: tango
+
+    # NOTE: make sure the url_template, the token and given repo (github or gitlab) owner and name are from the
+    # same kind. We will probably unify this in the next major version like it is done with scoop.
+
+    # Github repository to push the tap to.
+    github:
+      owner: roma-glushko
+      name: tango
+
+    # Template for the url which is determined by the given Token (github or gitlab)
+    # Default for github is "https://github.com/<repo_owner>/<repo_name>/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    # Default for gitlab is "https://gitlab.com/<repo_owner>/<repo_name>/uploads/{{ .ArtifactUploadHash }}/{{ .ArtifactName }}"
+    url_template: "https://github.com/roma-glushko/tango/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+
+    # Allows you to set a custom download strategy. Note that you'll need
+    # to implement the strategy and add it to your tap repository.
+    # Example: http://lessthanhero.io/post/homebrew-with-private-repo-releases/
+    # Default is empty.
+    download_strategy: GitHubPrivateRepositoryReleaseDownloadStrategy
+
+    # Git author used to commit to the repository.
+    # Defaults are shown.
+    commit_author:
+      name: tango-release-bot
+      email: roman.glushko.m@gmail.com
+
+    # Your app's homepage.
+    # Default is empty.
+    homepage: "https://github.com/roma-glushko/tango"
+
+    # Your app's description.
+    # Default is empty.
+    description: "Tango is a command-line tool for "dancing" with access logs"
+
+    # Setting this will prevent goreleaser to actually try to commit the updated
+    # formula - instead, the formula file will be stored on the dist folder only,
+    # leaving the responsibility of publishing it to the user.
+    # If set to auto, the release will not be uploaded to the homebrew tap
+    # in case there is an indicator for prerelease in the tag e.g. v1.0.0-rc1
+    # Default is false.
+    skip_upload: auto
+
+    # Custom block for brew.
+    # Can be used to specify alternate downloads for devel or head releases.
+    # Default is empty.
+    custom_block: |
+      head "https://github.com/roma-glushko/tango.git"
+
+    # Packages your package depends on.
+    dependencies: []
+
+    # Packages that conflict with your package.
+    conflicts: []
+
+    # So you can `brew test` your formula.
+    # Default is empty.
+    test: |
+      system "#{bin}/program --version"
+
+    # Custom install script for brew.
+    # Default is 'bin.install "program"'.
+    install: |
+      bin.install "program"
