@@ -11,44 +11,20 @@ builds:
   - CGO_ENABLED=0
 archives:
 - 
-  id: tango-macos-archive
-  name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-  wrap_in_directory: true
-  builds:
-    - default
-  replacements:
-    darwin: macOS
-    amd64: 64-bit
-    386: 32-bit
-  format: zip
--
-  id: tango-linux-archive
-  name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-  wrap_in_directory: true
-  builds:
-    - default
-  replacements:
-    linux: Linux
-    amd64: 64-bit
-    386: 32-bit
-  format: gz
--
-  id: tango-win-archive
-  name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-  wrap_in_directory: true
-  builds:
-    - default
+  id: tango-archive
   replacements:
     windows: Windows
+    linux: Linux
+    darwin: macOS
     amd64: 64-bit
     386: 32-bit
   format: zip
 
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "{{ .ProjectName }}-{{ .Tag }}-checksums.txt"
 
 snapshot:
-  name_template: "{{ .Tag }}-next"
+  name_template: "{{ .ProjectName }}-{{ .Tag }}-next"
 
 changelog:
   sort: asc
