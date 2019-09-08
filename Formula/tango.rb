@@ -18,7 +18,7 @@ class Tango < Formula
   head "https://github.com/roma-glushko/tango.git"
 
   def install
-    bin.install "program"
+    bin.install "tango"
   end
 
   def caveats; <<~EOS
@@ -27,6 +27,6 @@ class Tango < Formula
   end
 
   test do
-    system "#{bin}/program --version"
+    system "#{bin}/tango --version"
   end
 end

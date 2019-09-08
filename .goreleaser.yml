@@ -113,8 +113,8 @@ brews:
 
     # So you can `brew test` your formula.
     # Default is empty.
-    test: system "#{bin}/program --version"
+    test: system "#{bin}/tango --version"
 
     # Custom install script for brew.
     # Default is 'bin.install "program"'.
-    install: bin.install "program"
+    install: bin.install "tango"
