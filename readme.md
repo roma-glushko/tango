@@ -6,7 +6,9 @@
 
 ---
 
-<img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" />
+<p align="center">
+    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" />
+</p>
 
 Tango is a command-line tool for "dancing" with access logs 💃
 
