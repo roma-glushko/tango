@@ -7,6 +7,7 @@ go:
 os:
   - linux
   - osx
+  - windows
 
 addons:
   apt:
@@ -21,7 +22,6 @@ env:
     # needed for the snap pipe:
     - PATH=/snap/bin:$PATH
     - GO111MODULE=on
-    - GOFLAGS='-mod internal'
 
 install:
   # needed for the snap pipe:
@@ -56,3 +56,6 @@ deploy:
     script: curl -sL https://git.io/goreleaser | bash
     on:
       tags: true
+
+notifications:
+  email: false
