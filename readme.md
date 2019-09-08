@@ -14,6 +14,15 @@ Tango is a command-line tool for "dancing" with access logs 💃
 
 Currently, work on this project is in progress. No stable or workable release yet.
 
+## Installation
+
+### Homebrew
+
+```
+brew tap roma-glushko/tango https://github.com/roma-glushko/tango
+brew install roma-glushko/tango/tango
+```
+
 ## Badges
 
 [![Build Status](https://travis-ci.com/roma-glushko/tango.svg?branch=master)](https://travis-ci.com/roma-glushko/tango)
