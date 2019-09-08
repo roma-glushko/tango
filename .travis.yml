@@ -21,6 +21,9 @@ install:
 services:
 - docker
 
+before_script:
+  - go get -t -v ./
+
 after_success:
 # docker login is required if you want to push docker images.
 # DOCKER_PASSWORD should be a secret in your .travis.yml configuration.
