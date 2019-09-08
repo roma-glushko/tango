@@ -17,18 +17,18 @@ addons:
     - snapd
 
 env:
-# needed for the snap pipe:
-- PATH=/snap/bin:$PATH
-- GO111MODULE=on
-- GOFLAGS='-mod internal'
+  # needed for the snap pipe:
+  - PATH=/snap/bin:$PATH
+  - GO111MODULE=on
+  - GOFLAGS='-mod internal'
 
 install:
-# needed for the snap pipe:
-- sudo snap install snapcraft --classic
+  # needed for the snap pipe:
+  - sudo snap install snapcraft --classic
 
 # needed for the docker pipe
 services:
-- docker
+  - docker
 
 before_script:
   - go get -t -v ./...
@@ -38,20 +38,20 @@ script:
   - go test
 
 after_success:
-# docker login is required if you want to push docker images.
-# DOCKER_PASSWORD should be a secret in your .travis.yml configuration.
-- test -n "$TRAVIS_TAG" && docker login -u=myuser -p="$DOCKER_PASSWORD"
-# snapcraft login is required if you want to push snapcraft packages to the
-# store.
-# You'll need to run `snapcraft export-login snap.login` and
-# `travis encrypt-file snap.login --add` to add the key to the travis
-# environment.
-- test -n "$TRAVIS_TAG" && snapcraft login --with snap.login
+  # docker login is required if you want to push docker images.
+  # DOCKER_PASSWORD should be a secret in your .travis.yml configuration.
+  - test -n "$TRAVIS_TAG" && docker login -u=myuser -p="$DOCKER_PASSWORD"
+  # snapcraft login is required if you want to push snapcraft packages to the
+  # store.
+  # You'll need to run `snapcraft export-login snap.login` and
+  # `travis encrypt-file snap.login --add` to add the key to the travis
+  # environment.
+  - test -n "$TRAVIS_TAG" && snapcraft login --with snap.login
 
 # calls goreleaser
 deploy:
-- provider: script
-  skip_cleanup: true
-  script: curl -sL https://git.io/goreleaser | bash
-  on:
-    tags: true
+  - provider: script
+    skip_cleanup: true
+    script: curl -sL https://git.io/goreleaser | bash
+    on:
+      tags: true
