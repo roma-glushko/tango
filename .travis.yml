@@ -13,6 +13,8 @@ env:
 # needed for the snap pipe:
 - PATH=/snap/bin:$PATH
 
+- GO111MODULE=on
+
 install:
 # needed for the snap pipe:
 - sudo snap install snapcraft --classic
