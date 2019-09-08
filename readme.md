@@ -1,13 +1,21 @@
-# Tango
+<p align="center">
+  <img alt="Tango Logo" src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-logo.png" height="120" />
+  <h3 align="center">Tango</h3>
+  <p align="center">"Dance" with your access logs</p>
+</p>
 
-<img src="https://img.shields.io/badge/WIP-Work%20In%20Progress-yellow.svg" />
-<img src="https://travis-ci.com/roma-glushko/tango.svg?branch=master" />
+---
 
 <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" />
 
 Tango is a command-line tool for "dancing" with access logs 💃
 
 Currently, work on this project is in progress. No stable or workable release yet.
+
+## Badges
+
+<img src="https://travis-ci.com/roma-glushko/tango.svg?branch=master" />
+<img src="https://img.shields.io/badge/WIP-Work%20In%20Progress-yellow.svg" />
 
 ## Use Cases
 
