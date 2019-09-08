@@ -14,7 +14,7 @@ Currently, work on this project is in progress. No stable or workable release ye
 
 ## Badges
 
-<img src="https://travis-ci.com/roma-glushko/tango.svg?branch=master" />
+[![Build Status](https://travis-ci.com/roma-glushko/tango.svg?branch=master)](https://travis-ci.com/roma-glushko/tango)
 <img src="https://img.shields.io/badge/WIP-Work%20In%20Progress-yellow.svg" />
 
 ## Use Cases
