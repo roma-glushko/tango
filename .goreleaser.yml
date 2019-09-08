@@ -10,22 +10,53 @@ builds:
 - env:
   - CGO_ENABLED=0
 archives:
-- replacements:
-    darwin: Darwin
+- 
+  id: tango-macos-archive
+  name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+  wrap_in_directory: true
+  builds:
+    - default
+  replacements:
+    darwin: macOS
+    amd64: 64-bit
+    386: 32-bit
+  format: zip
+-
+  id: tango-linux-archive
+  name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+  wrap_in_directory: true
+  builds:
+    - default
+  replacements:
     linux: Linux
+    amd64: 64-bit
+    386: 32-bit
+  format: gz
+-
+  id: tango-win-archive
+  name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+  wrap_in_directory: true
+  builds:
+    - default
+  replacements:
     windows: Windows
-    386: i386
-    amd64: x86_64
+    amd64: 64-bit
+    386: 32-bit
+  format: zip
+
 checksum:
   name_template: 'checksums.txt'
+
 snapshot:
   name_template: "{{ .Tag }}-next"
+
 changelog:
   sort: asc
   filters:
     exclude:
     - '^doc:'
     - '^test:'
+
 release:
   github:
     owner: roma-glushko
@@ -42,6 +73,11 @@ brews:
     # Name template of the recipe
     # Default to project name
     name: tango
+
+    # IDs of the archives to use.
+    # Defaults to all.
+    ids:
+    - tango-macos-archive
 
     # NOTE: make sure the url_template, the token and given repo (github or gitlab) owner and name are from the
     # same kind. We will probably unify this in the next major version like it is done with scoop.
@@ -62,11 +98,21 @@ brews:
     # Default is empty.
     download_strategy: GitHubPrivateRepositoryReleaseDownloadStrategy
 
+    # Allows you to add a custom require_relative at the top of the formula template
+    # Default is empty
+    custom_require: custom_download_strategy
+
     # Git author used to commit to the repository.
     # Defaults are shown.
     commit_author:
       name: tango-release-bot
       email: roman.glushko.m@gmail.com
+
+    folder: formula
+
+    # Caveats for the user of your binary.
+    # Default is empty.
+    caveats: "How to use this binary"
 
     # Your app's homepage.
     # Default is empty.
@@ -74,7 +120,7 @@ brews:
 
     # Your app's description.
     # Default is empty.
-    description: "Tango is a command-line tool for "dancing" with access logs"
+    description: "Tango is a command-line tool for dancing with access logs"
 
     # Setting this will prevent goreleaser to actually try to commit the updated
     # formula - instead, the formula file will be stored on the dist folder only,
@@ -87,8 +133,7 @@ brews:
     # Custom block for brew.
     # Can be used to specify alternate downloads for devel or head releases.
     # Default is empty.
-    custom_block: |
-      head "https://github.com/roma-glushko/tango.git"
+    custom_block: head "https://github.com/roma-glushko/tango.git"
 
     # Packages your package depends on.
     dependencies: []
@@ -96,12 +141,12 @@ brews:
     # Packages that conflict with your package.
     conflicts: []
 
+    plist: '' 
+
     # So you can `brew test` your formula.
     # Default is empty.
-    test: |
-      system "#{bin}/program --version"
+    test: system "#{bin}/program --version"
 
     # Custom install script for brew.
     # Default is 'bin.install "program"'.
-    install: |
-      bin.install "program"
+    install: bin.install "program"
