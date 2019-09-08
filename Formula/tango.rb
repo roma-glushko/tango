@@ -2,16 +2,16 @@
 class Tango < Formula
   desc "Tango is a command-line tool for dancing with access logs"
   homepage "https://github.com/roma-glushko/tango"
-  version "0.0.0-rc6"
+  version "0.0.0-rc9"
   bottle :unneeded
 
   if OS.mac?
-    url "https://github.com/roma-glushko/tango/releases/download/0.0.0-rc6/tango_0.0.0-rc6_macOS_64-bit.zip", :using => GitHubPrivateRepositoryReleaseDownloadStrategy
-    sha256 "fbf89de981cd8f0f93d8dd687bb890f60ab1aecc292a589bdc0cc42a39516e8a"
+    url "https://github.com/roma-glushko/tango/releases/download/0.0.0-rc9/tango_0.0.0-rc9_macOS_64-bit.zip"
+    sha256 "3779c29fe3506a9bed666c9d52978b98a3bdea2068f43697e5196ffb618406ab"
   elsif OS.linux?
     if Hardware::CPU.intel?
-      url "https://github.com/roma-glushko/tango/releases/download/0.0.0-rc6/tango_0.0.0-rc6_Linux_64-bit.zip", :using => GitHubPrivateRepositoryReleaseDownloadStrategy
-      sha256 "fd3064d71667a49383249d8663a5f1bbe0e2189e414c3fbaae8d7e4768f3375b"
+      url "https://github.com/roma-glushko/tango/releases/download/0.0.0-rc9/tango_0.0.0-rc9_Linux_64-bit.zip"
+      sha256 "85093c182c977213afea89f43a0f1aef3a6b081a5852170fc65f0e8f0a0a1579"
     end
   end
   
