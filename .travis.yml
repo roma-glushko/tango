@@ -17,10 +17,11 @@ addons:
     - snapd
 
 env:
-  # needed for the snap pipe:
-  - PATH=/snap/bin:$PATH
-  - GO111MODULE=on
-  - GOFLAGS='-mod internal'
+  global:
+    # needed for the snap pipe:
+    - PATH=/snap/bin:$PATH
+    - GO111MODULE=on
+    - GOFLAGS='-mod internal'
 
 install:
   # needed for the snap pipe:
