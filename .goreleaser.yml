@@ -26,3 +26,13 @@ changelog:
     exclude:
     - '^doc:'
     - '^test:'
+release:
+  github:
+    owner: roma-glushko
+    name: tango
+  draft: true
+  prerelease: auto
+  # You can change the name of the GitHub release.
+  # Default is `{{.Tag}}`
+  name_template: "{{.ProjectName}}-v{{.Version}}"
+  disable: true
