@@ -15,7 +15,7 @@
 
 Tango is a dependency-free command-line tool for analyzing access logs 💃
 
-Currently, work on this project is in progress. No stable or workable release yet.
+Currently, work on this project is in progress. However, one release is ready to use 🎉
 
 ## Installation
 
