@@ -9,6 +9,16 @@ os:
   - osx
   - windows
 
+addons:
+  apt:
+    packages:
+    # needed for the snap pipe:
+    - snapd
+
+install:
+  # needed for the snap pipe:
+  - sudo snap install snapcraft --classic
+
 # Only clone the most recent commit.
 git:
   depth: 1
@@ -38,6 +48,14 @@ deploy:
     on:
       tags: true
       condition: $TRAVIS_OS_NAME = linux # create a release draft only once
+
+after_success:
+  # snapcraft login is required if you want to push snapcraft packages to the
+  # store.
+  # You'll need to run `snapcraft export-login snap.login` and
+  # `travis encrypt-file snap.login --add` to add the key to the travis
+  # environment.
+  - test -n "$TRAVIS_TAG" && snapcraft login --with snap.login
 
 notifications:
   email: false

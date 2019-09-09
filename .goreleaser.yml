@@ -125,11 +125,6 @@ snapcrafts:
     # Defaults to "default".
     id: tango-snapcraft
 
-    # Build IDs for the builds you want to create snapcraft packages for.
-    # Defaults to all builds.
-    builds:
-    - tango-archive
-
     # You can change the name of the package.
     # Default: `{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}`
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
@@ -203,14 +198,4 @@ snapcrafts:
         # You can read the documentation about the available plugs and the
         # things they allow:
         # https://snapcraft.io/docs/reference/interfaces.
-        plugs: []
-
-    # Allows plugs to be configured. Plugs like system-files and personal-files
-    # require this.
-    # Default is empty.
-    plugs:
-      personal-files:
-        read:
-        - $HOME/
-        write:
-        - $HOME/
+        plugs: ["home", "network"]
