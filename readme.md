@@ -6,11 +6,10 @@
 
 ---
 
-<p align="center">
-    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" />
-</p>
+[![Build Status](https://travis-ci.com/roma-glushko/tango.svg?branch=master)](https://travis-ci.com/roma-glushko/tango)
+<img src="https://img.shields.io/badge/WIP-Work%20In%20Progress-yellow.svg" />
 
-Tango is a command-line tool for "dancing" with access logs 💃
+Tango is a dependency-free command-line tool for analyzing access logs 💃
 
 Currently, work on this project is in progress. No stable or workable release yet.
 
@@ -23,10 +22,11 @@ brew tap roma-glushko/tango https://github.com/roma-glushko/tango
 brew install roma-glushko/tango/tango
 ```
 
-## Badges
+### Linux
 
-[![Build Status](https://travis-ci.com/roma-glushko/tango.svg?branch=master)](https://travis-ci.com/roma-glushko/tango)
-<img src="https://img.shields.io/badge/WIP-Work%20In%20Progress-yellow.svg" />
+```
+Coming Soon..
+```
 
 ## Use Cases
 
@@ -72,5 +72,9 @@ Legend:
 - add hierarchical loading to separate base project configs from case-specific 🤔
 
 ## Usage
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" />
+</p>
 
 TBD
