@@ -11,7 +11,7 @@
   [![Build Status](https://travis-ci.com/roma-glushko/tango.svg?branch=master)](https://travis-ci.com/roma-glushko/tango)
   [![Licence](https://img.shields.io/github/license/roma-glushko/tango)](https://github.com/roma-glushko/tango/blob/master/LICENSE)
   <img src="https://img.shields.io/badge/WIP-Work%20In%20Progress-yellow.svg" />
-  
+  ![Twitter Follow](https://img.shields.io/twitter/follow/roma_glushko?label=Follow%20Me&style=social)
 </p>
 
 Tango is a dependency-free command-line tool for analyzing access logs 💃
