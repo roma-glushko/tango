@@ -37,6 +37,7 @@ deploy:
     script: curl -sL https://git.io/goreleaser | bash
     on:
       tags: true
+      condition: $TRAVIS_OS_NAME = linux # create a release draft only once
 
 notifications:
   email: false
