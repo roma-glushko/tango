@@ -219,7 +219,7 @@ scoop:
   # Repository to push the app manifest to.
   bucket:
     owner: roma-glushko
-    name: tango
+    name: scoop-tango
 
   # Git author used to commit to the repository.
   # Defaults are shown.
