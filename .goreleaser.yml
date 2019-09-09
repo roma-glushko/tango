@@ -91,7 +91,7 @@ brews:
 
     # Caveats for the user of your binary.
     # Default is empty.
-    caveats: "Tango is on the scene 🎉 Type tango --help to get started 💃💃💃"
+    caveats: "Tango is on the scene 🎉 Type `tango --help` to get started 💃💃💃"
 
     # Your app's homepage.
     # Default is empty.

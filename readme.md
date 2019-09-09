@@ -28,6 +28,10 @@ brew tap roma-glushko/tango
 brew install roma-glushko/tango/tango
 ```
 
+<p align="center">
+    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-install-homebrew.gif" />
+</p>
+
 ### Linux
 
 Tango is available on <a href="https://snapcraft.io/tango">Snapcraft</a> via Snap.
