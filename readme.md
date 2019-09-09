@@ -9,6 +9,7 @@
 <p align="center">
   
   [![Build Status](https://travis-ci.com/roma-glushko/tango.svg?branch=master)](https://travis-ci.com/roma-glushko/tango)
+  ![GitHub](https://img.shields.io/github/license/roma-glushko/tango)
   <img src="https://img.shields.io/badge/WIP-Work%20In%20Progress-yellow.svg" />
   
 </p>
