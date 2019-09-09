@@ -4,9 +4,9 @@ go:
 - 1.12.x
 
 os:
-- linux
-- osx
-- windows
+  - linux
+  #- osx
+  #- windows
 
 addons:
   apt:
