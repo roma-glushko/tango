@@ -9,6 +9,16 @@ before:
 builds:
 - env:
   - CGO_ENABLED=0
+  goos:
+    - linux
+    - darwin
+    - windows
+  goarch:
+    - 386
+    - amd64
+    - arm
+    - arm64
+    
 archives:
 - 
   id: tango-archive
@@ -199,3 +209,37 @@ snapcrafts:
         # things they allow:
         # https://snapcraft.io/docs/reference/interfaces.
         plugs: ["home", "network"]
+scoop:
+  # Template for the url which is determined by the given Token (github or gitlab)
+  # Default for github is "https://github.com/<repo_owner>/<repo_name>/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+  # Default for gitlab is "https://gitlab.com/<repo_owner>/<repo_name>/uploads/{{ .ArtifactUploadHash }}/{{ .ArtifactName }}"
+  # Gitea is not supported yet, but the support coming
+  url_template: "https://github.com/roma-glushko/tango/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+
+  # Repository to push the app manifest to.
+  bucket:
+    owner: roma-glushko
+    name: tango
+
+  # Git author used to commit to the repository.
+  # Defaults are shown.
+  commit_author:
+    name: tango-release-bot
+    email: roman.glushko.m@gmail.com
+
+  # Your app's homepage.
+  # Default is empty.
+  homepage: "https://github.com/roma-glushko/tango"
+
+  # Your app's description.
+  # Default is empty.
+  description: "Tango is a dependency-free command-line tool for analyzing server access logs"
+
+  # Your app's license
+  # Default is empty.
+  license: MIT
+
+  # Persist data between application updates
+  persist:
+  - "data"
+  - "config.toml"
