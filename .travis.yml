@@ -1,43 +1,52 @@
-# .travis.yml
 language: go
 
 go:
-  - 1.12.x
+- 1.12.x
 
 os:
   - linux
-  - osx
-  - windows
+  #- osx
+  #- windows
 
-# Only clone the most recent commit.
+addons:
+  apt:
+    packages:
+    - snapd
+
+before_install:
+  - openssl aes-256-cbc -K $encrypted_0ed7cc50a3ff_key -iv $encrypted_0ed7cc50a3ff_iv -in snap.login.enc -out snap.login -d
+
+install:
+- sudo snap install snapcraft --classic
+
 git:
   depth: 1
 
 env:
   global:
-    # needed for the snap pipe:
-    - PATH=/snap/bin:$PATH
-    - GO111MODULE=on
+  - PATH=/snap/bin:$PATH
+  - GO111MODULE=on
 
-# needed for the docker pipe
 services:
-  - docker
+- docker
 
 before_script:
-  - go get -t -v ./...
+- go get -t -v ./...
 
 script:
-  - go build
-  - go test
+- go build
+- go test
 
-# calls goreleaser
 deploy:
-  - provider: script
-    skip_cleanup: true
-    script: curl -sL https://git.io/goreleaser | bash
-    on:
-      tags: true
-      condition: $TRAVIS_OS_NAME = linux # create a release draft only once
+- provider: script
+  skip_cleanup: true
+  script: curl -sL https://git.io/goreleaser | bash
+  on:
+    tags: true
+    condition: "$TRAVIS_OS_NAME = linux"
+
+after_success:
+  - test -n "$TRAVIS_TAG" && snapcraft login --with snap.login
 
 notifications:
   email: false
