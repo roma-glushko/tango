@@ -38,7 +38,7 @@ Legend:
 
 - ✅ completed (MVP is ready)
 - 👷 under development (will be available soon!)
-- 🤔 no progress so far
+- 🤔 no progress yet
 
 ### Reports
 
