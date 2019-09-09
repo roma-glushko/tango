@@ -27,9 +27,6 @@ env:
   - PATH=/snap/bin:$PATH
   - GO111MODULE=on
 
-services:
-- docker
-
 before_script:
 - go get -t -v ./...
 
