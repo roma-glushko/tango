@@ -42,6 +42,8 @@ changelog:
     exclude:
     - '^doc:'
     - '^test:'
+    - Merge pull request
+    - Merge branch
 
 release:
   github:
@@ -210,10 +212,6 @@ snapcrafts:
         # https://snapcraft.io/docs/reference/interfaces.
         plugs: ["home", "network"]
 scoop:
-  # Template for the url which is determined by the given Token (github or gitlab)
-  # Default for github is "https://github.com/<repo_owner>/<repo_name>/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-  # Default for gitlab is "https://gitlab.com/<repo_owner>/<repo_name>/uploads/{{ .ArtifactUploadHash }}/{{ .ArtifactName }}"
-  # Gitea is not supported yet, but the support coming
   url_template: "https://github.com/roma-glushko/tango/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
 
   # Repository to push the app manifest to.
