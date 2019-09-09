@@ -19,17 +19,38 @@ Currently, work on this project is in progress. No stable or workable release ye
 
 ## Installation
 
-### Homebrew
+### macOS
+
+Tango can be installed on macOS via <a href="https://brew.sh/">Homebrew</a>:
 
 ```
-brew tap roma-glushko/tango https://github.com/roma-glushko/tango
+brew tap roma-glushko/tango
 brew install roma-glushko/tango/tango
 ```
 
 ### Linux
 
+Tango is available on <a href="https://snapcraft.io/tango">Snapcraft</a> via Snap.
+This means that Tango can be installed on:
+- <a href="https://snapcraft.io/install/tango/ubuntu">Ubuntu</a>
+- <a href="https://snapcraft.io/install/tango/debian">Debian</a>
+- <a href="https://snapcraft.io/install/tango/centos">CentOS</a>
+- <a href="https://snapcraft.io/install/tango/opensuse">openSUSE</a>
+- <a href="https://snapcraft.io/install/tango/mint">Linux Mint</a>
+- <a href="https://snapcraft.io/install/tango/fedora">Fedora</a>
+- <a href="https://snapcraft.io/install/tango/kubuntu">Kubuntu</a>
+- <a href="https://snapcraft.io/install/tango/elementary">elementary OS</a>
+- <a href="https://snapcraft.io/install/tango/arch">Arch Linux</a>
+- <a href="https://snapcraft.io/install/tango/kde-neon">KDE Neon</a>
+- <a href="https://snapcraft.io/install/tango/manjaro">Manjaro</a>
+
+### Windows
+
+Tango can be installed on macOS via <a href="https://scoop.sh/">Scoop</a>:
+
 ```
-Coming Soon..
+scoop bucket add tango https://github.com/roma-glushko/scoop-tango.git
+scoop install tango
 ```
 
 ## Use Cases
