@@ -5,3 +5,4 @@ assets
 .tango.yaml
 tango
 snap.login
+test/results/*

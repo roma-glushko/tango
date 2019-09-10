@@ -34,7 +34,7 @@ func (f *UserAgentFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
 	// if keep filter is enabled, than keep only specified
 	if len(f.keepUaFilters) > 0 {
 		for _, keepUserAgent := range f.keepUaFilters {
-			if !strings.Contains(userAgent, keepUserAgent) {
+			if strings.Contains(userAgent, keepUserAgent) {
 				return false
 			}
 		}
