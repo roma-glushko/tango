@@ -6,3 +6,4 @@ assets
 tango
 snap.login
 test/results/*
+!test/results/.gitkeep
