@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var europeFormat = "2006-01-02 15:04:05 -0700"
+var EuropeFormat = "2006-01-02 15:04:05 -0700"
 
 //
 type TimeFilter struct {
@@ -24,8 +24,8 @@ func NewTimeFilter(filterConfig config.FilterConfig) *TimeFilter {
 	// doesn't support multiple time frames by this moment
 	// needs to validate time frames: timeStart should be less than timeEnd
 	if len(timeFrames) == 2 {
-		timeStart, _ = time.Parse(europeFormat, timeFrames[0])
-		timeEnd, _ = time.Parse(europeFormat, timeFrames[1])
+		timeStart, _ = time.Parse(EuropeFormat, timeFrames[0])
+		timeEnd, _ = time.Parse(EuropeFormat, timeFrames[1])
 	}
 
 	return &TimeFilter{

@@ -9,7 +9,7 @@ import (
 	"tango/internal/domain/entity"
 )
 
-var timeFormat = "2006-01-02 15:04:05" // todo: add localization for US/EU formats
+var timeFormat = "2006-01-02 15:04:05 -0700" // todo: add localization for US/EU formats
 
 var CustomReportHeader = []string{
 	"Time",
