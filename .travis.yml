@@ -32,7 +32,7 @@ before_script:
 
 script:
 - go build
-- go test
+- go test ./test/
 
 deploy:
 - provider: script
