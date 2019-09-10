@@ -1,6 +1,8 @@
 package test
 
 import (
+	"net"
+	"strings"
 	"tango/internal/cli"
 	"tango/internal/infrastructure/writer"
 	"tango/internal/usecase/filter"
@@ -185,5 +187,125 @@ func TestCreateCustomReportWithKeepTimeFilter(t *testing.T) {
 		reportItemTime, _ := time.Parse(filter.EuropeFormat, reportItem[0]) // todo: do we need this exactly format?
 
 		assert.True(reportItemTime.After(timeFrameStart) && reportItemTime.Before(timeFrameEnd), "Time of Report Item should within the test duration")
+	}
+}
+
+func TestCreateCustomReportWithMultipleSystemIpProcessor(t *testing.T) {
+	assert := assert.New(t)
+	tangoCli := cli.NewTangoCli()
+
+	reportFilePath := "results/custom-report-with-system-ips-processor.csv"
+	systemIPSubnet1 := "157.52.64.0/18"
+	systemIP2 := "104.156.90.48"
+
+	tangoCli.Run([]string{
+		"main",
+		"-l",
+		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
+		"-r",
+		reportFilePath,
+		"-c",
+		"fixture/.tango.empty.yaml",
+		"--system-ips",
+		systemIPSubnet1,
+		"--system-ips",
+		systemIP2,
+		"custom",
+	})
+
+	testReport := GetTestCsvReport(reportFilePath, t)
+
+	reportHeader, reportBody := testReport[0], testReport[1:]
+
+	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+
+	_, IPSubnet1, _ := net.ParseCIDR(systemIPSubnet1)
+
+	// Check if IP patterns work in the output report
+	for _, reportItem := range reportBody {
+		ipList := strings.Split(reportItem[1], ", ")
+
+		for _, ip := range ipList {
+			parsedIP := net.ParseIP(ip)
+
+			assert.NotEqual(systemIP2, ip, "Single IP pattern should filter all related IPs")
+			assert.False(IPSubnet1.Contains(parsedIP), "Subnet IP pattern should filter all related IPs")
+		}
+	}
+}
+
+func TestCreateCustomReportWithSubnetSystemIpProcessor(t *testing.T) {
+	assert := assert.New(t)
+	tangoCli := cli.NewTangoCli()
+
+	reportFilePath := "results/custom-report-with-system-ips-processor.csv"
+	systemIPSubnet := "157.52.64.0/18"
+
+	tangoCli.Run([]string{
+		"main",
+		"-l",
+		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
+		"-r",
+		reportFilePath,
+		"-c",
+		"fixture/.tango.empty.yaml",
+		"--system-ips",
+		systemIPSubnet,
+		"custom",
+	})
+
+	testReport := GetTestCsvReport(reportFilePath, t)
+
+	reportHeader, reportBody := testReport[0], testReport[1:]
+
+	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+
+	_, IPSubnet, _ := net.ParseCIDR(systemIPSubnet)
+
+	// Check if IP pattern works in the output report
+	for _, reportItem := range reportBody {
+		ipList := strings.Split(reportItem[1], ", ")
+
+		for _, ip := range ipList {
+			parsedIP := net.ParseIP(ip)
+
+			assert.False(IPSubnet.Contains(parsedIP), "Subnet IP pattern should filter all related IPs")
+		}
+	}
+}
+
+func TestCreateCustomReportWithSingleSystemIpProcessor(t *testing.T) {
+	assert := assert.New(t)
+	tangoCli := cli.NewTangoCli()
+
+	reportFilePath := "results/custom-report-with-system-ips-processor.csv"
+	systemIP := "104.156.90.48"
+
+	tangoCli.Run([]string{
+		"main",
+		"-l",
+		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
+		"-r",
+		reportFilePath,
+		"-c",
+		"fixture/.tango.empty.yaml",
+		"--system-ips",
+		systemIP,
+		"custom",
+	})
+
+	testReport := GetTestCsvReport(reportFilePath, t)
+
+	reportHeader, reportBody := testReport[0], testReport[1:]
+
+	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+
+	// Check if IP pattern works in the output report
+	for _, reportItem := range reportBody {
+		ipList := strings.Split(reportItem[1], ", ")
+
+		for _, ip := range ipList {
+			assert.NotEqual(systemIP, ip, "Single IP pattern should filter all related IPs")
+		}
 	}
 }

@@ -2,25 +2,45 @@ package processor
 
 import (
 	"net"
+	"strings"
 	"tango/internal/domain/entity"
 	"tango/internal/usecase/config"
 )
 
 //
 type IPProcessor struct {
-	systemIPs []string
+	systemIPs       []string
+	systemIPSubnets []*net.IPNet
 }
 
 //
 func NewIPProcessor(processorConfig config.ProcessorConfig) IPProcessor {
+	systemIpPatterns := processorConfig.SystemIpList
+
+	systemIPs := make([]string, 0)
+	systemIPSubnets := make([]*net.IPNet, 0)
+
+	for _, ipPattern := range systemIpPatterns {
+		// IP subnet pattern
+		if strings.Contains(ipPattern, "/") {
+			_, systemIpNet, _ := net.ParseCIDR(ipPattern)
+			systemIPSubnets = append(systemIPSubnets, systemIpNet)
+			continue
+		}
+
+		// single IP pattern
+		systemIPs = append(systemIPs, ipPattern)
+	}
+
 	return IPProcessor{
-		systemIPs: processorConfig.SystemIpList,
+		systemIPs:       systemIPs,
+		systemIPSubnets: systemIPSubnets,
 	}
 }
 
 // Process list of parsed IPs for access log record and remove system IPs
 func (f *IPProcessor) Process(accessLogRecord entity.AccessLogRecord) entity.AccessLogRecord {
-	if len(f.systemIPs) == 0 {
+	if len(f.systemIPs) == 0 && len(f.systemIPSubnets) == 0 {
 		return accessLogRecord
 	}
 
@@ -31,16 +51,26 @@ func (f *IPProcessor) Process(accessLogRecord entity.AccessLogRecord) entity.Acc
 		filtered := false
 		ip := net.ParseIP(accessLogIp)
 
-		for _, ipPattern := range f.systemIPs {
-			// it's possible to specify subnet and test if current IP belongs to needed subnet
-			_, systemIpNet, _ := net.ParseCIDR(ipPattern)
-
-			if systemIpNet.Contains(ip) {
+		// check ip subnet patterns
+		// goes first as potencially covers more IPs than singe IP pattern
+		for _, ipSubnet := range f.systemIPSubnets {
+			if ipSubnet.Contains(ip) {
 				filtered = true
 				break
 			}
 		}
 
+		// check single ip patterns
+		if !filtered {
+			for _, systemIP := range f.systemIPs {
+				if accessLogIp == systemIP {
+					filtered = true
+					break
+				}
+			}
+		}
+
+		// was IP filtered during checks?
 		if !filtered {
 			ipList = append(ipList, accessLogIp)
 		}
