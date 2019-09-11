@@ -3,6 +3,8 @@ package cli
 import (
 	"log"
 	"tango/internal/cli/command"
+	"tango/internal/cli/component"
+	"time"
 
 	"github.com/urfave/cli"
 	"github.com/urfave/cli/altsrc"
@@ -16,6 +18,7 @@ type TangoCli struct {
 // getTangoCommands returns list of commands
 func getTangoCommands() []cli.Command {
 	return []cli.Command{
+		// report commands
 		{
 			Name:    "custom",
 			Aliases: []string{"custom-report"},
@@ -67,7 +70,8 @@ func getTangoGlobalFlags() []cli.Flag {
 		// general
 		cli.StringFlag{Name: "log-file, l", Usage: "Access log file to analyze", Required: true},
 		cli.StringFlag{Name: "report-file, r", Usage: "Output report file", Required: true},
-		cli.StringFlag{Name: "config-file, c", Usage: "Configuration file for storing preset of filters", Value: ".tango.yaml"},
+		cli.StringFlag{Name: "config-file, c", Usage: "Configuration file for storing preset of filters", Value: component.DefaultConfigFileName},
+		altsrc.NewStringFlag(cli.StringFlag{Name: "base-url", Usage: "Website Base Url"}),
 
 		// filters
 		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "asset-filter", Usage: "Filter js, css, image files from access logs"}),
@@ -78,7 +82,8 @@ func getTangoGlobalFlags() []cli.Flag {
 		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "keep-ip-filter", Usage: "Keep only specified IPs"}),
 		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "ua-filter", Usage: "Filter specified user agents"}),
 		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "keep-ua-filter", Usage: "Keep only specified user agents"}),
-		altsrc.NewStringFlag(cli.StringFlag{Name: "base-url", Usage: "Website Base Url"}),
+
+		// processors
 		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "system-ips", Usage: "System IPs which are needed to filter like proxies"}),
 	}
 }
@@ -89,12 +94,20 @@ func NewTangoCli() TangoCli {
 
 	cliApp.Name = "Tango"
 	cliApp.Usage = "Access Logs Analyzing Tool"
-	cliApp.Version = "1.0.0-beta"
+	cliApp.Version = "1.0.1 [beta]"
+	cliApp.Compiled = time.Now()
+	cliApp.Copyright = "(c) 2019 Roman Glushko"
+	cliApp.Authors = []cli.Author{
+		cli.Author{
+			Name:  "Roman Glushko",
+			Email: "roman.glushko.m@gmai.com",
+		},
+	}
 
 	cliApp.Flags = getTangoGlobalFlags()
 	cliApp.Commands = getTangoCommands()
 
-	cliApp.Before = altsrc.InitInputSourceWithContext(cliApp.Flags, altsrc.NewYamlSourceFromFlagFunc("config-file"))
+	cliApp.Before = component.InitTangoConfigSourceWithContext(cliApp.Flags, component.NewTangoConfigYamlSourceFromFlagFunc("config-file"))
 
 	return TangoCli{
 		cliApp: cliApp,
