@@ -12,6 +12,31 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestCreateCustomReportWithoutFilters(t *testing.T) {
+	assert := assert.New(t)
+	tangoCli := cli.NewTangoCli()
+
+	reportFilePath := "results/custom-report-keep-ip-filter.csv"
+
+	tangoCli.Run([]string{
+		"main",
+		"-l",
+		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
+		"-r",
+		reportFilePath,
+		"-c",
+		"fixture/.tango.empty.yaml",
+		"custom",
+	})
+
+	testReport := GetTestCsvReport(reportFilePath, t)
+
+	reportHeader, reportBody := testReport[0], testReport[1:]
+
+	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+	assert.Len(reportBody, 200, "Report file should be as full as original input file")
+}
+
 func TestCreateCustomReportWithKeepIPFilter(t *testing.T) {
 	assert := assert.New(t)
 	tangoCli := cli.NewTangoCli()
@@ -66,8 +91,6 @@ func TestCreateCustomReportWithKeepUAFilter(t *testing.T) {
 
 	testReport := GetTestCsvReport(reportFilePath, t)
 
-	t.Logf("%v", len(testReport))
-
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
 	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
@@ -75,6 +98,37 @@ func TestCreateCustomReportWithKeepUAFilter(t *testing.T) {
 
 	for _, reportItem := range reportBody {
 		assert.Contains(reportItem[5], sampleUserAgent, "Report Item should contain needed User Agent")
+	}
+}
+
+func TestCreateCustomReportWithUAFilter(t *testing.T) {
+	assert := assert.New(t)
+	tangoCli := cli.NewTangoCli()
+
+	sampleUserAgent := "iPhone OS 12_3_1 like Mac OS X"
+	reportFilePath := "results/custom-report-ua-filter.csv"
+
+	tangoCli.Run([]string{
+		"main",
+		"-l",
+		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
+		"-r",
+		reportFilePath,
+		"-c",
+		"fixture/.tango.empty.yaml",
+		"--ua-filter",
+		sampleUserAgent,
+		"custom",
+	})
+
+	testReport := GetTestCsvReport(reportFilePath, t)
+
+	reportHeader, reportBody := testReport[0], testReport[1:]
+
+	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+
+	for _, reportItem := range reportBody {
+		assert.NotContains(reportItem[5], sampleUserAgent, "Needed user agent should be filtered")
 	}
 }
 
@@ -100,8 +154,6 @@ func TestCreateCustomReportWithKeepUriFilter(t *testing.T) {
 
 	testReport := GetTestCsvReport(reportFilePath, t)
 
-	t.Logf("%v", len(testReport))
-
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
 	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
@@ -109,6 +161,37 @@ func TestCreateCustomReportWithKeepUriFilter(t *testing.T) {
 
 	for _, reportItem := range reportBody {
 		assert.Contains(reportItem[2], sampleURI, "Report Item should contain required URI")
+	}
+}
+
+func TestCreateCustomReportWithUriFilter(t *testing.T) {
+	assert := assert.New(t)
+	tangoCli := cli.NewTangoCli()
+
+	sampleURI := "/category200"
+	reportFilePath := "results/custom-report-uri-filter.csv"
+
+	tangoCli.Run([]string{
+		"main",
+		"-l",
+		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
+		"-r",
+		reportFilePath,
+		"-c",
+		"fixture/.tango.empty.yaml",
+		"--uri-filter",
+		sampleURI,
+		"custom",
+	})
+
+	testReport := GetTestCsvReport(reportFilePath, t)
+
+	reportHeader, reportBody := testReport[0], testReport[1:]
+
+	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+
+	for _, reportItem := range reportBody {
+		assert.NotContains(reportItem[2], sampleURI, "Needed URI should be filtered")
 	}
 }
 
@@ -138,15 +221,13 @@ func TestCreateCustomReportWithMultipleAssetFilters(t *testing.T) {
 
 	testReport := GetTestCsvReport(reportFilePath, t)
 
-	t.Logf("%v", len(testReport))
-
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
 	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
 
 	for _, reportItem := range reportBody {
-		assert.NotContains(reportItem[2], assetPattern1, "Report Item should not be an asset")
-		assert.NotContains(reportItem[2], assetPattern2, "Report Item should not be an asset")
+		assert.NotContains(reportItem[2], assetPattern1, "Assets should be filtered")
+		assert.NotContains(reportItem[2], assetPattern2, "Assets should be filtered")
 	}
 }
 

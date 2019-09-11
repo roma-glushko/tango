@@ -43,9 +43,11 @@ func (f *UserAgentFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
 	}
 
 	// if keep filter is not enabled, then try to filter user agents
-	for _, userAgentFilter := range f.uaFilters {
-		if !strings.Contains(userAgent, userAgentFilter) {
-			return true
+	if len(f.uaFilters) > 0 {
+		for _, userAgentFilter := range f.uaFilters {
+			if strings.Contains(userAgent, userAgentFilter) {
+				return true
+			}
 		}
 	}
 
