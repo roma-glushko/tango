@@ -8,6 +8,16 @@ import (
 	"tango/internal/usecase/report"
 )
 
+var GeoReportHeader = []string{
+	"IP",
+	"Country",
+	"City",
+	"Continent",
+	"Sample Request",
+	"Browser Agent",
+	"Count of Requests",
+}
+
 type GeoReportCsvWriter struct {
 }
 
@@ -28,15 +38,7 @@ func (w *GeoReportCsvWriter) Save(filePath string, geolocationReport map[string]
 	defer writer.Flush()
 
 	// Header
-	writer.Write([]string{
-		"IP",
-		"Country",
-		"City",
-		"Continent",
-		"Sample Request",
-		"Browser Agent",
-		"Count of Requests",
-	})
+	writer.Write(GeoReportHeader)
 
 	// Body
 	for ip, geoLocation := range geolocationReport {
