@@ -3,6 +3,7 @@ package di
 import (
 	"tango/internal/cli/component"
 	"tango/internal/cli/factory"
+	"tango/internal/infrastructure/geo"
 	"tango/internal/infrastructure/reader"
 	"tango/internal/infrastructure/writer"
 	"tango/internal/usecase"
@@ -59,9 +60,10 @@ func InitReadAccessLogUsecase(processorConfig config.ProcessorConfig, filterConf
 
 // InitGeoReportUsecase inits a usecase
 func InitGeoReportUsecase() *report.GeoReportUsecase {
+	geoLocationProvider := geo.NewMaxMindGeoProvider()
 	geoReportWriter := writer.NewGeoReportCsvWriter()
 
-	return report.NewGeoReportUsecase(geoReportWriter)
+	return report.NewGeoReportUsecase(geoLocationProvider, geoReportWriter)
 }
 
 // InitBrowserReportUsecase inits a usecase

@@ -1,8 +1,6 @@
 package report
 
 import (
-	"log"
-	"net"
 	"tango/internal/domain/entity"
 
 	"github.com/oschwald/geoip2-golang"
@@ -18,6 +16,12 @@ type Geolocation struct {
 	Requests      uint64
 }
 
+// GeoLocationProvider provides ability to find geolocation data by IP
+type GeoLocationProvider interface {
+	GetGeoLocationByIP(ip string) *geoip2.City // keep geoip2 references in the usecase layer, don't plan to support anything else
+	Close() error
+}
+
 // GeoReportWriter is an interface for saving geo location reports
 type GeoReportWriter interface {
 	Save(reportPath string, geolocationReport map[string]*Geolocation)
@@ -25,13 +29,15 @@ type GeoReportWriter interface {
 
 // GeoReportUsecase knows how to generate geo reports
 type GeoReportUsecase struct {
-	geoReportWriter GeoReportWriter
+	geoLocationProvider GeoLocationProvider
+	geoReportWriter     GeoReportWriter
 }
 
-//
-func NewGeoReportUsecase(geoReportWriter GeoReportWriter) *GeoReportUsecase {
+// NewGeoReportUsecase
+func NewGeoReportUsecase(geoLocationProvider GeoLocationProvider, geoReportWriter GeoReportWriter) *GeoReportUsecase {
 	return &GeoReportUsecase{
-		geoReportWriter: geoReportWriter,
+		geoLocationProvider: geoLocationProvider,
+		geoReportWriter:     geoReportWriter,
 	}
 }
 
@@ -39,11 +45,7 @@ func NewGeoReportUsecase(geoReportWriter GeoReportWriter) *GeoReportUsecase {
 func (u *GeoReportUsecase) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
 	var geoReport = make(map[string]*Geolocation)
 
-	db, err := geoip2.Open("assets/GeoLite2-City.mmdb") // todo: move working with GeoLite to infrastructure layer
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	defer u.geoLocationProvider.Close()
 
 	for _, accessRecord := range accessRecords {
 		for _, ip := range accessRecord.IP {
@@ -53,12 +55,7 @@ func (u *GeoReportUsecase) GenerateReport(reportPath string, accessRecords []ent
 				continue
 			}
 
-			ipRecord := net.ParseIP(ip)
-			geoLocation, err := db.City(ipRecord)
-
-			if err != nil {
-				log.Fatal(err)
-			}
+			geoLocation := u.geoLocationProvider.GetGeoLocationByIP(ip)
 
 			geoReport[ip] = &Geolocation{
 				Country:       geoLocation.Country.Names["en"],
