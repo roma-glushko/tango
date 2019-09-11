@@ -32,6 +32,13 @@ before_script:
 
 script:
 - go build
+
+# workaround for installing MaxMind Geo library
+- mkdir test/assets
+- curl https://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz -o ./test/assets/GeoLite2-City.tar.gz
+- tar -xzvf ./test/assets/GeoLite2-City.tar.gz
+- mv ./test/assets/GeoLite2-City_20190903/GeoLite2-City.mmdb ./test/assets/GeoLite2-City.mmdb 
+
 - go test ./test/
 
 deploy:
