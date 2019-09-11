@@ -9,6 +9,15 @@ import (
 	"tango/internal/usecase/report"
 )
 
+var BrowserReportHeader = []string{
+	"Category",
+	"Browser",
+	"Requests",
+	"Bandwith",
+	"Sample URL",
+	"User Agents",
+}
+
 //
 type BrowserReportCsvWriter struct {
 }
@@ -63,14 +72,7 @@ func (w *BrowserReportCsvWriter) Save(reportPath string, browserReport map[strin
 	defer writer.Flush()
 
 	// Header
-	writer.Write([]string{
-		"Category",
-		"Browser",
-		"Requests",
-		"Bandwith",
-		"Sample URL",
-		"User Agents",
-	})
+	writer.Write(BrowserReportHeader)
 
 	// Body
 	for _, browserReportItem := range browserReport {

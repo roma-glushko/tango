@@ -32,7 +32,7 @@ before_script:
 
 script:
 - go build
-- cp -R assets ./test/
+- cp -R ./assets ./test/
 - go test ./test/
 
 deploy:
