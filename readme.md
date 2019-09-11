@@ -57,6 +57,28 @@ scoop bucket add tango https://github.com/roma-glushko/scoop-tango.git
 scoop install tango
 ```
 
+## Usage
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" />
+</p>
+
+List of available commands:
+
+```
+tango help
+```
+
+### Geo Location Report
+
+To be able to use Geo Location Report, it's needed to download manually <a href="https://dev.maxmind.com/geoip/geoip2/geolite2/">MaxMind Geo City Lite library</a> and put library file to `assets/` which should be in directory where you want to anaylyze your logs. As a result path to file will look like this:
+
+```
+assets/GeoLite2-City.mmdb
+```
+
+This is a workaround. Next releases will install MaxMind automatically.
+
 ## Use Cases
 
 Legend:
@@ -99,11 +121,3 @@ Legend:
 - ability to generate output report filenames 🤔
 - ability to show applied filters during report generation 🤔
 - add hierarchical loading to separate base project configs from case-specific 🤔
-
-## Usage
-
-<p align="center">
-    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" />
-</p>
-
-TBD
