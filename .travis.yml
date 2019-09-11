@@ -32,6 +32,7 @@ before_script:
 
 script:
 - go build
+- pwd
 - cp -R ./assets ./test/
 - go test ./test/
 
