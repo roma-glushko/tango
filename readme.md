@@ -69,6 +69,12 @@ scoop bucket add tango https://github.com/roma-glushko/scoop-tango.git
 scoop install tango
 ```
 
+To upgrade, try to run:
+
+```bash
+scoop update tango
+```
+
 ## Usage
 
 <p align="center">
@@ -85,10 +91,32 @@ tango help
 
 TBU
 
+```bash
+tango --uri-filter "/test-page" custom
+tango --keep-uri-filter "/admin/" custom
+
+tango --keep-time-filter "2019-09-15 04:16:00 -0400" --keep-time-filter "2019-09-15 04:35:00 -0400" custom
+
+tango --ua-filter "iPhone OS 12_3_1 like Mac OS X" custom
+tango --keep-ua-filter "iPhone OS 12_3_1 like Mac OS X" custom
+
+tango --asset-filter "/pub/static/" --asset-filter "/pub/media/" custom
+```
+
 ### Reports
+
+#### Custom Reports
+
+TBU
+
+#### Geo Reports
+
+TBU
+
+#### Browser Reports
 
 TBU
 
 ## Use Cases
 
-List of usecases to cover: <a href="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/use-cases.md">Tango Usecases</a>
+List of usecases to cover: <a href="https://github.com/roma-glushko/tango/blob/master/doc/use-cases.md">Tango Usecases</a>
