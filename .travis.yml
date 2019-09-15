@@ -29,9 +29,10 @@ env:
 
 before_script:
 - go get -t -v ./...
+- go get -u github.com/gobuffalo/packr/v2/packr2
 
 script:
-- ${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin/packr2
+- packr2
 - go build
 - go test ./test/
 
