@@ -17,17 +17,22 @@ import (
 	"github.com/urfave/cli"
 )
 
-//
+// InitReportConfig inits a config provider
+func InitReportConfig(cliContext *cli.Context) config.ReportConfig {
+	return factory.NewReportConfig(cliContext)
+}
+
+// InitGeneralConfig inits a config provider
 func InitGeneralConfig(cliContext *cli.Context) config.GeneralConfig {
 	return factory.NewGeneralConfig(cliContext)
 }
 
-//
+// InitProcessorConfig inits a config provider
 func InitProcessorConfig(cliContext *cli.Context) config.ProcessorConfig {
 	return factory.NewProcessorConfig(cliContext)
 }
 
-//
+// InitFilterConfig inits a config provider
 func InitFilterConfig(cliContext *cli.Context) config.FilterConfig {
 	return factory.NewFilterConfig(cliContext)
 }

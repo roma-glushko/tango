@@ -9,7 +9,7 @@ import (
 
 //
 func BrowserReportCommand(cliContext *cli.Context) error {
-	generalConfig := di.InitGeneralConfig(cliContext)
+	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
 	processorConfig := di.InitProcessorConfig(cliContext)
 	readAccessLogUsecase := di.InitReadAccessLogUsecase(processorConfig, filterConfig)
@@ -19,11 +19,11 @@ func BrowserReportCommand(cliContext *cli.Context) error {
 	fmt.Println("💃 started to generate a browser report...")
 	fmt.Println("💃 reading access logs...")
 
-	accessLogRecords := readAccessLogUsecase.Read(generalConfig.LogFile)
+	accessLogRecords := readAccessLogUsecase.Read(reportConfig.LogFile)
 
 	fmt.Println("💃 saving the browser report...")
 
-	browserReportUsecase.GenerateReport(generalConfig.ReportFile, accessLogRecords)
+	browserReportUsecase.GenerateReport(reportConfig.ReportFile, accessLogRecords)
 
 	fmt.Println("🎉 browser report has been generated")
 

@@ -8,9 +8,9 @@ import (
 	"github.com/urfave/cli"
 )
 
-//
+// GeoReportCommand
 func GeoReportCommand(cliContext *cli.Context) error {
-	generalConfig := di.InitGeneralConfig(cliContext)
+	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
 	processorConfig := di.InitProcessorConfig(cliContext)
 	readAccessLogUsecase := di.InitReadAccessLogUsecase(processorConfig, filterConfig)
@@ -34,11 +34,11 @@ func GeoReportCommand(cliContext *cli.Context) error {
 	fmt.Println("💃 started to generate a geo report...")
 	fmt.Println("💃 reading access logs...")
 
-	accessLogRecords := readAccessLogUsecase.Read(generalConfig.LogFile)
+	accessLogRecords := readAccessLogUsecase.Read(reportConfig.LogFile)
 
 	fmt.Println("💃 saving the geo report...")
 
-	geoReportUsecase.GenerateReport(generalConfig.ReportFile, accessLogRecords)
+	geoReportUsecase.GenerateReport(reportConfig.ReportFile, accessLogRecords)
 
 	fmt.Println("🎉 geo report has been generated")
 
