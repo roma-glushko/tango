@@ -189,7 +189,7 @@ func NewTangoCli() TangoCli {
 	cliApp.Authors = []cli.Author{
 		cli.Author{
 			Name:  "Roman Glushko",
-			Email: "roman.glushko.m@gmai.com",
+			Email: "roman.glushko.m@gmail.com",
 		},
 	}
 
