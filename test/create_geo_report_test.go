@@ -16,13 +16,13 @@ func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
+		"-c",
+		"fixture/.tango.system-ips.yaml",
+		"geo",
 		"-l",
 		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
 		"-r",
 		reportFilePath,
-		"-c",
-		"fixture/.tango.system-ips.yaml",
-		"geo",
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)

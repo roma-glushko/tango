@@ -20,13 +20,13 @@ func TestCreateCustomReportWithoutFilters(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
+		"-c",
+		"fixture/.tango.empty.yaml",
+		"custom",
 		"-l",
 		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
 		"-r",
 		reportFilePath,
-		"-c",
-		"fixture/.tango.empty.yaml",
-		"custom",
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)
@@ -46,15 +46,15 @@ func TestCreateCustomReportWithKeepIPFilter(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
-		"-l",
-		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
-		"-r",
-		reportFilePath,
 		"-c",
 		"fixture/.tango.empty.yaml",
 		"--keep-ip-filter",
 		sampleIP,
 		"custom",
+		"-l",
+		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
+		"-r",
+		reportFilePath,
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)
@@ -78,15 +78,15 @@ func TestCreateCustomReportWithKeepUAFilter(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
-		"-l",
-		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
-		"-r",
-		reportFilePath,
 		"-c",
 		"fixture/.tango.empty.yaml",
 		"--keep-ua-filter",
 		sampleUserAgent,
 		"custom",
+		"-l",
+		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
+		"-r",
+		reportFilePath,
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)
@@ -110,13 +110,13 @@ func TestCreateCustomReportWithUAFilter(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
+		"--ua-filter",
+		sampleUserAgent,
+		"custom",
 		"-l",
 		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
 		"-r",
 		reportFilePath,
-		"--ua-filter",
-		sampleUserAgent,
-		"custom",
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)
@@ -139,13 +139,13 @@ func TestCreateCustomReportWithKeepUriFilter(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
+		"--keep-uri-filter",
+		sampleURI,
+		"custom",
 		"-l",
 		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
 		"-r",
 		reportFilePath,
-		"--keep-uri-filter",
-		sampleURI,
-		"custom",
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)
@@ -169,13 +169,13 @@ func TestCreateCustomReportWithUriFilter(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
+		"--uri-filter",
+		sampleURI,
+		"custom",
 		"-l",
 		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
 		"-r",
 		reportFilePath,
-		"--uri-filter",
-		sampleURI,
-		"custom",
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)
@@ -200,15 +200,15 @@ func TestCreateCustomReportWithMultipleAssetFilters(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
-		"-l",
-		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
-		"-r",
-		reportFilePath,
 		"--asset-filter",
 		assetPattern1,
 		"--asset-filter",
 		assetPattern2,
 		"custom",
+		"-l",
+		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
+		"-r",
+		reportFilePath,
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)
@@ -234,15 +234,15 @@ func TestCreateCustomReportWithKeepTimeFilter(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
-		"-l",
-		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
-		"-r",
-		reportFilePath,
 		"--keep-time-filter",
 		testPeriodStart,
 		"--keep-time-filter",
 		testPeriodFrameEnd,
 		"custom",
+		"-l",
+		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
+		"-r",
+		reportFilePath,
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)
@@ -271,15 +271,15 @@ func TestCreateCustomReportWithMultipleSystemIpProcessor(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
-		"-l",
-		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
-		"-r",
-		reportFilePath,
 		"--system-ips",
 		systemIPSubnet1,
 		"--system-ips",
 		systemIP2,
 		"custom",
+		"-l",
+		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
+		"-r",
+		reportFilePath,
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)
@@ -312,13 +312,13 @@ func TestCreateCustomReportWithSubnetSystemIpProcessor(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
+		"--system-ips",
+		systemIPSubnet,
+		"custom",
 		"-l",
 		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
 		"-r",
 		reportFilePath,
-		"--system-ips",
-		systemIPSubnet,
-		"custom",
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)
@@ -350,13 +350,13 @@ func TestCreateCustomReportWithSingleSystemIpProcessor(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
+		"--system-ips",
+		systemIP,
+		"custom",
 		"-l",
 		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
 		"-r",
 		reportFilePath,
-		"--system-ips",
-		systemIP,
-		"custom",
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)
