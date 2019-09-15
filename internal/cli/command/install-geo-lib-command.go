@@ -15,10 +15,11 @@ func InstallGeoLibCommand(cliContext *cli.Context) error {
 
 	fmt.Println("💃 Tango is on the scene!")
 
-	_, err := geoLibResolver.GetPath()
+	geoLibPath, err := geoLibResolver.GetPath()
 
 	if !os.IsNotExist(err) && !needUpdate {
 		fmt.Println("🎉 geo lib has already been installed")
+		fmt.Println("🛠 geo lib path: ", geoLibPath)
 		return nil
 	}
 
@@ -37,6 +38,8 @@ func InstallGeoLibCommand(cliContext *cli.Context) error {
 	} else {
 		fmt.Println("🎉 geo lib has been installed")
 	}
+
+	fmt.Println("🛠 geo lib path: ", geoLibPath)
 
 	return nil
 }
