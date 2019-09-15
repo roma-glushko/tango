@@ -1,6 +1,7 @@
 package writer
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"tango/internal/domain/entity"
@@ -44,6 +45,8 @@ func (w *JourneyReportHtmlWriter) Save(filePath string, journeyReportData map[st
 	templateBox := packr.New("template-box", "../../../template")
 	journewReportContent, err := templateBox.FindString("journey-report.tmpl")
 
+	fmt.Println(journewReportContent)
+
 	if err != nil {
 		log.Fatal("Error on loading journey template file", err)
 	}
@@ -57,9 +60,11 @@ func (w *JourneyReportHtmlWriter) Save(filePath string, journeyReportData map[st
 	reportWriter, err := os.Create(filePath)
 
 	if err != nil {
-		log.Println("Error on opening report file: ", err)
+		log.Println("Error on creating report file: ", err)
 		return
 	}
+
+	defer reportWriter.Close()
 
 	err = journeyReportTemplate.Execute(reportWriter, w.getJourneyReportHTMLData(journeyReportData))
 
@@ -67,8 +72,6 @@ func (w *JourneyReportHtmlWriter) Save(filePath string, journeyReportData map[st
 		log.Println("Error on generating journey report file: ", err)
 		return
 	}
-
-	reportWriter.Close()
 }
 
 // getJourneyReportHTMLData
