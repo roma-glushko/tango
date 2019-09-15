@@ -25,6 +25,13 @@ func getTangoCommands() []cli.Command {
 			Category: "Misc",
 			Usage:    "Install Geo Lib (from MaxMind)",
 			Action:   command.InstallGeoLibCommand,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:     "update, u",
+					Usage:    "Update/reinstall geo library",
+					Required: false,
+				},
+			},
 		},
 		// report commands
 		{

@@ -25,7 +25,7 @@ func (r *MaxMindGeoLibResolver) GetPath() (string, error) {
 	homeDirectory := r.homeDirResolver.GetPath()
 
 	maxmindGeoLibPath := filepath.Join(homeDirectory, "GeoLite2-City.mmdb")
-	_, maxmindGeoLibExistanceError := os.Stat(maxmindGeoLibPath)
+	_, maxmindGeoLibExistError := os.Stat(maxmindGeoLibPath)
 
-	return maxmindGeoLibPath, maxmindGeoLibExistanceError
+	return maxmindGeoLibPath, maxmindGeoLibExistError
 }

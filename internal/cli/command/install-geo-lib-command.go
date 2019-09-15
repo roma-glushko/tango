@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"os"
 	"tango/internal/di"
 
 	"github.com/urfave/cli"
@@ -9,14 +10,33 @@ import (
 
 // InstallGeoLibCommand installs the geo lib
 func InstallGeoLibCommand(cliContext *cli.Context) error {
-	installMaxmindLibUsecase := di.InitInstallMaxmindLibUsecase()
+	needUpdate := cliContext.Bool("update")
+	geoLibResolver := di.InitMaxmindGeoLibResolver()
 
 	fmt.Println("💃 Tango is on the scene!")
-	fmt.Println("💃 installing geo lib...")
+
+	_, err := geoLibResolver.GetPath()
+
+	if !os.IsNotExist(err) && !needUpdate {
+		fmt.Println("🎉 geo lib has already been installed")
+		return nil
+	}
+
+	installMaxmindLibUsecase := di.InitInstallMaxmindLibUsecase()
+
+	if needUpdate {
+		fmt.Println("💃 updating geo lib...")
+	} else {
+		fmt.Println("💃 installing geo lib...")
+	}
 
 	installMaxmindLibUsecase.Install()
 
-	fmt.Println("🎉 geo lib has been installed")
+	if needUpdate {
+		fmt.Println("🎉 geo lib has been updated")
+	} else {
+		fmt.Println("🎉 geo lib has been installed")
+	}
 
 	return nil
 }
