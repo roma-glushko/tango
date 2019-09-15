@@ -31,7 +31,7 @@ before_script:
 - go get -t -v ./...
 
 script:
-- packr2
+- ${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin/packr2
 - go build
 - go test ./test/
 
