@@ -18,48 +18,132 @@ type TangoCli struct {
 // getTangoCommands returns list of commands
 func getTangoCommands() []cli.Command {
 	return []cli.Command{
+		// misc commands
+		{
+			Name:     "geo-lib",
+			Aliases:  []string{"install-geo-lib", "get-geo-lib"},
+			Category: "Misc",
+			Usage:    "Install Geo Lib (from MaxMind)",
+			Action:   command.InstallGeoLibCommand,
+		},
 		// report commands
 		{
-			Name:    "custom",
-			Aliases: []string{"custom-report"},
-			Usage:   "Process Access Logs applying custom filtering",
-			Action:  command.CustomReportCommand,
+			Name:     "custom",
+			Aliases:  []string{"custom-report"},
+			Category: "Reports",
+			Usage:    "Process Access Logs applying custom filtering",
+			Action:   command.CustomReportCommand,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "log-file, l",
+					Usage:    "Access log file to analyze",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "report-file, r",
+					Usage:    "Output report file",
+					Required: true,
+				},
+			},
 		},
 		{
-			Name:    "geo",
-			Aliases: []string{"geo-report"},
-			Usage:   "Generate Geo report from Access Logs",
-			Action:  command.GeoReportCommand,
+			Name:     "geo",
+			Aliases:  []string{"geo-report"},
+			Category: "Reports",
+			Usage:    "Generate Geo report from Access Logs",
+			Action:   command.GeoReportCommand,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "log-file, l",
+					Usage:    "Access log file to analyze",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "report-file, r",
+					Usage:    "Output report file",
+					Required: true,
+				},
+			},
 		},
 		{
-			Name:    "browser",
-			Aliases: []string{"browser-report"},
-			Usage:   "Generate Browser report from Access Logs",
-			Action:  command.BrowserReportCommand,
+			Name:     "browser",
+			Aliases:  []string{"browser-report"},
+			Category: "Reports",
+			Usage:    "Generate Browser report from Access Logs",
+			Action:   command.BrowserReportCommand,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "log-file, l",
+					Usage:    "Access log file to analyze",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "report-file, r",
+					Usage:    "Output report file",
+					Required: true,
+				},
+			},
 		},
 		{
-			Name:    "request",
-			Aliases: []string{"request-report"},
-			Usage:   "Generate Request report from Access Logs",
-			Action:  command.RequestReportCommand,
+			Name:     "request",
+			Aliases:  []string{"request-report"},
+			Category: "Reports",
+			Usage:    "Generate Request report from Access Logs",
+			Action:   command.RequestReportCommand,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "log-file, l",
+					Usage:    "Access log file to analyze",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "report-file, r",
+					Usage:    "Output report file",
+					Required: true,
+				},
+			},
 		},
 		{
-			Name:    "journey",
-			Aliases: []string{"journey-report"},
-			Usage:   "Generate a report based on visitor's journeys",
-			Action:  command.JourneyReportCommand,
+			Name:     "journey",
+			Aliases:  []string{"journey-report"},
+			Category: "Reports",
+			Usage:    "Generate a report based on visitor's journeys",
+			Action:   command.JourneyReportCommand,
 			Flags: []cli.Flag{
 				cli.StringSliceFlag{
 					Name:  "uri-filter, uf",
 					Usage: "Remove URIs from visitor's journey, but consider these records during journey preparing",
 				},
+				cli.StringFlag{
+					Name:     "log-file, l",
+					Usage:    "Access log file to analyze",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "report-file, r",
+					Usage:    "Output report file",
+					Required: true,
+				},
 			},
 		},
 		{
-			Name:    "pace",
-			Aliases: []string{"request-pace-report"},
-			Usage:   "Generate request pace report from access logs",
-			Action:  command.PaceReportCommand,
+			Name:     "pace",
+			Aliases:  []string{"request-pace-report"},
+			Category: "Reports",
+			Usage:    "Generate request pace report from access logs",
+			Action:   command.PaceReportCommand,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "log-file, l",
+					Usage:    "Access log file to analyze",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "report-file, r",
+					Usage:    "Output report file",
+					Required: true,
+				},
+			},
 		},
 	}
 }
@@ -68,8 +152,6 @@ func getTangoCommands() []cli.Command {
 func getTangoGlobalFlags() []cli.Flag {
 	return []cli.Flag{
 		// general
-		cli.StringFlag{Name: "log-file, l", Usage: "Access log file to analyze", Required: true},
-		cli.StringFlag{Name: "report-file, r", Usage: "Output report file", Required: true},
 		cli.StringFlag{Name: "config-file, c", Usage: "Configuration file for storing preset of filters", Value: component.DefaultConfigFileName},
 		altsrc.NewStringFlag(cli.StringFlag{Name: "base-url", Usage: "Website Base Url"}),
 
