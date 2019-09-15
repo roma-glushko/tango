@@ -60,6 +60,12 @@ This means that Tango can be installed on:
 - <a href="https://snapcraft.io/install/tango/kde-neon">KDE Neon</a>
 - <a href="https://snapcraft.io/install/tango/manjaro">Manjaro</a>
 
+To upgrade, try to run:
+
+```bash
+snap refresh tango
+```
+
 ### Windows
 
 Tango can be installed on Windows via <a href="https://scoop.sh/">Scoop</a>:
