@@ -32,6 +32,16 @@ brew install roma-glushko/tango/tango
     <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-install-homebrew.gif" />
 </p>
 
+To upgrade, try to run:
+
+```
+brew upgrade tango
+```
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-upgrade-homebrew.gif" />
+</p>
+
 ### Linux
 
 Tango is available on <a href="https://snapcraft.io/tango">Snapcraft</a> via Snap.
@@ -56,18 +66,6 @@ Tango can be installed on macOS via <a href="https://scoop.sh/">Scoop</a>:
 scoop bucket add tango https://github.com/roma-glushko/scoop-tango.git
 scoop install tango
 ```
-
-## Upgrade
-
-### macOS
-
-```
-brew upgrade tango
-```
-
-<p align="center">
-    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-upgrade-homebrew.gif" />
-</p>
 
 ## Usage
 
