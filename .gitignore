@@ -1,9 +1,12 @@
 dist
 tmp
 output
-assets
 .tango.yaml
 tango
 snap.login
 test/results/*
 !test/results/.gitkeep
+
+# packr2 related stuff
+packrd
+internal/infrastructure/writer/writer-packr.go

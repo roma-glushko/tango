@@ -5,6 +5,8 @@ import (
 	"os"
 	"tango/internal/domain/entity"
 	"text/template"
+
+	"github.com/gobuffalo/packr/v2"
 )
 
 // JourneyReportHtmlWriter
@@ -38,11 +40,18 @@ func NewJourneyReportHTMLWriter() *JourneyReportHtmlWriter {
 }
 
 // Save journey report to html file
-func (w *JourneyReportHtmlWriter) Save(filePath string, journeyReport map[string]*entity.Journey) {
-	reportTemplate, err := template.ParseFiles("template/journey-report.tmpl")
+func (w *JourneyReportHtmlWriter) Save(filePath string, journeyReportData map[string]*entity.Journey) {
+	templateBox := packr.New("template-box", "../../../template")
+	journewReportContent, err := templateBox.FindString("journey-report.tmpl")
 
 	if err != nil {
-		log.Fatal("Error on reading journey report template: ", err)
+		log.Fatal("Error on loading journey template file", err)
+	}
+
+	journeyReportTemplate, err := template.New("journey-report").Parse(journewReportContent)
+
+	if err != nil {
+		log.Fatal("Error on loading journey template file", err)
 	}
 
 	reportWriter, err := os.Create(filePath)
@@ -52,7 +61,7 @@ func (w *JourneyReportHtmlWriter) Save(filePath string, journeyReport map[string
 		return
 	}
 
-	err = reportTemplate.Execute(reportWriter, w.getJourneyReportHTMLData(journeyReport))
+	err = journeyReportTemplate.Execute(reportWriter, w.getJourneyReportHTMLData(journeyReportData))
 
 	if err != nil {
 		log.Println("Error on generating journey report file: ", err)

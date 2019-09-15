@@ -29,8 +29,10 @@ env:
 
 before_script:
 - go get -t -v ./...
+- go get -u github.com/gobuffalo/packr/v2/packr2
 
 script:
+- packr2
 - go build
 - go test ./test/
 
