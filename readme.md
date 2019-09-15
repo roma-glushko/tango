@@ -24,7 +24,7 @@ However, a few pre-releases are ready available to use 🎉
 
 Tango can be installed on macOS via <a href="https://brew.sh/">Homebrew</a>:
 
-```
+```bash
 brew tap roma-glushko/tango
 brew install roma-glushko/tango/tango
 ```
@@ -35,7 +35,7 @@ brew install roma-glushko/tango/tango
 
 To upgrade, try to run:
 
-```
+```bash
 brew upgrade tango
 ```
 
@@ -45,8 +45,9 @@ brew upgrade tango
 
 ### Linux
 
-Tango is available on <a href="https://snapcraft.io/tango">Snapcraft</a> via Snap.
+Tango is available on Linux via <a href="https://snapcraft.io/tango">Snapcraft</a>.
 This means that Tango can be installed on:
+
 - <a href="https://snapcraft.io/install/tango/ubuntu">Ubuntu</a>
 - <a href="https://snapcraft.io/install/tango/debian">Debian</a>
 - <a href="https://snapcraft.io/install/tango/centos">CentOS</a>
@@ -61,9 +62,9 @@ This means that Tango can be installed on:
 
 ### Windows
 
-Tango can be installed on macOS via <a href="https://scoop.sh/">Scoop</a>:
+Tango can be installed on Windows via <a href="https://scoop.sh/">Scoop</a>:
 
-```
+```bash
 scoop bucket add tango https://github.com/roma-glushko/scoop-tango.git
 scoop install tango
 ```
@@ -76,49 +77,18 @@ scoop install tango
 
 List of available commands:
 
-```
+```bash
 tango help
 ```
 
-## Use Cases
+### Global Filters
 
-Legend:
-
-- ✅ completed (MVP is ready)
-- 👷 under development (will be available soon!)
-- 🤔 no progress yet
+TBU
 
 ### Reports
 
-- Generate geo reports ✅
-- Generate browser/crawler reports ✅
-- Generate custom filtered reports ✅
-- Generate visitor jorney pathes by IP ✅
-- Generate request reports ✅
-- Generate request frequency reports (automatically found automated requests from security scanners, exploits) 🤔
-- Generate security reports (automatically found automated requests from security scanners, exploits) 🤔
+TBU
 
-### Filters
+## Use Cases
 
-- Remove access log records from IP list ✅
-- Keep only access log records from IP list ✅
-- Filter access logs by user agent 🤔
-- Extract access logs related to specific time frame ✅
-- Ignore system IPs (like Harproxy, Fastly, any proxy, etc) ✅
-- Filter access logs by response codes (keep only 30X, 50X, 40X responses, for example) 🤔
-- Remove requests to web assets (js, css, images) ✅
-- Remove other noisy requests that happens almost on the all pages (like customer data requests in Magento) ✅
-- Find only records requested from the external resources 🤔
-- Find only records requested during website browsing 🤔
-
-### Output Formats
-
-- Save reports to CSV files ✅
-- Save reports to MySql database 🤔
-
-### UX
-
-- ability to set EU/US date time formats 🤔
-- ability to generate output report filenames 🤔
-- ability to show applied filters during report generation 🤔
-- add hierarchical loading to separate base project configs from case-specific 🤔
+List of usecases to cover: <a href="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/use-cases.md">Tango Usecases</a>
