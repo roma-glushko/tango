@@ -183,7 +183,7 @@ func NewTangoCli() TangoCli {
 
 	cliApp.Name = "Tango"
 	cliApp.Usage = "Access Logs Analyzing Tool"
-	cliApp.Version = "1.0.1 [beta]"
+	cliApp.Version = "1.0.2 [beta]"
 	cliApp.Compiled = time.Now()
 	cliApp.Copyright = "(c) 2019 Roman Glushko"
 	cliApp.Authors = []cli.Author{
