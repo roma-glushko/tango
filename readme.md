@@ -57,6 +57,18 @@ scoop bucket add tango https://github.com/roma-glushko/scoop-tango.git
 scoop install tango
 ```
 
+## Upgrade
+
+### macOS
+
+```
+brew upgrade tango
+```
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-upgrade-homebrew.gif" />
+</p>
+
 ## Usage
 
 <p align="center">
