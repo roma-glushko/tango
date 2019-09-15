@@ -1,7 +1,6 @@
 package writer
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"tango/internal/domain/entity"
@@ -44,8 +43,6 @@ func NewJourneyReportHTMLWriter() *JourneyReportHtmlWriter {
 func (w *JourneyReportHtmlWriter) Save(filePath string, journeyReportData map[string]*entity.Journey) {
 	templateBox := packr.New("template-box", "../../../template")
 	journewReportContent, err := templateBox.FindString("journey-report.tmpl")
-
-	fmt.Println(journewReportContent)
 
 	if err != nil {
 		log.Fatal("Error on loading journey template file", err)
