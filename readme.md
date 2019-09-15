@@ -107,21 +107,31 @@ tango -v
 // IP filters
 tango --ip-filter "127.0.0.1" custom -l access-log.log -r custom.csv
 tango --keep-ip-filter "8.8.8.8" custom -l access-log.log -r custom.csv
+```
 
+```bash
 // URI filters
 tango --uri-filter "/test-page" custom -l access-log.log -r custom.csv
 tango --keep-uri-filter "/admin/" custom -l access-log.log -r custom.csv
+```
 
+```bash
 // Time Frame filter
 tango --keep-time-filter "2019-09-15 04:16:00 -0400" --keep-time-filter "2019-09-15 04:35:00 -0400" custom -l access-log.log -r custom.csv
+```
 
+```bash
 // User Agent filters
 tango --ua-filter "iPhone OS 12_3_1 like Mac OS X" custom -l access-log.log -r custom.csv
 tango --keep-ua-filter "iPhone OS 12_3_1 like Mac OS X" custom -l access-log.log -r custom.csv
+```
 
+```bash
 // Asset filter
 tango --asset-filter "/pub/static/" --asset-filter "/pub/media/" custom -l access-log.log -r custom.csv
+```
 
+```bash
 // System IP filter
 tango --system-ips "127.0.0.1"  --system-ips "1.2.3.4" custom -l access-log.log -r custom.csv
 ```
@@ -151,11 +161,13 @@ TBU
 
 TBU
 
-#### Pace Reports
+#### Pace Reports [Experimental]
 
 TBU
 
 #### Journey Reports [Experimental]
+
+TBU
 
 ### Misc Commands
 
