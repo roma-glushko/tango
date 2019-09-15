@@ -9,7 +9,7 @@ import (
 
 //
 func CustomReportCommand(cliContext *cli.Context) error {
-	generalConfig := di.InitGeneralConfig(cliContext)
+	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
 	processorConfig := di.InitProcessorConfig(cliContext)
 	readAccessLogUsecase := di.InitReadAccessLogUsecase(processorConfig, filterConfig)
@@ -19,11 +19,11 @@ func CustomReportCommand(cliContext *cli.Context) error {
 	fmt.Println("💃 started to generate a custom report...")
 	fmt.Println("💃 reading access logs...")
 
-	accessLogRecords := readAccessLogUsecase.Read(generalConfig.LogFile)
+	accessLogRecords := readAccessLogUsecase.Read(reportConfig.LogFile)
 
 	fmt.Println("💃 saving the custom report...")
 
-	customReportUsecase.GenerateReport(generalConfig.ReportFile, accessLogRecords)
+	customReportUsecase.GenerateReport(reportConfig.ReportFile, accessLogRecords)
 
 	fmt.Println("🎉 custom report has been generated")
 

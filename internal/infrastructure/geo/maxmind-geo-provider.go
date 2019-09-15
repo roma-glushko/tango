@@ -13,8 +13,8 @@ type MaxMindGeoProvider struct {
 }
 
 // NewMaxMindGeoProvider creates a new instance of MaxMindGeoProvider
-func NewMaxMindGeoProvider() *MaxMindGeoProvider {
-	maxmindCityDatabase, err := geoip2.Open("assets/GeoLite2-City.mmdb") // todo: resolve db path
+func NewMaxMindGeoProvider(maxmindGeoLibPath string) *MaxMindGeoProvider {
+	maxmindCityDatabase, err := geoip2.Open(maxmindGeoLibPath)
 
 	if err != nil {
 		log.Fatal(err)

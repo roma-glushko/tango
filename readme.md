@@ -69,16 +69,6 @@ List of available commands:
 tango help
 ```
 
-### Geo Location Report
-
-To be able to use Geo Location Report, it's needed to download manually <a href="https://dev.maxmind.com/geoip/geoip2/geolite2/">MaxMind Geo City Lite library</a> and put library file to `assets/` which should be in directory where you want to anaylyze your logs. As a result path to file will look like this:
-
-```
-assets/GeoLite2-City.mmdb
-```
-
-This is a workaround. Next releases will install MaxMind automatically.
-
 ## Use Cases
 
 Legend:

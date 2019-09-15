@@ -3,29 +3,36 @@ package di
 import (
 	"tango/internal/cli/component"
 	"tango/internal/cli/factory"
+	"tango/internal/infrastructure/filesystem"
 	"tango/internal/infrastructure/geo"
 	"tango/internal/infrastructure/reader"
 	"tango/internal/infrastructure/writer"
 	"tango/internal/usecase"
 	"tango/internal/usecase/config"
 	"tango/internal/usecase/filter"
+	"tango/internal/usecase/geodata"
 	"tango/internal/usecase/processor"
 	"tango/internal/usecase/report"
 
 	"github.com/urfave/cli"
 )
 
-//
+// InitReportConfig inits a config provider
+func InitReportConfig(cliContext *cli.Context) config.ReportConfig {
+	return factory.NewReportConfig(cliContext)
+}
+
+// InitGeneralConfig inits a config provider
 func InitGeneralConfig(cliContext *cli.Context) config.GeneralConfig {
 	return factory.NewGeneralConfig(cliContext)
 }
 
-//
+// InitProcessorConfig inits a config provider
 func InitProcessorConfig(cliContext *cli.Context) config.ProcessorConfig {
 	return factory.NewProcessorConfig(cliContext)
 }
 
-//
+// InitFilterConfig inits a config provider
 func InitFilterConfig(cliContext *cli.Context) config.FilterConfig {
 	return factory.NewFilterConfig(cliContext)
 }
@@ -48,6 +55,26 @@ func InitIpProcessor(processorConfig config.ProcessorConfig) processor.IPProcess
 	return processor.NewIPProcessor(processorConfig)
 }
 
+// InitHomeDirResolver inits home dir resolver
+func InitHomeDirResolver() *filesystem.HomeDirResolver {
+	return filesystem.NewHomeDirResolver()
+}
+
+// InitMaxmindGeoLibResolver inits Maxmind Geo Lib resolver
+func InitMaxmindGeoLibResolver() *geo.MaxMindGeoLibResolver {
+	homeDirResolver := InitHomeDirResolver()
+
+	return geo.NewMaxMindGeoLibResolver(homeDirResolver)
+}
+
+// InitInstallMaxmindLibUsecase inits a usecase
+func InitInstallMaxmindLibUsecase() *geodata.InstallMaxmindLibUsecase {
+	homeDirResolver := InitHomeDirResolver()
+	maxmindGeoLibResolver := InitMaxmindGeoLibResolver()
+
+	return geodata.NewInstallMaxmindLibUsecase(homeDirResolver, maxmindGeoLibResolver)
+}
+
 // InitReadAccessLogUsecase inits a usecase
 func InitReadAccessLogUsecase(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig) *usecase.ReadAccessLogUsecase {
 	accessLogReader := reader.NewAccessLogReader()
@@ -59,11 +86,11 @@ func InitReadAccessLogUsecase(processorConfig config.ProcessorConfig, filterConf
 }
 
 // InitGeoReportUsecase inits a usecase
-func InitGeoReportUsecase() *report.GeoReportUsecase {
-	geoLocationProvider := geo.NewMaxMindGeoProvider()
+func InitGeoReportUsecase(maxmindGeoLibPath string) *report.GeoReportUsecase {
+	geoProvider := geo.NewMaxMindGeoProvider(maxmindGeoLibPath)
 	geoReportWriter := writer.NewGeoReportCsvWriter()
 
-	return report.NewGeoReportUsecase(geoLocationProvider, geoReportWriter)
+	return report.NewGeoReportUsecase(geoProvider, geoReportWriter)
 }
 
 // InitBrowserReportUsecase inits a usecase

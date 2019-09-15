@@ -16,13 +16,13 @@ func TestCreateBrowserReport(t *testing.T) {
 
 	tangoCli.Run([]string{
 		"main",
+		"-c",
+		"fixture/.tango.empty.yaml",
+		"browser",
 		"-l",
 		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",
 		"-r",
 		reportFilePath,
-		"-c",
-		"fixture/.tango.empty.yaml",
-		"browser",
 	})
 
 	testReport := GetTestCsvReport(reportFilePath, t)
