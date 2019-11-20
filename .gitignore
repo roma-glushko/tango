@@ -2,6 +2,7 @@ dist
 tmp
 output
 .tango.yaml
+.tango.*.yaml
 tango
 snap.login
 test/results/*

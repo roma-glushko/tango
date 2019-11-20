@@ -34,9 +34,10 @@ func findNamedMatches(regex *regexp.Regexp, str string) map[string]string {
 
 // Map access logs line to AccessLogRecord type
 func MapAccessLogRecord(accessLogRecord string) entity.AccessLogRecord {
+	// todo: move compiling from the map method, we need it once and then use compiled pattern
 	accessLogParser, _ := regexp.Compile(combinedLogFormat)
 
-	accessRecordInformation := findNamedMatches(accessLogParser, accessLogRecord)
+	accessRecordInformation := findNamedMatches(accessLogParser, strings.TrimSpace(accessLogRecord))
 
 	ipList := filter(
 		strings.Split(
