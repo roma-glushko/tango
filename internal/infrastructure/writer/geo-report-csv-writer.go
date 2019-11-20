@@ -44,9 +44,9 @@ func (w *GeoReportCsvWriter) Save(filePath string, geolocationReport map[string]
 	for ip, geoLocation := range geolocationReport {
 		err := writer.Write([]string{
 			ip,
-			geoLocation.Country,
-			geoLocation.City,
-			geoLocation.Continent,
+			geoLocation.GeoData.Country,
+			geoLocation.GeoData.City,
+			geoLocation.GeoData.Continent,
 			geoLocation.SampleRequest,
 			geoLocation.BrowserAgent,
 			strconv.FormatUint(geoLocation.Requests, 10),
