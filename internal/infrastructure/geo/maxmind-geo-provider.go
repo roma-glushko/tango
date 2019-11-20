@@ -3,6 +3,7 @@ package geo
 import (
 	"log"
 	"net"
+	"tango/internal/usecase/report"
 
 	"github.com/oschwald/geoip2-golang"
 )
@@ -26,15 +27,24 @@ func NewMaxMindGeoProvider(maxmindGeoLibPath string) *MaxMindGeoProvider {
 }
 
 // GetGeoLocationByIP provides geo location data by IP
-func (p *MaxMindGeoProvider) GetGeoLocationByIP(ip string) *geoip2.City {
+func (p *MaxMindGeoProvider) GetGeoDataByIP(ip string) *report.GeoData {
 	parsedIP := net.ParseIP(ip)
 	geoLocation, err := p.maxmindCityDatabase.City(parsedIP)
 
 	if err != nil {
-		log.Fatal(err)
+		// todo: would be nice to log this errors
+		return &report.GeoData{
+			Country:   "N/A",
+			City:      "N/A",
+			Continent: "N/A",
+		}
 	}
 
-	return geoLocation
+	return &report.GeoData{
+		Country:   geoLocation.Country.Names["en"],
+		City:      geoLocation.City.Names["en"],
+		Continent: geoLocation.Continent.Names["en"],
+	}
 }
 
 // Close
