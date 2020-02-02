@@ -25,6 +25,10 @@ However, a few pre-releases are ready available to use 🎉
 
 ### macOS
 
+<p align="center">	
+  <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-install-homebrew.gif" width="500px" />
+</p>
+
 Tango can be installed on macOS via <a href="https://brew.sh/">Homebrew</a>:
 
 ```bash
