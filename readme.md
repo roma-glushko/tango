@@ -1,16 +1,19 @@
 <p align="center">
-  <img alt="Tango Logo" src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-logo.png" height="120" />
+  <img alt="Tango" src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-logo.png" height="90" />
   <h3 align="center">Tango</h3>
-  <p align="center">"Dance" with your access logs</p>
+  <p align="center">Tool to get insights from the server access logs</p>
 </p>
 
 ---
 
 <p align="center">
-  
-  [![Build Status](https://travis-ci.org/roma-glushko/tango.svg?branch=master)](https://travis-ci.org/roma-glushko/tango)
-  [![Licence](https://img.shields.io/github/license/roma-glushko/tango)](https://github.com/roma-glushko/tango/blob/master/LICENSE)
+  <a href="https://travis-ci.org/roma-glushko/tango" alt="Build Status"><img alt="Tango" src="https://travis-ci.org/roma-glushko/tango.svg?branch=master" /></a>
+  <a href="https://github.com/roma-glushko/tango/blob/master/LICENSE" alt="License"><img alt="License" src="https://img.shields.io/github/license/roma-glushko/tango" /></a>
   <img src="https://img.shields.io/badge/WIP-Work%20In%20Progress-yellow.svg" />
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" width="500px" />
 </p>
 
 Tango is a dependency-free command-line tool for analyzing access logs 💃
@@ -22,6 +25,10 @@ However, a few pre-releases are ready available to use 🎉
 
 ### macOS
 
+<p align="center">	
+  <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-install-homebrew.gif" width="500px" />
+</p>
+
 Tango can be installed on macOS via <a href="https://brew.sh/">Homebrew</a>:
 
 ```bash
@@ -29,19 +36,11 @@ brew tap roma-glushko/tango
 brew install roma-glushko/tango/tango
 ```
 
-<p align="center">
-    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-install-homebrew.gif" />
-</p>
-
 To upgrade, try to run:
 
 ```bash
 brew upgrade tango
 ```
-
-<p align="center">
-    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-upgrade-homebrew.gif" />
-</p>
 
 ### Linux
 
@@ -82,10 +81,6 @@ scoop update tango
 ```
 
 ## Usage
-
-<p align="center">
-    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" />
-</p>
 
 List of available commands:
 

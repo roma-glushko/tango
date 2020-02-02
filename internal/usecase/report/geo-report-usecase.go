@@ -2,15 +2,18 @@ package report
 
 import (
 	"tango/internal/domain/entity"
-
-	"github.com/oschwald/geoip2-golang"
 )
+
+// Geo Location Data
+type GeoData struct {
+	Country   string
+	City      string
+	Continent string
+}
 
 // Geolocation report information
 type Geolocation struct {
-	Country       string
-	City          string
-	Continent     string
+	GeoData       *GeoData
 	SampleRequest string
 	BrowserAgent  string
 	Requests      uint64
@@ -18,7 +21,7 @@ type Geolocation struct {
 
 // GeoLocationProvider provides ability to find geolocation data by IP
 type GeoLocationProvider interface {
-	GetGeoLocationByIP(ip string) *geoip2.City // keep geoip2 references in the usecase layer, don't plan to support anything else
+	GetGeoDataByIP(ip string) *GeoData // keep geoip2 references in the usecase layer, don't plan to support anything else
 	Close() error
 }
 
@@ -55,12 +58,10 @@ func (u *GeoReportUsecase) GenerateReport(reportPath string, accessRecords []ent
 				continue
 			}
 
-			geoLocation := u.geoLocationProvider.GetGeoLocationByIP(ip)
+			geoData := u.geoLocationProvider.GetGeoDataByIP(ip)
 
 			geoReport[ip] = &Geolocation{
-				Country:       geoLocation.Country.Names["en"],
-				City:          geoLocation.City.Names["en"],
-				Continent:     geoLocation.Continent.Names["en"],
+				GeoData:       geoData,
 				SampleRequest: accessRecord.URI,
 				BrowserAgent:  accessRecord.UserAgent,
 				Requests:      1,
