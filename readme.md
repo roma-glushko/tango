@@ -183,6 +183,36 @@ tango journey -l access-log.log -r custom.csv
 tango geo-lib
 ```
 
+### Example of the config file
+
+Put the similar content to a `.tango.yaml` file under your working directory where you analyze logs: 
+
+```yaml
+"asset-filter":
+  - "/pub/static/"
+  - "/pub/media/"
+"ip-filter":
+  - "127.0.0.1"
+"system-ips":
+  # Fastly IPs
+  - "23.235.32.0/20"
+  - "43.249.72.0/22"
+  - "103.244.50.0/24"
+  - "103.245.222.0/23"
+  - "103.245.224.0/24"
+  - "104.156.80.0/20"
+  - "151.101.0.0/16"
+  - "157.52.64.0/18"
+  - "167.82.0.0/17"
+  - "167.82.128.0/20"
+  - "167.82.160.0/20"
+  - "167.82.224.0/20"
+  - "172.111.64.0/18"
+  - "185.31.16.0/22"
+  - "199.27.72.0/21"
+  - "199.232.0.0/16"
+```
+
 ## Use Cases
 
 List of usecases to cover: <a href="https://github.com/roma-glushko/tango/blob/master/doc/use-cases.md">Tango Usecases</a>
