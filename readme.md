@@ -142,31 +142,46 @@ tango --base-url "https://example.com/" custom -l access-log.log -r custom.csv
 
 #### Custom Reports
 
-TBU
+```bash
+tango --keep-uri-filter "/newsletter/subscriber/new/" custom -l access-log.log -r custom.csv
+```
 
 #### Geo Reports
 
-TBU
+```bash
+tango geo -l access-log.log -r custom.csv
+```
 
 #### Browser Reports
 
-TBU
+```bash
+tango browser -l access-log.log -r custom.csv
+```
 
 #### Request Reports
 
-TBU
+```bash
+tango request -l access-log.log -r custom.csv
+```
 
 #### Pace Reports [Experimental]
 
-TBU
+```bash
+tango pace -l access-log.log -r custom.csv
+```
 
 #### Journey Reports [Experimental]
 
-TBU
+```bash
+tango journey -l access-log.log -r custom.csv
+```
 
 ### Misc Commands
 
-TBU
+```bash
+// Install geo library to get more info in geo reports
+tango geo-lib
+```
 
 ## Use Cases
 
