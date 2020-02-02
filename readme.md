@@ -183,7 +183,9 @@ tango journey -l access-log.log -r custom.csv
 tango geo-lib
 ```
 
-Tango uses the MaxMind GeoLite2-City database and stores it under: `/Users/[username]/.tango/GeoLite2-City.mmdb`
+Tango uses the MaxMind GeoLite2-City database and stores it under: 
+
+- macOS - `/Users/[username]/.tango/GeoLite2-City.mmdb`
 
 ### Example of the config file
 
