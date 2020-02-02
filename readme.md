@@ -88,35 +88,100 @@ List of available commands:
 tango help
 ```
 
-### Global Filters
-
-TBU
+Tango Version:
 
 ```bash
-tango --uri-filter "/test-page" custom
-tango --keep-uri-filter "/admin/" custom
-
-tango --keep-time-filter "2019-09-15 04:16:00 -0400" --keep-time-filter "2019-09-15 04:35:00 -0400" custom
-
-tango --ua-filter "iPhone OS 12_3_1 like Mac OS X" custom
-tango --keep-ua-filter "iPhone OS 12_3_1 like Mac OS X" custom
-
-tango --asset-filter "/pub/static/" --asset-filter "/pub/media/" custom
+tango -v
 ```
 
-### Reports
+### Global Options
+
+#### Filters
+
+```bash
+// IP filters
+tango --ip-filter "127.0.0.1" custom -l access-log.log -r custom.csv
+tango --keep-ip-filter "8.8.8.8" custom -l access-log.log -r custom.csv
+```
+
+```bash
+// URI filters
+tango --uri-filter "/test-page" custom -l access-log.log -r custom.csv
+tango --keep-uri-filter "/admin/" custom -l access-log.log -r custom.csv
+```
+
+```bash
+// Time Frame filter
+tango --keep-time-filter "2019-09-15 04:16:00 -0400" --keep-time-filter "2019-09-15 04:35:00 -0400" custom -l access-log.log -r custom.csv
+```
+
+```bash
+// User Agent filters
+tango --ua-filter "iPhone OS 12_3_1 like Mac OS X" custom -l access-log.log -r custom.csv
+tango --keep-ua-filter "iPhone OS 12_3_1 like Mac OS X" custom -l access-log.log -r custom.csv
+```
+
+```bash
+// Asset filter
+tango --asset-filter "/pub/static/" --asset-filter "/pub/media/" custom -l access-log.log -r custom.csv
+```
+
+```bash
+// System IP filter
+tango --system-ips "127.0.0.1"  --system-ips "1.2.3.4" custom -l access-log.log -r custom.csv
+```
+
+#### Other
+
+```bash
+// Base URL info
+tango --base-url "https://example.com/" custom -l access-log.log -r custom.csv
+```
+
+### Report Commands
 
 #### Custom Reports
 
-TBU
+```bash
+tango --keep-uri-filter "/newsletter/subscriber/new/" custom -l access-log.log -r custom.csv
+```
 
 #### Geo Reports
 
-TBU
+```bash
+tango geo -l access-log.log -r custom.csv
+```
 
 #### Browser Reports
 
-TBU
+```bash
+tango browser -l access-log.log -r custom.csv
+```
+
+#### Request Reports
+
+```bash
+tango request -l access-log.log -r custom.csv
+```
+
+#### Pace Reports [Experimental]
+
+```bash
+tango pace -l access-log.log -r custom.csv
+```
+
+#### Journey Reports [Experimental]
+
+```bash
+tango journey -l access-log.log -r custom.csv
+```
+
+### Misc Commands
+
+```bash
+// Install geo library to get more info in geo reports
+tango geo-lib
+```
 
 ## Use Cases
 
