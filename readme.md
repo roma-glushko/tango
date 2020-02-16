@@ -154,11 +154,16 @@ tango geo -l access-log.log -r custom.csv
 
 Example of the report:
 
-| IP             | Country       | City    | Continent     | Sample Request | Browser Agent                                                            | Count of Requests |
+<details>
+  <summary>Example of the report</summary>
+  
+  | IP             | Country       | City    | Continent     | Sample Request | Browser Agent                                                            | Count of Requests |
 |----------------|---------------|---------|---------------|----------------|--------------------------------------------------------------------------|-------------------|
 | 46.229.173.68  | United States | Ashburn | North America | /robots.txt    | Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html) | 362               |
 | 40.77.167.91   | United States | Boydton | North America | /contact-us    | Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)  | 3                 |
 | 178.154.171.62 | Russia        |         | Europe        | /              | Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)         | 34                |
+  
+</details>
 
 #### Browser Reports
 
@@ -166,12 +171,15 @@ Example of the report:
 tango browser -l access-log.log -r custom.csv
 ```
 
-Example of the report:
-
-| Category | Browser | Requests | Bandwith | Sample URL | User Agents |
+<details>
+  <summary>Example of the report</summary>
+  
+  | Category | Browser | Requests | Bandwith | Sample URL | User Agents |
 |----------|---------|----------|----------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Crawlers | bingbot | 629 | 28.8 MB | /black-bag-product | Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) |
 | Chrome | Chrome | 131998 | 1.3 GB | /gears/bags?p=3 | Mozilla/5.0 (Linux; Android 8.0.0; G8441) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.136 Mobile Safari/537.36<br>Mozilla/5.0 (Linux; Android 9; SM-G960F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.136 MobileSafari/537.36<br>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36<br>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36 |
+  
+</details>
 
 #### Request Reports
 
@@ -179,13 +187,16 @@ Example of the report:
 tango request -l access-log.log -r custom.csv
 ```
 
-Example of the report:
-
-| Path | Requests | Response Code | Referer URLs |
+<details>
+  <summary>Example of the report</summary>
+  
+  | Path | Requests | Response Code | Referer URLs |
 |---------------------------------------|----------|---------------|---------------------------------------|
 | /media/catalog/product/black-bag.jpg | 20 | 200 | /black-bag |
 | /admin/sales/order/view/order_id/1234 | 4 | 200 | /admin/sales/order/index/order_id/123 |
 | /test321 | 1 | 404 | / |
+  
+</details>
 
 #### Pace Reports [Experimental]
 
@@ -193,9 +204,10 @@ Example of the report:
 tango pace -l access-log.log -r custom.csv
 ```
 
-Example of the report:
-
-| Hour Group | Minute Group | IP | Browser | Pace (req/min) | Pace (req/hour) |
+<details>
+  <summary>Example of the report</summary>
+  
+  | Hour Group | Minute Group | IP | Browser | Pace (req/min) | Pace (req/hour) |
 |-----------------|------------------|---------------|--------------------------------------------------------------------|----------------|-----------------|
 | 2020-02-10 04 h |  |  |  |  | 35 |
 |  | 2020-02-10 04:06 |  |  | 15 |  |
@@ -206,6 +218,8 @@ Example of the report:
 |  |  | 66.249.76.89 | Googlebot-Image/1.0 | 20 |  |
 |  | 2020-02-10 04:07 |  |  | 20 |  |
 | 2020-02-10 04 h |  |  |  |  | 35 |
+  
+</details>
 
 #### Journey Reports [Experimental]
 
