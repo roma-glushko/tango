@@ -2,6 +2,7 @@ package cli
 
 import (
 	"log"
+	"runtime/debug"
 	"tango/internal/cli/command"
 	"tango/internal/cli/component"
 	"time"
@@ -183,9 +184,9 @@ func NewTangoCli() TangoCli {
 
 	cliApp.Name = "Tango"
 	cliApp.Usage = "Access Logs Analyzing Tool"
-	cliApp.Version = "1.0.3 [beta]"
+	cliApp.Version = GetVersion()
 	cliApp.Compiled = time.Now()
-	cliApp.Copyright = "(c) 2019 Roman Glushko"
+	cliApp.Copyright = "(c) 2019-2020 Roman Glushko"
 	cliApp.Authors = []cli.Author{
 		cli.Author{
 			Name:  "Roman Glushko",
@@ -201,6 +202,15 @@ func NewTangoCli() TangoCli {
 	return TangoCli{
 		cliApp: cliApp,
 	}
+}
+
+// Get Application Version
+func GetVersion() string {
+	if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "(devel)" {
+		return info.Main.Version
+	}
+
+	return "develop"
 }
 
 // Run executes Tango CLI Application
