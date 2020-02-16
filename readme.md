@@ -179,6 +179,14 @@ Example of the report:
 tango request -l access-log.log -r custom.csv
 ```
 
+Example of the report:
+
+| Path | Requests | Response Code | Referer URLs |
+|---------------------------------------|----------|---------------|---------------------------------------|
+| /media/catalog/product/black-bag.jpg | 20 | 200 | /black-bag |
+| /admin/sales/order/view/order_id/1234 | 4 | 200 | /admin/sales/order/index/order_id/123 |
+| /test321 | 1 | 404 | / |
+
 #### Pace Reports [Experimental]
 
 ```bash
