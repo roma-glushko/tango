@@ -61,11 +61,15 @@ func (u *RequestReportUsecase) GenerateReport(reportPath string, accessRecords [
 
 		parsedURI, err := url.Parse(requestURI)
 
-		if err != nil {
-			panic(err)
-		}
+		path := ""
 
-		path := parsedURI.Path
+		if err != nil {
+			// during security scans it's possible to submit a request which triggers a panic in url.Parse()
+			// in that case, just use the original URI
+			path = requestURI
+		} else {
+			path = parsedURI.Path
+		}
 
 		for _, filter := range pathFilters {
 			path = filter.ReplaceAllString(path, "")
