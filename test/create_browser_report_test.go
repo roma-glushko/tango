@@ -10,7 +10,7 @@ import (
 
 func TestCreateBrowserReport(t *testing.T) {
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	reportFilePath := "results/browser-report.csv"
 

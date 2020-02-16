@@ -14,7 +14,7 @@ func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
 	return
 
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	reportFilePath := "results/geo-report-with-system-ip-processor.csv"
 

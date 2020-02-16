@@ -14,7 +14,7 @@ import (
 
 func TestCreateCustomReportWithoutFilters(t *testing.T) {
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	reportFilePath := "results/custom-report-keep-ip-filter.csv"
 
@@ -39,7 +39,7 @@ func TestCreateCustomReportWithoutFilters(t *testing.T) {
 
 func TestCreateCustomReportWithKeepIPFilter(t *testing.T) {
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	sampleIP := "130.93.253.236"
 	reportFilePath := "results/custom-report-keep-ip-filter.csv"
@@ -71,7 +71,7 @@ func TestCreateCustomReportWithKeepIPFilter(t *testing.T) {
 
 func TestCreateCustomReportWithKeepUAFilter(t *testing.T) {
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	sampleUserAgent := "iPhone OS 12_3_1 like Mac OS X"
 	reportFilePath := "results/custom-report-keep-ua-filter.csv"
@@ -103,7 +103,7 @@ func TestCreateCustomReportWithKeepUAFilter(t *testing.T) {
 
 func TestCreateCustomReportWithUAFilter(t *testing.T) {
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	sampleUserAgent := "iPhone OS 12_3_1 like Mac OS X"
 	reportFilePath := "results/custom-report-ua-filter.csv"
@@ -132,7 +132,7 @@ func TestCreateCustomReportWithUAFilter(t *testing.T) {
 
 func TestCreateCustomReportWithKeepUriFilter(t *testing.T) {
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	sampleURI := "/category200"
 	reportFilePath := "results/custom-report-keep-uri-filter.csv"
@@ -162,7 +162,7 @@ func TestCreateCustomReportWithKeepUriFilter(t *testing.T) {
 
 func TestCreateCustomReportWithUriFilter(t *testing.T) {
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	sampleURI := "/category200"
 	reportFilePath := "results/custom-report-uri-filter.csv"
@@ -191,7 +191,7 @@ func TestCreateCustomReportWithUriFilter(t *testing.T) {
 
 func TestCreateCustomReportWithMultipleAssetFilters(t *testing.T) {
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	assetPattern1 := "/pub/static/"
 	assetPattern2 := "/pub/media/"
@@ -225,7 +225,7 @@ func TestCreateCustomReportWithMultipleAssetFilters(t *testing.T) {
 
 func TestCreateCustomReportWithKeepTimeFilter(t *testing.T) {
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	testPeriodStart := "2019-07-08 00:00:00 -0200"
 	testPeriodFrameEnd := "2019-07-08 00:00:20 -0200"
@@ -263,7 +263,7 @@ func TestCreateCustomReportWithKeepTimeFilter(t *testing.T) {
 
 func TestCreateCustomReportWithMultipleSystemIpProcessor(t *testing.T) {
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	reportFilePath := "results/custom-report-with-system-ips-processor.csv"
 	systemIPSubnet1 := "157.52.64.0/18"
@@ -305,7 +305,7 @@ func TestCreateCustomReportWithMultipleSystemIpProcessor(t *testing.T) {
 
 func TestCreateCustomReportWithSubnetSystemIpProcessor(t *testing.T) {
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	reportFilePath := "results/custom-report-with-system-ips-processor.csv"
 	systemIPSubnet := "157.52.64.0/18"
@@ -343,7 +343,7 @@ func TestCreateCustomReportWithSubnetSystemIpProcessor(t *testing.T) {
 
 func TestCreateCustomReportWithSingleSystemIpProcessor(t *testing.T) {
 	assert := assert.New(t)
-	tangoCli := cli.NewTangoCli()
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	reportFilePath := "results/custom-report-with-system-ips-processor.csv"
 	systemIP := "104.156.90.48"
