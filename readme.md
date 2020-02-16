@@ -193,6 +193,20 @@ Example of the report:
 tango pace -l access-log.log -r custom.csv
 ```
 
+Example of the report:
+
+| Hour Group | Minute Group | IP | Browser | Pace (req/min) | Pace (req/hour) |
+|-----------------|------------------|---------------|--------------------------------------------------------------------|----------------|-----------------|
+| 2020-02-10 04 h |  |  |  |  | 35 |
+|  | 2020-02-10 04:06 |  |  | 15 |  |
+|  |  | 51.15.191.180 | Barkrowler/0.9 (+https://babbar.tech/crawler) | 10 |  |
+|  |  | 54.36.150.167 | Mozilla/5.0 (compatible; AhrefsBot/6.1; +http://ahrefs.com/robot/) | 5 |  |
+|  | 2020-02-10 04:06 |  |  | 15 |  |
+|  | 2020-02-10 04:07 |  |  | 20 |  |
+|  |  | 66.249.76.89 | Googlebot-Image/1.0 | 20 |  |
+|  | 2020-02-10 04:07 |  |  | 20 |  |
+| 2020-02-10 04 h |  |  |  |  | 35 |
+
 #### Journey Reports [Experimental]
 
 ```bash
