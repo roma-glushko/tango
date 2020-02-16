@@ -9,6 +9,10 @@ import (
 )
 
 func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
+	// todo: temporarily skip geo tests (more info: https://github.com/roma-glushko/tango/issues/35)
+	t.Skip()
+	return
+
 	assert := assert.New(t)
 	tangoCli := cli.NewTangoCli()
 
