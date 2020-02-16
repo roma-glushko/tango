@@ -152,6 +152,14 @@ tango --keep-uri-filter "/newsletter/subscriber/new/" custom -l access-log.log -
 tango geo -l access-log.log -r custom.csv
 ```
 
+Example of the report:
+
+| IP             | Country       | City    | Continent     | Sample Request | Browser Agent                                                            | Count of Requests |
+|----------------|---------------|---------|---------------|----------------|--------------------------------------------------------------------------|-------------------|
+| 46.229.173.68  | United States | Ashburn | North America | /robots.txt    | Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html) | 362               |
+| 40.77.167.91   | United States | Boydton | North America | /contact-us    | Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)  | 3                 |
+| 178.154.171.62 | Russia        |         | Europe        | /              | Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)         | 34                |
+
 #### Browser Reports
 
 ```bash
