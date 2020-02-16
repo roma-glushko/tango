@@ -166,6 +166,13 @@ Example of the report:
 tango browser -l access-log.log -r custom.csv
 ```
 
+Example of the report:
+
+| Category | Browser | Requests | Bandwith | Sample URL | User Agents |
+|----------|---------|----------|----------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Crawlers | bingbot | 629 | 28.8 MB | /black-bag-product | Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) |
+| Chrome | Chrome | 131998 | 1.3 GB | /gears/bags?p=3 | Mozilla/5.0 (Linux; Android 8.0.0; G8441) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.136 Mobile Safari/537.36<br>Mozilla/5.0 (Linux; Android 9; SM-G960F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.136 MobileSafari/537.36<br>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36<br>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36 |
+
 #### Request Reports
 
 ```bash
