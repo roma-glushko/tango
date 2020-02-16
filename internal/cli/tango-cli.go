@@ -1,11 +1,10 @@
 package cli
 
 import (
+	"fmt"
 	"log"
-	"runtime/debug"
 	"tango/internal/cli/command"
 	"tango/internal/cli/component"
-	"time"
 
 	"github.com/urfave/cli"
 	"github.com/urfave/cli/altsrc"
@@ -179,13 +178,12 @@ func getTangoGlobalFlags() []cli.Flag {
 }
 
 // NewTangoCli creates a main Tango CLI application
-func NewTangoCli() TangoCli {
+func NewTangoCli(version string, commit string) TangoCli {
 	cliApp := cli.NewApp()
 
 	cliApp.Name = "Tango"
 	cliApp.Usage = "Access Logs Analyzing Tool"
-	cliApp.Version = GetVersion()
-	cliApp.Compiled = time.Now()
+	cliApp.Version = fmt.Sprintf("%s (%s)", version, commit)
 	cliApp.Copyright = "(c) 2019-2020 Roman Glushko"
 	cliApp.Authors = []cli.Author{
 		cli.Author{
@@ -202,15 +200,6 @@ func NewTangoCli() TangoCli {
 	return TangoCli{
 		cliApp: cliApp,
 	}
-}
-
-// Get Application Version
-func GetVersion() string {
-	if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "(devel)" {
-		return info.Main.Version
-	}
-
-	return "develop"
 }
 
 // Run executes Tango CLI Application
