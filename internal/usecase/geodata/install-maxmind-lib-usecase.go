@@ -22,13 +22,13 @@ func (u *InstallMaxmindLibUsecase) Install(configFile string, dbDirectory string
 	maxmindConfig, err := geoipupdate.NewConfig(configFile, dbDirectory, dbDirectory, verbose)
 
 	if err != nil {
-		fmt.Errorf("🚨 Error loading configuration file", err.Error())
+		fmt.Println("🚨 Error loading configuration file", err.Error())
+
+		return
 	}
 
-	if maxmindConfig.Verbose {
-		fmt.Printf("🛠 Using MaxMind Config File: %s", configFile)
-		fmt.Printf("🛠 Using MaxMind DB Dir: %s", maxmindConfig.DatabaseDirectory)
-	}
+	fmt.Println("🛠 Using MaxMind Config File: %s", configFile)
+	fmt.Println("🛠 Using MaxMind DB Dir: %s", maxmindConfig.DatabaseDirectory)
 
 	client := geoipupdate.NewClient(maxmindConfig)
 
@@ -38,18 +38,24 @@ func (u *InstallMaxmindLibUsecase) Install(configFile string, dbDirectory string
 		filename, err := geoipupdate.GetFilename(maxmindConfig, editionID, client)
 
 		if err != nil {
-			//return errors.Wrap(err, "error retrieving filename")
+			fmt.Println("🚨 Error retrieving filename", err.Error())
+
+			return
 		}
 
 		filePath := filepath.Join(maxmindConfig.DatabaseDirectory, filename)
 		dbWriter, err := database.NewLocalFileDatabaseWriter(filePath, maxmindConfig.LockFile, maxmindConfig.Verbose)
 
 		if err != nil {
-			//return errors.Wrap(err, "error creating database writer")
+			fmt.Println("🚨 Error creating MaxMind db writer", err.Error())
+
+			return
 		}
 
 		if err := dbReader.Get(dbWriter, editionID); err != nil {
-			//return err
+			fmt.Println("🚨", err.Error())
+
+			return
 		}
 	}
 }
