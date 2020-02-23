@@ -22,11 +22,10 @@ func GeoReportCommand(cliContext *cli.Context) error {
 
 	// ensure that geo library is in place
 	if os.IsNotExist(err) {
-		installMaxmindLibUsecase := di.InitInstallMaxmindLibUsecase()
+		fmt.Println("🚨 Cannot perform geo reports without MaxMind geo database installed")
+		fmt.Println("🚨 Please run 'tango geo-lib -h' to get more info about installation")
 
-		fmt.Println("💃 installing geo lib...")
-		installMaxmindLibUsecase.Install()
-		fmt.Println("🎉 geo lib has been installed")
+		return nil
 	}
 
 	geoReportUsecase := di.InitGeoReportUsecase(geoLibPath)

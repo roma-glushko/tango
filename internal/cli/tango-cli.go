@@ -23,12 +23,22 @@ func getTangoCommands() []cli.Command {
 			Name:     "geo-lib",
 			Aliases:  []string{"install-geo-lib", "get-geo-lib"},
 			Category: "Misc",
-			Usage:    "Install Geo Lib (from MaxMind)",
+			Usage:    "Install Geo Lib (from MaxMind).\nCredentials can be generated under https://www.maxmind.com/en/accounts/current/license-key page",
 			Action:   command.InstallGeoLibCommand,
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:     "update, u",
 					Usage:    "Update/reinstall geo library",
+					Required: false,
+				},
+				cli.StringFlag{
+					Name:     "account-id, a",
+					Usage:    "MaxMind AccountID",
+					Required: false,
+				},
+				cli.StringFlag{
+					Name:     "license-key, l",
+					Usage:    "MaxMind LicenseKey",
 					Required: false,
 				},
 			},

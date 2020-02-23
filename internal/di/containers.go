@@ -67,12 +67,21 @@ func InitMaxmindGeoLibResolver() *geo.MaxMindGeoLibResolver {
 	return geo.NewMaxMindGeoLibResolver(homeDirResolver)
 }
 
+// InitMaxmindConfResolver inits Maxmind Conf file resolver
+func InitMaxmindConfResolver() *geo.MaxMindConfResolver {
+	homeDirResolver := InitHomeDirResolver()
+
+	return geo.NewMaxMindConfResolver(homeDirResolver)
+}
+
 // InitInstallMaxmindLibUsecase inits a usecase
 func InitInstallMaxmindLibUsecase() *geodata.InstallMaxmindLibUsecase {
-	homeDirResolver := InitHomeDirResolver()
-	maxmindGeoLibResolver := InitMaxmindGeoLibResolver()
+	return geodata.NewInstallMaxmindLibUsecase()
+}
 
-	return geodata.NewInstallMaxmindLibUsecase(homeDirResolver, maxmindGeoLibResolver)
+// InitGenerateMaxmindConfUsecase inits a usecase
+func InitGenerateMaxmindConfUsecase() *geodata.GenerateMaxmindConfUsecase {
+	return geodata.NewGenerateMaxmindConfUsecase()
 }
 
 // InitReadAccessLogUsecase inits a usecase
