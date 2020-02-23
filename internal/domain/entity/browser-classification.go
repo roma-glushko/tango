@@ -81,6 +81,12 @@ func GetBrowserClassification() []BrowserCategory {
 		{Agent: "MicroMessenger", Category: "Others"},
 		{Agent: "Apache", Category: "Others"},
 		{Agent: "JOSM", Category: "Others"},
+		{Agent: "okhttp", Category: "Others"},
+		{Agent: "ruby", Category: "Others"},
+		{Agent: "Ruby", Category: "Others"},
+		{Agent: "python", Category: "Others"},
+		{Agent: "Python", Category: "Others"},
+		{Agent: "HTTP Banner Detection", Category: "Others"},
 
 		/* Feed-reader-as-a-service */
 		{Agent: "Feedspot", Category: "Feeds"},
@@ -167,11 +173,6 @@ func GetBrowserClassification() []BrowserCategory {
 		{Agent: "PHP", Category: "Crawlers"},
 		{Agent: "AndroidDownloadManager", Category: "Crawlers"},
 		{Agent: "Embedly", Category: "Crawlers"},
-		{Agent: "ruby", Category: "Crawlers"},
-		{Agent: "Ruby", Category: "Crawlers"},
-		{Agent: "python", Category: "Crawlers"},
-		{Agent: "Python", Category: "Crawlers"},
-		{Agent: "Go-http-client", Category: "Crawlers"},
 		{Agent: "Twitter", Category: "Crawlers"},
 		{Agent: "LinkedIn", Category: "Crawlers"},
 		{Agent: "Microsoft-WebDAV", Category: "Crawlers"},
@@ -233,7 +234,6 @@ func GetBrowserClassification() []BrowserCategory {
 		{Agent: "Photon", Category: "Crawlers"},
 		{Agent: "karriereatBot", Category: "Crawlers"},
 		{Agent: "MixnodeCache", Category: "Crawlers"},
-		{Agent: "HTTP Banner Detection", Category: "Crawlers"},
 		{Agent: "yacybot", Category: "Crawlers"},
 		{Agent: "cortex", Category: "Crawlers"},
 		{Agent: "tracemyfile", Category: "Crawlers"},
@@ -273,20 +273,17 @@ func GetBrowserClassification() []BrowserCategory {
 		{Agent: "nagios", Category: "Uptime"},
 
 		/* Security Scanners */
-		{Agent: "WPScan", Category: "Crawlers"},
-		{Agent: "magereport", Category: "Crawlers"},
-		{Agent: "SurdotlyBot", Category: "Crawlers"},
-		{Agent: "masscan", Category: "Crawlers"},
+		{Agent: "WPScan", Category: "Security"},
+		{Agent: "magereport", Category: "Security"},
+		{Agent: "SurdotlyBot", Category: "Security"},
+		{Agent: "masscan", Category: "Security"},
 
 		/* SEO */
-		{Agent: "TOBBOT", Category: "Crawlers"},
-		{Agent: "adscanner", Category: "Crawlers"},
-		{Agent: "Screaming Frog SEO Spider", Category: "Crawlers"},
-		{Agent: "SeobilityBot", Category: "Crawlers"},
-		{Agent: "SEOkicks", Category: "Crawlers"},
-
-		/* Services */
-		{Agent: "okhttp", Category: "Crawlers"},
+		{Agent: "TOBBOT", Category: "SEO"},
+		{Agent: "adscanner", Category: "SEO"},
+		{Agent: "Screaming Frog SEO Spider", Category: "SEO"},
+		{Agent: "SeobilityBot", Category: "SEO"},
+		{Agent: "SEOkicks", Category: "SEO"},
 
 		{Agent: "Mozilla", Category: "Others"},
 	}
