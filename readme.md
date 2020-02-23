@@ -10,6 +10,7 @@
   <a href="https://travis-ci.org/roma-glushko/tango" alt="Build Status"><img alt="Tango" src="https://travis-ci.org/roma-glushko/tango.svg?branch=master" /></a>
   <a href="https://github.com/roma-glushko/tango/blob/master/LICENSE" alt="License"><img alt="License" src="https://img.shields.io/github/license/roma-glushko/tango" /></a>
   <img src="https://img.shields.io/badge/WIP-Work%20In%20Progress-yellow.svg" />
+   <a href="https://gitter.im/roma-glushko-tango/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge" alt="Gitter"><img alt="Gitter" src="https://badges.gitter.im/roma-glushko-tango/community.svg" /></a>
 </p>
 
 <p align="center">
