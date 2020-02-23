@@ -146,6 +146,11 @@ tango --base-url "https://example.com/" custom -l access-log.log -r custom.csv
 tango --keep-uri-filter "/newsletter/subscriber/new/" custom -l access-log.log -r custom.csv
 ```
 
+Use cases:
+
+- generate a report with all requests from a certain IP
+- generate a report with all requests to a certain URL
+
 #### Geo Reports
 
 ```bash
