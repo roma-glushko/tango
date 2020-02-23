@@ -2,7 +2,6 @@ package geodata
 
 import (
 	"fmt"
-	"log"
 	"path/filepath"
 
 	"github.com/maxmind/geoipupdate/v4/pkg/geoipupdate"
@@ -23,12 +22,12 @@ func (u *InstallMaxmindLibUsecase) Install(configFile string, dbDirectory string
 	maxmindConfig, err := geoipupdate.NewConfig(configFile, dbDirectory, dbDirectory, verbose)
 
 	if err != nil {
-		fmt.Errorf("error loading configuration file", err)
+		fmt.Errorf("🚨 Error loading configuration file", err.Error())
 	}
 
 	if maxmindConfig.Verbose {
-		log.Printf("Using config file %s", configFile)
-		log.Printf("Using database directory %s", maxmindConfig.DatabaseDirectory)
+		fmt.Printf("🛠 Using MaxMind Config File: %s", configFile)
+		fmt.Printf("🛠 Using MaxMind DB Dir: %s", maxmindConfig.DatabaseDirectory)
 	}
 
 	client := geoipupdate.NewClient(maxmindConfig)

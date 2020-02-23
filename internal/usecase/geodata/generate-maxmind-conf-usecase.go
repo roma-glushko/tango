@@ -34,6 +34,7 @@ func (u *GenerateMaxmindConfUsecase) Generate(confPath string, accountID string,
 	return nil
 }
 
+// GetEditionIDs retrieves MaxMind Product IDs which are used by Tango
 func (u *GenerateMaxmindConfUsecase) GetEditionIDs() string {
 	return "GeoLite2-City"
 }

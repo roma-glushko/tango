@@ -11,6 +11,7 @@ import (
 // InstallGeoLibCommand installs the geo lib
 func InstallGeoLibCommand(cliContext *cli.Context) error {
 	needUpdate := cliContext.Bool("update")
+
 	homeDirResolver := di.InitHomeDirResolver()
 	geoLibResolver := di.InitMaxmindGeoLibResolver()
 	geoConfResolver := di.InitMaxmindConfResolver()
@@ -32,13 +33,15 @@ func InstallGeoLibCommand(cliContext *cli.Context) error {
 			fmt.Println("🚨 MaxMind Config file should be generated to work with Geo data")
 			fmt.Println("🚨 You need to provide 'account-id' and 'license-key' arguments for this command")
 			fmt.Println("🚨 Credentials can be found under https://www.maxmind.com/en/accounts/current/license-key page")
+
 			return nil
 		}
 
 		err := generateConfUsecase.Generate(geoConfPath, accountID, licenseKey)
 
 		if err != nil {
-			fmt.Errorf("🚨 Failed to generate MaxMind Config file: ", err.Error())
+			fmt.Printf("🚨 Failed to generate MaxMind Config file: ", err.Error())
+
 			return nil
 		}
 
