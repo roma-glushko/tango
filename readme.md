@@ -21,6 +21,15 @@ Tango is a dependency-free command-line tool for analyzing access logs 💃
 Currently, work on this project is in progress. 
 However, a few pre-releases are ready available to use 🎉
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Filters](#filters)
+- [Report Commands](#report-commands)
+- [Misc Commands](#misc-commands)
+- [Config File](#misc-commands)
+
 ## Installation
 
 ### macOS
@@ -274,7 +283,7 @@ Tango uses the MaxMind GeoLite2-City database and stores it under:
 
 To be able to manage the Geo lib, you need to generate acceses under <a href="https://www.maxmind.com/en/accounts/current/license-key">MaxMind Account</a> page
 
-### Example of the config file
+### Config File
 
 Put the similar content to a `.tango.yaml` file under your working directory where you analyze logs: 
 
@@ -282,6 +291,8 @@ Put the similar content to a `.tango.yaml` file under your working directory whe
 "asset-filter":
   - "/pub/static/"
   - "/pub/media/"
+  - "/media/"
+  - "/static/"
 "ip-filter":
   - "127.0.0.1"
 "system-ips":
@@ -303,7 +314,3 @@ Put the similar content to a `.tango.yaml` file under your working directory whe
   - "199.27.72.0/21"
   - "199.232.0.0/16"
 ```
-
-## Use Cases
-
-List of usecases to cover: <a href="https://github.com/roma-glushko/tango/blob/master/doc/use-cases.md">Tango Usecases</a>
