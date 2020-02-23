@@ -157,6 +157,12 @@ Use cases:
 tango geo -l access-log.log -r custom.csv
 ```
 
+Use cases:
+
+- collects geo information about all IPs that requested the website
+- get request distribution by IP with geo information
+- see all IPs sorted by countries/continents/cities  
+
 Example of the report:
 
 <details>
@@ -176,6 +182,13 @@ Example of the report:
 tango browser -l access-log.log -r custom.csv
 ```
 
+Use cases:
+
+- check how many requests were sent by crawlers
+- check what kind of browsers requested the website
+- check bandwith that was transmitted to all kind of browsers
+- check what crawlers requested the website
+
 <details>
   <summary>Example of the report</summary>
   
@@ -191,6 +204,12 @@ tango browser -l access-log.log -r custom.csv
 ```bash
 tango request -l access-log.log -r custom.csv
 ```
+
+Use cases:
+
+- check how many requests were sent to a certain URL
+- check all URLs that were responded with 404/50X code
+- find requests from security scanners (sort by response codes and look at 404/50X codes which were requested only 1 time)
 
 <details>
   <summary>Example of the report</summary>
@@ -208,6 +227,11 @@ tango request -l access-log.log -r custom.csv
 ```bash
 tango pace -l access-log.log -r custom.csv
 ```
+
+Use cases:
+
+- check which IPs and how many requests they made during a certain time frame
+- check count of requests per minutes/hours
 
 <details>
   <summary>Example of the report</summary>
