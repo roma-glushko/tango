@@ -158,7 +158,7 @@ tango geo -l access-log.log -r custom.csv
 ```
 
 Geo Report uses MaxMind Geo lib to get Geo information. 
-See <a href="#GeoLib">Geo Lib command</a> for more info.
+See <a href="#geo-lib">Geo Lib command</a> for more info.
 
 Use cases:
 
