@@ -10,7 +10,6 @@ require (
 	github.com/maxmind/geoipupdate/v4 v4.2.2
 	github.com/oschwald/geoip2-golang v1.3.0
 	github.com/oschwald/maxminddb-golang v1.3.1 // indirect
-	github.com/pkg/errors v0.9.1
 	github.com/rogpeppe/go-internal v1.5.2 // indirect
 	github.com/stretchr/testify v1.5.1
 	github.com/urfave/cli v1.21.0
