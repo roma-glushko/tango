@@ -157,6 +157,9 @@ Use cases:
 tango geo -l access-log.log -r custom.csv
 ```
 
+Geo Report uses MaxMind Geo lib to get Geo information. 
+See <a href="#geo-lib">Geo Lib command</a> for more info.
+
 Use cases:
 
 - collects geo information about all IPs that requested the website
@@ -258,14 +261,18 @@ tango journey -l access-log.log -r custom.csv
 
 ### Misc Commands
 
+#### Geo Lib
+
 ```bash
-// Install geo library to get more info in geo reports
+// Install geo library to be able to generate geo reports
 tango geo-lib
 ```
 
-Tango uses the MaxMind GeoLite2-City database and stores it under: 
+Tango uses the MaxMind GeoLite2-City database and stores it under:
 
 - macOS - `/Users/[username]/.tango/GeoLite2-City.mmdb`
+
+To be able to manage the Geo lib, you need to generate acceses under <a href="https://www.maxmind.com/en/accounts/current/license-key">MaxMind Account</a> page
 
 ### Example of the config file
 

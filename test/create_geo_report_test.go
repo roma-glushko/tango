@@ -1,18 +1,36 @@
 package test
 
 import (
+	"os"
 	"tango/internal/cli"
+	"tango/internal/di"
 	"tango/internal/infrastructure/writer"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
-	// todo: temporarily skip geo tests (more info: https://github.com/roma-glushko/tango/issues/35)
-	t.Skip()
-	return
+func TestInstallGeoLib(t *testing.T) {
+	assert := assert.New(t)
+	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
+	tangoCli.Run([]string{
+		"main",
+		"geo-lib",
+		"-a",
+		"197343",
+		"-l",
+		"aD36bIADbkErTRrS",
+	})
+
+	_, geoConfExistErr := di.InitMaxmindConfResolver().GetPath()
+	assert.False(os.IsNotExist(geoConfExistErr), "MaxMind Configuration File was not created")
+
+	_, geoLibExistErr := di.InitMaxmindGeoLibResolver().GetPath()
+	assert.False(os.IsNotExist(geoLibExistErr), "MaxMind Geo Lib was not created")
+}
+
+func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
 	assert := assert.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
