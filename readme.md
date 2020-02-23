@@ -264,7 +264,7 @@ tango journey -l access-log.log -r custom.csv
 #### Geo Lib
 
 ```bash
-// Install geo library to get more info in geo reports
+// Install geo library to be able to generate geo reports
 tango geo-lib
 ```
 
