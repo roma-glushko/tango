@@ -12,7 +12,7 @@ bin/packr2:
 bin/goreleaser:
 	@GOBIN=$(BIN_DIR) go install github.com/goreleaser/goreleaser@latest
 
-install: go.mod ## Install project dependencies
+install: go.mod bin/packr2 bin/goreleaser ## Install project dependencies
 	@go get -t -v ./...
 
 lint: ## Lint the codebase
