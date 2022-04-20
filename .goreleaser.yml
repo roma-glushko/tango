@@ -5,6 +5,7 @@ before:
     - go mod tidy
     - packr2
     - go generate ./...
+
 builds:
 - env:
   - CGO_ENABLED=0
@@ -13,7 +14,7 @@ builds:
     - darwin
     - windows
   goarch:
-    - 386
+    - "386"
     - amd64
     - arm
     - arm64
@@ -69,7 +70,7 @@ brews:
     # same kind. We will probably unify this in the next major version like it is done with scoop.
 
     # Github repository to push the tap to.
-    github:
+    tap:
       owner: roma-glushko
       name: homebrew-tango
 

@@ -1,10 +1,10 @@
 .idea
 dist
 tmp
+bin
 output
 .tango.yaml
 .tango.*.yaml
-tango
 snap.login
 test/results/*
 !test/results/.gitkeep
