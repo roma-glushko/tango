@@ -1,6 +1,7 @@
 before:
   hooks:
     - go mod tidy
+    - go install github.com/gobuffalo/packr/v2/packr2@v2.8.3
     - packr2
     - go generate ./...
 
