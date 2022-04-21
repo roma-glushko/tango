@@ -6,6 +6,8 @@ help:
 PROJECT_DIR := $(shell git rev-parse --show-toplevel)
 BIN_DIR := $(PROJECT_DIR)/bin
 
+export PATH := $(BIN_DIR):$(PATH)
+
 bin/packr2:
 	@GOBIN=$(BIN_DIR) go install github.com/gobuffalo/packr/v2/packr2
 
@@ -25,7 +27,8 @@ build: lint bin/packr2 ## Build tango binary
 	@go build -o bin/tango
 
 release: bin/goreleaser ## Release a new version of Tango
-	@PATH=$(BIN_DIR):$PATH $(BIN_DIR)/goreleaser
+	@export PATH="$(BIN_DIR):$$PATH"
+	@$(BIN_DIR)/goreleaser
 
 run: ## Run tango in dev mode
 	@go run main.go
