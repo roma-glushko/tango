@@ -14,24 +14,30 @@ bin/packr2:
 bin/goreleaser:
 	@GOBIN=$(BIN_DIR) go install github.com/goreleaser/goreleaser@latest
 
+.PHONY: install
 install: go.mod bin/packr2 bin/goreleaser ## Install project dependencies
 	@go get -t -v ./...
 
+.PHONY: lint
 lint: ## Lint the codebase
 	@go mod tidy
 	@go fmt ./...
 	@go vet ./...
 
+.PHONY: build
 build: lint bin/packr2 ## Build tango binary
 	@$(BIN_DIR)/packr2
 	@go build -o bin/tango
 
+.PHONY: release
 release: bin/goreleaser ## Release a new version of Tango
 	@export PATH="$(BIN_DIR):$$PATH"
 	@$(BIN_DIR)/goreleaser
 
+.PHONY: run
 run: ## Run tango in dev mode
 	@go run main.go
 
-tests: ## Run tests
+.PHONY: test
+test: ## Run tests
 	@go test ./test/
