@@ -24,6 +24,9 @@ build: lint bin/packr2 ## Build tango binary
 	@$(BIN_DIR)/packr2
 	@go build -o bin/tango
 
+release: bin/goreleaser ## Release a new version of Tango
+	@PATH=$(BIN_DIR):$PATH $(BIN_DIR)/goreleaser
+
 run: ## Run tango in dev mode
 	@go run main.go
 
