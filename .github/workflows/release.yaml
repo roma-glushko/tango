@@ -21,7 +21,7 @@ jobs:
           go-version: 1.18
 
       - name: Set up packr2
-        run: go get github.com/gobuffalo/packr/v2/packr2
+        run: go install github.com/gobuffalo/packr/v2/packr2
 
       - name: Checkout
         uses: actions/checkout@v2
