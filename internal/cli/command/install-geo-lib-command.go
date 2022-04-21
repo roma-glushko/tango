@@ -40,7 +40,7 @@ func InstallGeoLibCommand(cliContext *cli.Context) error {
 		err := generateConfUsecase.Generate(geoConfPath, accountID, licenseKey)
 
 		if err != nil {
-			fmt.Printf("🚨 Failed to generate MaxMind Config file: ", err.Error())
+			fmt.Printf("🚨 Failed to generate MaxMind Config file: %s", err.Error())
 
 			return nil
 		}

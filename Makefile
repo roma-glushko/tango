@@ -20,8 +20,9 @@ lint: ## Lint the codebase
 	@go fmt ./...
 	@go vet ./...
 
-build: lint ## Build tango binary
+build: lint bin/packr2 ## Build tango binary
 	@go build -o bin/tango
+	@$(BIN_DIR)/packr2
 
 run: ## Run tango in dev mode
 	@go run main.go
