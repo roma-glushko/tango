@@ -15,14 +15,6 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Fetch all tags
-        run: git fetch --force --tags
-
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
@@ -30,6 +22,14 @@ jobs:
 
       - name: Set up packr2
         run: go get github.com/gobuffalo/packr/v2/packr2
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all tags
+        run: git fetch --force --tags
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
