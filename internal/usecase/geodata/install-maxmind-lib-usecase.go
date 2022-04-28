@@ -27,8 +27,8 @@ func (u *InstallMaxmindLibUsecase) Install(configFile string, dbDirectory string
 		return
 	}
 
-	fmt.Println("🛠 Using MaxMind Config File: %s", configFile)
-	fmt.Println("🛠 Using MaxMind DB Dir: %s", maxmindConfig.DatabaseDirectory)
+	fmt.Printf("🛠 Using MaxMind Config File: %s\n", configFile)
+	fmt.Printf("🛠 Using MaxMind DB Dir: %s\n", maxmindConfig.DatabaseDirectory)
 
 	client := geoipupdate.NewClient(maxmindConfig)
 

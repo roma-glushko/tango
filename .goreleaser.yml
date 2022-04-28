@@ -1,10 +1,10 @@
-# This is an example goreleaser.yaml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
 before:
   hooks:
     - go mod tidy
+    - go install github.com/gobuffalo/packr/v2/packr2@v2.8.3
     - packr2
     - go generate ./...
+
 builds:
 - env:
   - CGO_ENABLED=0
@@ -13,7 +13,7 @@ builds:
     - darwin
     - windows
   goarch:
-    - 386
+    - "386"
     - amd64
     - arm
     - arm64
@@ -69,7 +69,7 @@ brews:
     # same kind. We will probably unify this in the next major version like it is done with scoop.
 
     # Github repository to push the tap to.
-    github:
+    tap:
       owner: roma-glushko
       name: homebrew-tango
 
@@ -194,6 +194,7 @@ snapcrafts:
 
       # The name of the app must be the same name as the binary built or the snapcraft name.
       tango:
+        command: tango
 
         # If your app requires extra permissions to work outside of its default
         # confined space, declare them here.

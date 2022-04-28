@@ -194,7 +194,7 @@ func NewTangoCli(version string, commit string) TangoCli {
 	cliApp.Name = "Tango"
 	cliApp.Usage = "Access Logs Analyzing Tool"
 	cliApp.Version = fmt.Sprintf("%s (%s)", version, commit)
-	cliApp.Copyright = "(c) 2019-2020 Roman Glushko"
+	cliApp.Copyright = "(c) 2019-2022 Roman Glushko"
 	cliApp.Authors = []cli.Author{
 		cli.Author{
 			Name:  "Roman Glushko",
