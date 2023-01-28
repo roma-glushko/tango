@@ -26,7 +26,7 @@ func NewMaxMindGeoProvider(maxmindGeoLibPath string) *MaxMindGeoProvider {
 	}
 }
 
-// GetGeoLocationByIP provides geo location data by IP
+// GetGeoDataByIP provides geo location data by IP
 func (p *MaxMindGeoProvider) GetGeoDataByIP(ip string) *report.GeoData {
 	parsedIP := net.ParseIP(ip)
 	geoLocation, err := p.maxmindCityDatabase.City(parsedIP)

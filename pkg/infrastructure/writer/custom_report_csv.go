@@ -41,7 +41,9 @@ func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.Access
 	defer writer.Flush()
 
 	// Header
-	writer.Write(CustomReportHeader)
+	if err := writer.Write(CustomReportHeader); err != nil {
+		log.Fatal(err)
+	}
 
 	// Body
 	for _, accessLog := range accessLogs {

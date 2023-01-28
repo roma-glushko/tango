@@ -8,6 +8,15 @@ import (
 	"tango/pkg/services/report"
 )
 
+var PaceReportHeader = []string{
+	"Hour Group",
+	"Minute Group",
+	"IP",
+	"Browser",
+	"Pace (req/min)",
+	"Pace (req/hour)",
+}
+
 // PaceReportCsvWriter
 type PaceReportCsvWriter struct {
 }
@@ -29,14 +38,9 @@ func (w *PaceReportCsvWriter) Save(filePath string, paceReport []*report.PaceHou
 	defer writer.Flush()
 
 	// Header
-	writer.Write([]string{
-		"Hour Group",
-		"Minute Group",
-		"IP",
-		"Browser",
-		"Pace (req/min)",
-		"Pace (req/hour)",
-	})
+	if err := writer.Write(PaceReportHeader); err != nil {
+		log.Fatal(err)
+	}
 
 	// Body
 	for _, hourPaceItem := range paceReport {

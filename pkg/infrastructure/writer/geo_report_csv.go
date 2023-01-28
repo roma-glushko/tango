@@ -38,7 +38,9 @@ func (w *GeoReportCsvWriter) Save(filePath string, geolocationReport map[string]
 	defer writer.Flush()
 
 	// Header
-	writer.Write(GeoReportHeader)
+	if err := writer.Write(GeoReportHeader); err != nil {
+		log.Fatal(err)
+	}
 
 	// Body
 	for ip, geoLocation := range geolocationReport {

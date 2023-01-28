@@ -8,6 +8,13 @@ import (
 	"tango/pkg/services/report"
 )
 
+var RequestReportHeaders = []string{
+	"Path",
+	"Requests",
+	"Response Code",
+	"Referer URLs",
+}
+
 type RequestReportCsvWriter struct {
 }
 
@@ -28,12 +35,9 @@ func (w *RequestReportCsvWriter) Save(filePath string, requestReport map[string]
 	defer writer.Flush()
 
 	// Header
-	writer.Write([]string{
-		"Path",
-		"Requests",
-		"Response Code",
-		"Referer URLs",
-	})
+	if err := writer.Write(RequestReportHeaders); err != nil {
+		log.Fatal(err)
+	}
 
 	// Body
 	for _, requestReportItem := range requestReport {
