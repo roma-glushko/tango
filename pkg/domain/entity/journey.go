@@ -13,7 +13,7 @@ type JourneyPlace struct {
 	Data      *AccessLogRecord
 }
 
-// Print a dubug information about journey nodes
+// Print a debug information about journey nodes
 func (n *JourneyPlace) Print() string {
 	return fmt.Sprintf("%v", n.Data.URI)
 }

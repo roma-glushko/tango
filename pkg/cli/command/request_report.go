@@ -7,7 +7,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-//
+// RequestReportCommand
 func RequestReportCommand(cliContext *cli.Context) error {
 	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)

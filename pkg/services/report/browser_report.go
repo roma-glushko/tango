@@ -11,7 +11,7 @@ type BrowserReportItem struct {
 	Category   string
 	SampleUrl  string
 	Requests   uint64
-	Bandwith   uint64
+	Bandwidth  uint64
 	UserAgents map[string]bool
 }
 
@@ -55,7 +55,7 @@ func (u *BrowserReportService) GenerateReport(reportPath string, accessRecords [
 
 		if _, ok := browserReport[browserAgent]; ok {
 			browserReport[browserAgent].Requests++
-			browserReport[browserAgent].Bandwith += accessRecord.ResponseSize
+			browserReport[browserAgent].Bandwidth += accessRecord.ResponseSize
 
 			// add a new unique occurance of user agent
 			if _, found := browserReport[browserAgent].UserAgents[userAgent]; !found {
@@ -70,7 +70,7 @@ func (u *BrowserReportService) GenerateReport(reportPath string, accessRecords [
 			Category:   browserCategory,
 			SampleUrl:  accessRecord.URI,
 			Requests:   1,
-			Bandwith:   accessRecord.ResponseSize,
+			Bandwidth:  accessRecord.ResponseSize,
 			UserAgents: map[string]bool{userAgent: true},
 		}
 	}

@@ -22,7 +22,11 @@ type ReadAccessLogService struct {
 }
 
 // NewReadAccessLogService Create a new ReadAccessLogService
-func NewReadAccessLogService(accessLogReader AccessLogReader, filterAccessLogService FilterAccessLogService, ipProcessor processor.IPProcessor) *ReadAccessLogService {
+func NewReadAccessLogService(
+	accessLogReader AccessLogReader,
+	filterAccessLogService FilterAccessLogService,
+	ipProcessor processor.IPProcessor,
+) *ReadAccessLogService {
 	return &ReadAccessLogService{
 		accessLogReader:        accessLogReader,
 		filterAccessLogService: filterAccessLogService,

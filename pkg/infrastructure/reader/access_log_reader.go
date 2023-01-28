@@ -7,10 +7,11 @@ import (
 	"tango/pkg/services"
 )
 
+// AccessLogReader
 type AccessLogReader struct {
 }
 
-//
+// NewAccessLogReader
 func NewAccessLogReader() *AccessLogReader {
 	return &AccessLogReader{}
 }

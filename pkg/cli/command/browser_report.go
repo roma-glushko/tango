@@ -7,7 +7,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-//
+// BrowserReportCommand
 func BrowserReportCommand(cliContext *cli.Context) error {
 	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)

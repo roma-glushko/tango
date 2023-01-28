@@ -13,7 +13,7 @@ var BrowserReportHeader = []string{
 	"Category",
 	"Browser",
 	"Requests",
-	"Bandwith",
+	"Bandwidth",
 	"Sample URL",
 	"User Agents",
 }
@@ -80,7 +80,7 @@ func (w *BrowserReportCsvWriter) Save(reportPath string, browserReport map[strin
 			browserReportItem.Category,
 			browserReportItem.Browser,
 			strconv.FormatUint(browserReportItem.Requests, 10),
-			byteCountDecimal(browserReportItem.Bandwith),
+			byteCountDecimal(browserReportItem.Bandwidth),
 			browserReportItem.SampleUrl,
 			newLineSeparated(browserReportItem.UserAgents),
 		})
