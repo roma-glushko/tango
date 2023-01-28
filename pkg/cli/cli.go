@@ -5,6 +5,7 @@ import (
 	"log"
 	"tango/pkg/cli/command"
 	"tango/pkg/cli/component"
+	"time"
 
 	"github.com/urfave/cli"
 	"github.com/urfave/cli/altsrc"
@@ -190,14 +191,15 @@ func getTangoGlobalFlags() []cli.Flag {
 // NewTangoCli creates a main Tango CLI application
 func NewTangoCli(version string, commit string) TangoCli {
 	cliApp := cli.NewApp()
+	today := time.Now()
 
 	cliApp.Name = "Tango"
 	cliApp.Usage = "Access Logs Analyzing Tool"
 	cliApp.Version = fmt.Sprintf("%s (%s)", version, commit)
-	cliApp.Copyright = "(c) 2019-2022 Roman Glushko"
+	cliApp.Copyright = fmt.Sprintf("(c) 2019-%d Roman Hlushko", today.Year())
 	cliApp.Authors = []cli.Author{
-		cli.Author{
-			Name:  "Roman Glushko",
+		{
+			Name:  "Roman Hlushko",
 			Email: "roman.glushko.m@gmail.com",
 		},
 	}
@@ -205,7 +207,10 @@ func NewTangoCli(version string, commit string) TangoCli {
 	cliApp.Flags = getTangoGlobalFlags()
 	cliApp.Commands = getTangoCommands()
 
-	cliApp.Before = component.InitTangoConfigSourceWithContext(cliApp.Flags, component.NewTangoConfigYamlSourceFromFlagFunc("config-file"))
+	cliApp.Before = component.InitTangoConfigSourceWithContext(
+		cliApp.Flags,
+		component.NewTangoConfigYamlSourceFromFlagFunc("config-file"),
+	)
 
 	return TangoCli{
 		cliApp: cliApp,
