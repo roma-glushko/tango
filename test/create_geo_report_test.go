@@ -2,9 +2,9 @@ package test
 
 import (
 	"os"
-	"tango/internal/cli"
-	"tango/internal/di"
-	"tango/internal/infrastructure/writer"
+	"tango/pkg/cli"
+	"tango/pkg/di"
+	"tango/pkg/infrastructure/writer"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
