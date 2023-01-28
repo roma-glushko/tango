@@ -17,18 +17,22 @@ func NewHomeDirResolver() *HomeDirResolver {
 
 // GetPath provides path to Tango Home Dir
 func (r *HomeDirResolver) GetPath() string {
-	homeDirectory, err := os.UserHomeDir()
+	homeDir, err := os.UserHomeDir()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	tangoHomeDirectory := filepath.Join(homeDirectory, ".tango")
+	tangoDir := filepath.Join(homeDir, ".tango")
 
 	// ensure that tango home dir is in place
-	if _, err := os.Stat(tangoHomeDirectory); os.IsNotExist(err) {
-		os.Mkdir(tangoHomeDirectory, os.ModePerm)
+	if _, err := os.Stat(tangoDir); os.IsNotExist(err) {
+		err := os.Mkdir(tangoDir, os.ModePerm)
+
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
-	return tangoHomeDirectory
+	return tangoDir
 }
