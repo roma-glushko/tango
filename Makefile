@@ -41,3 +41,7 @@ run: ## Run tango in dev mode
 .PHONY: test
 test: ## Run tests
 	@go test ./test/
+
+.PHONY: clean
+clean:
+	@rm -rf bin dist packrd

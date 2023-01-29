@@ -3,9 +3,9 @@ package test
 import (
 	"net"
 	"strings"
-	"tango/internal/cli"
-	"tango/internal/infrastructure/writer"
-	"tango/internal/usecase/filter"
+	"tango/pkg/adapters/writer"
+	"tango/pkg/cli"
+	"tango/pkg/services/filter"
 	"testing"
 	"time"
 

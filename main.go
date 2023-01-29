@@ -2,7 +2,7 @@ package main
 
 import (
 	"os"
-	"tango/internal/cli"
+	"tango/pkg/cli"
 )
 
 var (
