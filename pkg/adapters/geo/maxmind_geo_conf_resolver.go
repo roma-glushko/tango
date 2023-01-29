@@ -3,7 +3,7 @@ package geo
 import (
 	"os"
 	"path/filepath"
-	"tango/pkg/infrastructure/filesystem"
+	"tango/pkg/adapters/filesystem"
 )
 
 // MaxMindConfResolver retrieves path to the MaxMind Geo Confi file

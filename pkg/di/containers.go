@@ -1,12 +1,12 @@
 package di
 
 import (
+	"tango/pkg/adapters/filesystem"
+	"tango/pkg/adapters/geo"
+	"tango/pkg/adapters/reader"
+	"tango/pkg/adapters/writer"
 	"tango/pkg/cli/component"
 	"tango/pkg/cli/factory"
-	"tango/pkg/infrastructure/filesystem"
-	"tango/pkg/infrastructure/geo"
-	"tango/pkg/infrastructure/reader"
-	"tango/pkg/infrastructure/writer"
 	"tango/pkg/services"
 	"tango/pkg/services/config"
 	"tango/pkg/services/filter"

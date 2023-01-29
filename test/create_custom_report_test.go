@@ -3,8 +3,8 @@ package test
 import (
 	"net"
 	"strings"
+	"tango/pkg/adapters/writer"
 	"tango/pkg/cli"
-	"tango/pkg/infrastructure/writer"
 	"tango/pkg/services/filter"
 	"testing"
 	"time"

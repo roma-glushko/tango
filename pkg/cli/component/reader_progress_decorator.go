@@ -3,7 +3,7 @@ package component
 import (
 	"log"
 	"os"
-	"tango/pkg/infrastructure/reader"
+	"tango/pkg/adapters/reader"
 	"tango/pkg/services"
 
 	"github.com/cheggaaa/pb"

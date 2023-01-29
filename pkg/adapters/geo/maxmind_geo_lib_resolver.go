@@ -3,7 +3,7 @@ package geo
 import (
 	"os"
 	"path/filepath"
-	"tango/pkg/infrastructure/filesystem"
+	"tango/pkg/adapters/filesystem"
 )
 
 // MaxMindGeoLibResolver retrieves path to the MaxMind Geo Library
