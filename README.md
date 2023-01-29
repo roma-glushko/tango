@@ -13,10 +13,6 @@
    <a href="https://gitter.im/roma-glushko-tango/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge" alt="Gitter"><img alt="Gitter" src="https://badges.gitter.im/roma-glushko-tango/community.svg" /></a>
 </p>
 
-<p align="center">
-    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" width="500px" />
-</p>
-
 Tango is a dependency-free command-line tool for analyzing access logs 💃
 
 Currently, work on this project is in progress. 
