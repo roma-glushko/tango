@@ -16,9 +16,48 @@ type RequestReportItem struct {
 	RefererURLs  map[string]bool
 }
 
+type RequestReport struct {
+	report map[string]*RequestReportItem
+	mu     sync.Mutex
+}
+
+func (r *RequestReport) AddRequest(path string, refererURL string, logRecord entity.AccessLogRecord) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if requestRecord, exists := r.report[path]; exists {
+		requestRecord.Requests++
+
+		// collect referer URLs
+		if _, found := requestRecord.RefererURLs[refererURL]; !found {
+			requestRecord.RefererURLs[refererURL] = true
+		}
+
+		return
+	}
+
+	r.report[path] = &RequestReportItem{
+		Path:         path,
+		Requests:     1,
+		ResponseCode: logRecord.ResponseCode,
+		RefererURLs:  map[string]bool{refererURL: true},
+	}
+}
+
+func (r *RequestReport) Report() map[string]*RequestReportItem {
+	return r.report
+}
+
+func NewRequestReport() *RequestReport {
+	return &RequestReport{
+		report: make(map[string]*RequestReportItem),
+		mu:     sync.Mutex{},
+	}
+}
+
 // RequestReportWriter
 type RequestReportWriter interface {
-	Save(reportPath string, browserReport map[string]*RequestReportItem)
+	Save(reportPath string, requestReport *RequestReport)
 }
 
 // RequestReportService
@@ -35,8 +74,7 @@ func NewRequestReportService(requestReportWriter RequestReportWriter) *RequestRe
 
 // GenerateReport processes access logs and collect request reports
 func (u *RequestReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
-	var requestReport = make(map[string]*RequestReportItem)
-	var mutex sync.Mutex // TODO: try to use sync.Map
+	requestReport := NewRequestReport()
 
 	// todo: move to configs
 	queryPatterns := []string{
@@ -85,28 +123,7 @@ func (u *RequestReportService) GenerateReport(reportPath string, logChan <-chan 
 					path = filter.ReplaceAllString(path, "")
 				}
 
-				mutex.Lock()
-
-				if _, exists := requestReport[path]; exists {
-					requestReport[path].Requests++
-
-					// collect referer URLs
-					if _, found := requestReport[path].RefererURLs[refererURL]; !found {
-						requestReport[path].RefererURLs[refererURL] = true
-					}
-
-					mutex.Unlock()
-					continue
-				}
-
-				requestReport[path] = &RequestReportItem{
-					Path:         path,
-					Requests:     1,
-					ResponseCode: accessRecord.ResponseCode,
-					RefererURLs:  map[string]bool{refererURL: true},
-				}
-
-				mutex.Unlock()
+				requestReport.AddRequest(path, refererURL, accessRecord)
 			}
 		}()
 	}
