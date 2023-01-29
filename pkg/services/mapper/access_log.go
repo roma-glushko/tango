@@ -47,7 +47,7 @@ func MapAccessLogRecord(accessLogRecord string) entity.AccessLogRecord {
 		"-",
 	)
 
-	time, _ := time.Parse(timeFormat, accessRecordInformation["time"])
+	createdAt, _ := time.Parse(timeFormat, accessRecordInformation["time"])
 
 	responseCode, _ := strconv.ParseUint(accessRecordInformation["response_code"], 10, 64)
 	responseSize, _ := strconv.ParseUint(accessRecordInformation["response_size"], 10, 64)
@@ -55,7 +55,7 @@ func MapAccessLogRecord(accessLogRecord string) entity.AccessLogRecord {
 	return entity.AccessLogRecord{
 		IP:            ipList,
 		URI:           accessRecordInformation["uri"],
-		Time:          time,
+		Time:          createdAt,
 		RequestMethod: accessRecordInformation["request_method"],
 		Protocol:      accessRecordInformation["protocol"],
 		ResponseCode:  responseCode,

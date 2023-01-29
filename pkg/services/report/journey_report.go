@@ -100,7 +100,7 @@ func (u *JourneyReportService) addPlace(journey *entity2.Journey, accessLogRecor
 				Time:          accessLogRecord.Time,
 				UserAgent:     accessLogRecord.UserAgent,
 				Protocol:      accessLogRecord.Protocol,
-				ResponseCode:  200,   // assume that previous request was successfull
+				ResponseCode:  200,   // assume that previous request was successful
 				ResponseSize:  0,     // hard to say about size, keep 0 bytes
 				RequestMethod: "GET", // usually GET method is cachable, so assume it was used for this request as well
 				RefererURL:    "-",

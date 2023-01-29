@@ -11,7 +11,7 @@ import (
 )
 
 func TestInstallGeoLib(t *testing.T) {
-	assert := assert.New(t)
+	asserter := assert.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	tangoCli.Run([]string{
@@ -24,14 +24,14 @@ func TestInstallGeoLib(t *testing.T) {
 	})
 
 	_, geoConfExistErr := di.InitMaxmindConfResolver().GetPath()
-	assert.False(os.IsNotExist(geoConfExistErr), "MaxMind Configuration File was not created")
+	asserter.False(os.IsNotExist(geoConfExistErr), "MaxMind Configuration File was not created")
 
 	_, geoLibExistErr := di.InitMaxmindGeoLibResolver().GetPath()
-	assert.False(os.IsNotExist(geoLibExistErr), "MaxMind Geo Lib was not created")
+	asserter.False(os.IsNotExist(geoLibExistErr), "MaxMind Geo Lib was not created")
 }
 
 func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
-	assert := assert.New(t)
+	asserter := assert.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	reportFilePath := "results/geo-report-with-system-ip-processor.csv"
@@ -51,25 +51,25 @@ func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.GeoReportHeader, "Geo Report Header is different")
-	assert.Len(reportBody, 40, "Geo Report should contain 40 record")
+	asserter.Equal(reportHeader, writer.GeoReportHeader, "Geo Report Header is different")
+	asserter.Len(reportBody, 40, "Geo Report should contain 40 record")
 
 	testGeoData := map[string][]string{
-		"130.93.253.236": []string{
-			"130.93.253.236", // IP
-			"Hungary",        // Country
-			"",               // City
-			"/cstm/sec/load?sections=&updsecid=false&_=1562558398896", // Sample Request
-			"Europe", // Continent
+		"130.93.253.236": {
+			"130.93.253.236",  // IP
+			"Hungary",         // Country
+			"Szentlorinckata", // City
+			"",                // Sample Request, keep it empty as it may change since it's a random sampled URL
+			"Europe",          // Continent
 			"Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Mobile/15E148 Safari/604.1", //Browser Agent
 			"18", // Count of Requests
 		},
-		"121.79.80.29": []string{
-			"121.79.80.29",              // IP
-			"Australia",                 // Country
-			"",                          // City
-			"/product-tk8-smawbtk.html", // Sample Request
-			"Oceania",                   // Continent
+		"121.79.80.29": {
+			"121.79.80.29", // IP
+			"Australia",    // Country
+			"",             // City
+			"",             // Sample Request, keep it empty as it may change since it's a random sampled URL
+			"Oceania",      // Continent
 			"Mozilla/5.0 (X11; CrOS x86_64 12105.75.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.102 Safari/537.36", //Browser Agent
 			"4", // Count of Requests
 		},
@@ -90,13 +90,15 @@ func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
 	}
 
 	for _, reportItem := range reportBody {
-		ip := reportItem[0]
+		IP := reportItem[0]
 
-		if expectedItem, ok := testGeoData[ip]; ok {
-			assert.ElementsMatch(expectedItem, reportItem, "Sample Geo Report Item should match")
+		if expectedItem, found := testGeoData[IP]; found {
+			reportItem[4] = "" // ignore the randomly sampled URL
+
+			asserter.ElementsMatch(expectedItem, reportItem, "Sample Geo Report Item should match")
 		}
 
-		assert.NotContains(testSystemIpList, ip, "System IP should be filtered")
+		asserter.NotContains(testSystemIpList, IP, "System IP should be filtered")
 	}
 
 }
