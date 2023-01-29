@@ -64,10 +64,9 @@ func (u *PaceReportService) GenerateReport(reportPath string, logChan <-chan ent
 				hourTimeGroup := accessRecord.Time.Format(hourTimeFormat)
 				minuteTimeGroup := accessRecord.Time.Format(minuteTimeFormat)
 
+				mutex.Lock()
 				lastHourReportItem := u.findPaceHourReportItem(&paceReport, hourTimeGroup)
 				lastMinuteReportItem := u.findPaceMinuteReportItem(&lastHourReportItem.MinutePaceItems, minuteTimeGroup)
-
-				mutex.Lock()
 
 				for _, ip := range ipList {
 					if _, found := lastMinuteReportItem.IpPaces[ip]; !found {

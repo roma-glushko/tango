@@ -48,7 +48,8 @@ func NewGeoReportService(geoLocationProvider GeoLocationProvider, geoReportWrite
 // GenerateReport processes access logs and collect geo reports
 func (u *GeoReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
 	var geoReport = make(map[string]*Geolocation)
-	var mutex sync.Mutex // TODO: try to use sync.Map
+	var mutex sync.Mutex      // TODO: try to use sync.Map
+	var geoDBmutex sync.Mutex // TODO: try to use sync.Map
 
 	defer u.geoLocationProvider.Close()
 
@@ -69,7 +70,9 @@ func (u *GeoReportService) GenerateReport(reportPath string, logChan <-chan enti
 						continue
 					}
 
+					geoDBmutex.Lock()
 					geoData := u.geoLocationProvider.GetGeoDataByIP(ip)
+					geoDBmutex.Unlock()
 
 					mutex.Lock()
 					geoReport[ip] = &Geolocation{
