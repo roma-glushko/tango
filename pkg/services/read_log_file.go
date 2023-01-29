@@ -1,7 +1,7 @@
 package services
 
 import (
-	"tango/pkg/domain/entity"
+	"tango/pkg/entity"
 	"tango/pkg/services/mapper"
 	"tango/pkg/services/processor"
 )

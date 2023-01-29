@@ -3,7 +3,7 @@ package writer
 import (
 	"log"
 	"os"
-	"tango/pkg/domain/entity"
+	"tango/pkg/entity"
 	"text/template"
 
 	"github.com/gobuffalo/packr/v2"

@@ -1,7 +1,7 @@
 package report
 
 import (
-	"tango/pkg/domain/entity"
+	"tango/pkg/entity"
 )
 
 // Geo Location Data

@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"tango/pkg/domain/entity"
+	"tango/pkg/entity"
 	"time"
 )
 

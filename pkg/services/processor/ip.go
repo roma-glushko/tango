@@ -3,7 +3,7 @@ package processor
 import (
 	"net"
 	"strings"
-	"tango/pkg/domain/entity"
+	"tango/pkg/entity"
 	"tango/pkg/services/config"
 )
 

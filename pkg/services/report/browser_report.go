@@ -2,7 +2,7 @@ package report
 
 import (
 	"strings"
-	"tango/pkg/domain/entity"
+	entity2 "tango/pkg/entity"
 )
 
 //
@@ -33,9 +33,9 @@ func NewBrowserReportService(browserReportWriter BrowserReportWriter) *BrowserRe
 }
 
 // Process access logs and collect browser reports
-func (u *BrowserReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *BrowserReportService) GenerateReport(reportPath string, accessRecords []entity2.AccessLogRecord) {
 	var browserReport = make(map[string]*BrowserReportItem)
-	var browserCategories = entity.GetBrowserClassification()
+	var browserCategories = entity2.GetBrowserClassification()
 
 	for _, accessRecord := range accessRecords {
 		userAgent := accessRecord.UserAgent

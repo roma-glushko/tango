@@ -1,6 +1,8 @@
 package services
 
-import "tango/pkg/domain/entity"
+import (
+	"tango/pkg/entity"
+)
 
 //
 type AccessLogFilter interface {

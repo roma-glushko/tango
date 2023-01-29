@@ -2,7 +2,7 @@ package filter
 
 import (
 	"strings"
-	"tango/pkg/domain/entity"
+	"tango/pkg/entity"
 	"tango/pkg/services/config"
 )
 

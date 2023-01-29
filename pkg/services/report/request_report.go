@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
-	"tango/pkg/domain/entity"
+	"tango/pkg/entity"
 )
 
 // RequestReportItem

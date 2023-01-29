@@ -1,7 +1,7 @@
 package filter
 
 import (
-	"tango/pkg/domain/entity"
+	"tango/pkg/entity"
 	"tango/pkg/services/config"
 	"time"
 )

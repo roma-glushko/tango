@@ -6,7 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"tango/pkg/domain/entity"
+	"tango/pkg/entity"
 )
 
 var timeFormat = "2006-01-02 15:04:05 -0700" // todo: add localization for US/EU formats

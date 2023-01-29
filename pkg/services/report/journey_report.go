@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"tango/pkg/domain/entity"
+	entity2 "tango/pkg/entity"
 	"tango/pkg/services/config"
 )
 
 // JourneyReportWriter knows how to save journey report
 type JourneyReportWriter interface {
-	Save(reportPath string, journeyReport map[string]*entity.Journey)
+	Save(reportPath string, journeyReport map[string]*entity2.Journey)
 }
 
 // JourneyReportService knows how to prepare journey reports
@@ -41,15 +41,15 @@ func getUUID() string {
 }
 
 // GenerateReport processes access logs and determine visitor's journeys on the website
-func (u *JourneyReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
-	journeyReport := make(map[string]*entity.Journey, 0)
+func (u *JourneyReportService) GenerateReport(reportPath string, accessRecords []entity2.AccessLogRecord) {
+	journeyReport := make(map[string]*entity2.Journey, 0)
 
 	for _, accessRecord := range accessRecords {
 		ipList := accessRecord.IP
 
 		for _, ip := range ipList {
 			if _, ok := journeyReport[ip]; !ok {
-				journeyReport[ip] = &entity.Journey{
+				journeyReport[ip] = &entity2.Journey{
 					ID: getUUID(),
 					IP: ip,
 				}
@@ -63,7 +63,7 @@ func (u *JourneyReportService) GenerateReport(reportPath string, accessRecords [
 }
 
 // addPlace
-func (u *JourneyReportService) addPlace(journey *entity.Journey, accessLogRecord entity.AccessLogRecord) {
+func (u *JourneyReportService) addPlace(journey *entity2.Journey, accessLogRecord entity2.AccessLogRecord) {
 	refererURI := accessLogRecord.RefererURL
 
 	if u.isInternalReferer(refererURI) {
@@ -76,10 +76,10 @@ func (u *JourneyReportService) addPlace(journey *entity.Journey, accessLogRecord
 	if refererPlace == nil {
 		lastAddedPlace := journey.GetLastPlace()
 
-		refererPlace = journey.AddPlace(&entity.JourneyPlace{
+		refererPlace = journey.AddPlace(&entity2.JourneyPlace{
 			ID:        getUUID(),
 			WasLogged: false,
-			Data: &entity.AccessLogRecord{
+			Data: &entity2.AccessLogRecord{
 				IP:            accessLogRecord.IP,
 				URI:           refererURI,
 				Time:          accessLogRecord.Time,
@@ -98,7 +98,7 @@ func (u *JourneyReportService) addPlace(journey *entity.Journey, accessLogRecord
 	}
 
 	if !strings.Contains(accessLogRecord.URI, "/customer/section/load") { // todo: refactor and remove hardcoded uri
-		currentPlace := journey.AddPlace(&entity.JourneyPlace{
+		currentPlace := journey.AddPlace(&entity2.JourneyPlace{
 			ID:        getUUID(),
 			WasLogged: true,
 			Data:      &accessLogRecord,

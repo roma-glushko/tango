@@ -1,7 +1,7 @@
 package report
 
 import (
-	"tango/pkg/domain/entity"
+	"tango/pkg/entity"
 )
 
 var minuteTimeFormat = "2006-01-02 15:04" // minute time group template
