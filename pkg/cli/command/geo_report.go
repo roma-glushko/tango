@@ -33,11 +33,11 @@ func GeoReportCommand(cliContext *cli.Context) error {
 	fmt.Println("💃 started to generate a geo report...")
 	fmt.Println("💃 reading access logs...")
 
-	accessLogRecords := readAccessLogService.Read(reportConfig.LogFile)
+	logChan := readAccessLogService.Read(reportConfig.LogFile)
 
 	fmt.Println("💃 saving the geo report...")
 
-	geoReportService.GenerateReport(reportConfig.ReportFile, accessLogRecords)
+	geoReportService.GenerateReport(reportConfig.ReportFile, logChan)
 
 	fmt.Println("🎉 geo report has been generated")
 

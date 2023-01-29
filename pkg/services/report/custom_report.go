@@ -6,7 +6,7 @@ import (
 
 //
 type CustomReportWriter interface {
-	Save(reportPath string, accessLogs []entity.AccessLogRecord)
+	Save(reportPath string, logChan <-chan entity.AccessLogRecord)
 }
 
 //
@@ -22,7 +22,7 @@ func NewCustomReportService(customReportWriter CustomReportWriter) *CustomReport
 }
 
 // Save a custom log based on access logs
-func (u *CustomReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *CustomReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
 	// nothing to do here yet
-	u.customReportWriter.Save(reportPath, accessRecords)
+	u.customReportWriter.Save(reportPath, logChan)
 }

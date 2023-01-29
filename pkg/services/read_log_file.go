@@ -1,6 +1,8 @@
 package services
 
 import (
+	"sync"
+	adapters "tango/pkg/adapters/reader"
 	"tango/pkg/entity"
 	"tango/pkg/services/mapper"
 	"tango/pkg/services/processor"
@@ -10,50 +12,66 @@ import (
 type ReadAccessLogFunc func(accessLogRecord string, bytes int)
 
 //
-type AccessLogReader interface {
-	Read(filePath string, readAccessLogFunc ReadAccessLogFunc)
-}
-
-//
 type ReadAccessLogService struct {
-	accessLogReader        AccessLogReader
-	filterAccessLogService FilterAccessLogService
-	ipProcessor            processor.IPProcessor
+	logReader        *adapters.AccessLogReader
+	readProgress     *adapters.ReadProgress
+	filterLogService FilterAccessLogService
+	ipProcessor      processor.IPProcessor
 }
 
 // NewReadAccessLogService Create a new ReadAccessLogService
 func NewReadAccessLogService(
-	accessLogReader AccessLogReader,
-	filterAccessLogService FilterAccessLogService,
+	accessLogReader *adapters.AccessLogReader,
+	readProgress *adapters.ReadProgress,
+	filterLogService FilterAccessLogService,
 	ipProcessor processor.IPProcessor,
 ) *ReadAccessLogService {
 	return &ReadAccessLogService{
-		accessLogReader:        accessLogReader,
-		filterAccessLogService: filterAccessLogService,
-		ipProcessor:            ipProcessor,
+		logReader:        accessLogReader,
+		readProgress:     readProgress,
+		filterLogService: filterLogService,
+		ipProcessor:      ipProcessor,
 	}
 }
 
 // Read Access Logs and convert them to array of AccessLogRecord-s
-func (u *ReadAccessLogService) Read(filePath string) []entity.AccessLogRecord {
-	accessRecords := make([]entity.AccessLogRecord, 0)
+func (u *ReadAccessLogService) Read(filePath string) <-chan entity.AccessLogRecord {
+	logFileSize := u.logReader.FileSize(filePath)
+	rawLogChan, bytesReadChan := u.logReader.Read(filePath)
 
-	u.accessLogReader.Read(filePath, func(accessLogRecord string, bytes int) {
-		accessRecord := mapper.MapAccessLogRecord(accessLogRecord)
+	parsedLogChan := make(chan entity.AccessLogRecord)
 
-		// process parsed access log record
-		accessRecord = u.ipProcessor.Process(accessRecord)
+	u.readProgress.Track(bytesReadChan, logFileSize)
 
-		// filter/skip parsed access log record if needed
-		if u.filterAccessLogService.Filter(accessRecord) {
-			return
-		}
+	var waitGroup sync.WaitGroup
 
-		accessRecords = append(
-			accessRecords,
-			accessRecord,
-		)
-	})
+	// TODO: Configure thread number
+	for i := 0; i < 4; i++ {
+		waitGroup.Add(1)
 
-	return accessRecords
+		go func() {
+			defer waitGroup.Done()
+
+			for rawLog := range rawLogChan {
+				logRecord := mapper.MapAccessLogRecord(rawLog)
+
+				// process a parsed access log record
+				logRecord = u.ipProcessor.Process(logRecord)
+
+				// filter/skip parsed access log record if needed
+				if u.filterLogService.Filter(logRecord) {
+					continue
+				}
+
+				parsedLogChan <- logRecord
+			}
+		}()
+	}
+
+	go func() {
+		waitGroup.Wait()
+		close(parsedLogChan)
+	}()
+
+	return parsedLogChan
 }

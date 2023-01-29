@@ -19,11 +19,11 @@ func CustomReportCommand(cliContext *cli.Context) error {
 	fmt.Println("💃 started to generate a custom report...")
 	fmt.Println("💃 reading access logs...")
 
-	accessLogRecords := readAccessLogService.Read(reportConfig.LogFile)
+	logChan := readAccessLogService.Read(reportConfig.LogFile)
 
 	fmt.Println("💃 saving the custom report...")
 
-	customReportService.GenerateReport(reportConfig.ReportFile, accessLogRecords)
+	customReportService.GenerateReport(reportConfig.ReportFile, logChan)
 
 	fmt.Println("🎉 custom report has been generated")
 

@@ -5,7 +5,6 @@ import (
 	"tango/pkg/adapters/geo"
 	"tango/pkg/adapters/reader"
 	"tango/pkg/adapters/writer"
-	"tango/pkg/cli/component"
 	"tango/pkg/cli/factory"
 	"tango/pkg/services"
 	"tango/pkg/services/config"
@@ -86,12 +85,18 @@ func InitGenerateMaxmindConfService() *geodata.GenerateMaxmindConfService {
 
 // InitReadAccessLogService inits a services
 func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig) *services.ReadAccessLogService {
-	accessLogReader := reader.NewAccessLogReader()
-	readerProgressDecorator := component.NewReaderProgressDecorator(accessLogReader)
+	logReader := reader.NewAccessLogReader()
+	readProgress := reader.NewReadProgress()
+
 	ipProcessor := InitIpProcessor(processorConfig)
 	filterAccessLogService := InitFilterAccessLogService(filterConfig)
 
-	return services.NewReadAccessLogService(readerProgressDecorator, filterAccessLogService, ipProcessor)
+	return services.NewReadAccessLogService(
+		logReader,
+		readProgress,
+		filterAccessLogService,
+		ipProcessor,
+	)
 }
 
 // InitGeoReportService inits a services

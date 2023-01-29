@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"sync"
 	"tango/pkg/entity"
 )
 
@@ -33,8 +34,9 @@ func NewRequestReportService(requestReportWriter RequestReportWriter) *RequestRe
 }
 
 // GenerateReport processes access logs and collect request reports
-func (u *RequestReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *RequestReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
 	var requestReport = make(map[string]*RequestReportItem)
+	var mutex sync.Mutex // TODO: try to use sync.Map
 
 	// todo: move to configs
 	queryPatterns := []string{
@@ -55,44 +57,62 @@ func (u *RequestReportService) GenerateReport(reportPath string, accessRecords [
 		pathFilters = append(pathFilters, filter)
 	}
 
-	for _, accessRecord := range accessRecords {
-		requestURI := accessRecord.URI
-		refererURL := accessRecord.RefererURL
+	var waitGroup sync.WaitGroup
 
-		parsedURI, err := url.Parse(requestURI)
+	for i := 0; i < 4; i++ {
+		waitGroup.Add(1)
 
-		path := ""
+		go func() {
+			defer waitGroup.Done()
 
-		if err != nil {
-			// during security scans it's possible to submit a request which triggers a panic in url.Parse()
-			// in that case, just use the original URI
-			path = requestURI
-		} else {
-			path = parsedURI.Path
-		}
+			for accessRecord := range logChan {
+				requestURI := accessRecord.URI
+				refererURL := accessRecord.RefererURL
 
-		for _, filter := range pathFilters {
-			path = filter.ReplaceAllString(path, "")
-		}
+				parsedURI, err := url.Parse(requestURI)
 
-		if _, ok := requestReport[path]; ok {
-			requestReport[path].Requests++
+				path := ""
 
-			// collect referer URLs
-			if _, found := requestReport[path].RefererURLs[refererURL]; !found {
-				requestReport[path].RefererURLs[refererURL] = true
+				if err != nil {
+					// during security scans it's possible to submit a request which triggers a panic in url.Parse()
+					// in that case, just use the original URI
+					path = requestURI
+				} else {
+					path = parsedURI.Path
+				}
+
+				for _, filter := range pathFilters {
+					path = filter.ReplaceAllString(path, "")
+				}
+
+				mutex.Lock()
+
+				if _, exists := requestReport[path]; exists {
+					requestReport[path].Requests++
+
+					// collect referer URLs
+					if _, found := requestReport[path].RefererURLs[refererURL]; !found {
+						requestReport[path].RefererURLs[refererURL] = true
+					}
+
+					mutex.Unlock()
+					continue
+				}
+
+				requestReport[path] = &RequestReportItem{
+					Path:         path,
+					Requests:     1,
+					ResponseCode: accessRecord.ResponseCode,
+					RefererURLs:  map[string]bool{refererURL: true},
+				}
+
+				mutex.Unlock()
 			}
-
-			continue
-		}
-
-		requestReport[path] = &RequestReportItem{
-			Path:         path,
-			Requests:     1,
-			ResponseCode: accessRecord.ResponseCode,
-			RefererURLs:  map[string]bool{refererURL: true},
-		}
+		}()
 	}
 
+	waitGroup.Wait()
+
+	fmt.Println("💃 saving the request report...")
 	u.requestReportWriter.Save(reportPath, requestReport)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"sync"
 	entity2 "tango/pkg/entity"
 	"tango/pkg/services/config"
 )
@@ -41,23 +42,37 @@ func getUUID() string {
 }
 
 // GenerateReport processes access logs and determine visitor's journeys on the website
-func (u *JourneyReportService) GenerateReport(reportPath string, accessRecords []entity2.AccessLogRecord) {
+func (u *JourneyReportService) GenerateReport(reportPath string, logChan <-chan entity2.AccessLogRecord) {
 	journeyReport := make(map[string]*entity2.Journey, 0)
+	var mutex sync.Mutex // TODO: try to use sync.Map
+	var waitGroup sync.WaitGroup
 
-	for _, accessRecord := range accessRecords {
-		ipList := accessRecord.IP
+	for i := 0; i < 4; i++ {
+		waitGroup.Add(1)
 
-		for _, ip := range ipList {
-			if _, ok := journeyReport[ip]; !ok {
-				journeyReport[ip] = &entity2.Journey{
-					ID: getUUID(),
-					IP: ip,
+		go func() {
+			defer waitGroup.Done()
+
+			for accessRecord := range logChan {
+				ipList := accessRecord.IP
+
+				for _, ip := range ipList {
+					mutex.Lock()
+					if _, ok := journeyReport[ip]; !ok {
+						journeyReport[ip] = &entity2.Journey{
+							ID: getUUID(),
+							IP: ip,
+						}
+					}
+
+					u.addPlace(journeyReport[ip], accessRecord)
+					mutex.Unlock()
 				}
 			}
-
-			u.addPlace(journeyReport[ip], accessRecord)
-		}
+		}()
 	}
+
+	waitGroup.Wait()
 
 	u.journeyReportWriter.Save(reportPath, journeyReport)
 }

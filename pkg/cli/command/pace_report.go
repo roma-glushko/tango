@@ -20,11 +20,11 @@ func PaceReportCommand(cliContext *cli.Context) error {
 	fmt.Println("💃 started to generate a request pace report...")
 	fmt.Println("💃 reading access logs...")
 
-	accessLogRecords := readAccessLogService.Read(reportConfig.LogFile)
+	logChan := readAccessLogService.Read(reportConfig.LogFile)
 
 	fmt.Println("💃 saving the request pace report...")
 
-	paceReportService.GenerateReport(reportConfig.ReportFile, accessLogRecords)
+	paceReportService.GenerateReport(reportConfig.ReportFile, logChan)
 
 	fmt.Println("🎉 request pace report has been generated")
 

@@ -1,6 +1,7 @@
 package report
 
 import (
+	"sync"
 	"tango/pkg/entity"
 )
 
@@ -45,29 +46,45 @@ func NewGeoReportService(geoLocationProvider GeoLocationProvider, geoReportWrite
 }
 
 // GenerateReport processes access logs and collect geo reports
-func (u *GeoReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *GeoReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
 	var geoReport = make(map[string]*Geolocation)
+	var mutex sync.Mutex // TODO: try to use sync.Map
 
 	defer u.geoLocationProvider.Close()
 
-	for _, accessRecord := range accessRecords {
-		for _, ip := range accessRecord.IP {
+	var waitGroup sync.WaitGroup
 
-			if _, ok := geoReport[ip]; ok {
-				geoReport[ip].Requests++
-				continue
+	for i := 0; i < 4; i++ {
+		waitGroup.Add(1)
+		go func() {
+			defer waitGroup.Done()
+
+			for accessRecord := range logChan {
+				for _, ip := range accessRecord.IP {
+
+					if _, found := geoReport[ip]; found {
+						mutex.Lock()
+						geoReport[ip].Requests++
+						mutex.Unlock()
+						continue
+					}
+
+					geoData := u.geoLocationProvider.GetGeoDataByIP(ip)
+
+					mutex.Lock()
+					geoReport[ip] = &Geolocation{
+						GeoData:       geoData,
+						SampleRequest: accessRecord.URI,
+						BrowserAgent:  accessRecord.UserAgent,
+						Requests:      1,
+					}
+					mutex.Unlock()
+				}
 			}
-
-			geoData := u.geoLocationProvider.GetGeoDataByIP(ip)
-
-			geoReport[ip] = &Geolocation{
-				GeoData:       geoData,
-				SampleRequest: accessRecord.URI,
-				BrowserAgent:  accessRecord.UserAgent,
-				Requests:      1,
-			}
-		}
+		}()
 	}
+
+	waitGroup.Wait()
 
 	u.geoReportWriter.Save(reportPath, geoReport)
 }

@@ -19,11 +19,11 @@ func BrowserReportCommand(cliContext *cli.Context) error {
 	fmt.Println("💃 started to generate a browser report...")
 	fmt.Println("💃 reading access logs...")
 
-	accessLogRecords := readAccessLogService.Read(reportConfig.LogFile)
+	logChan := readAccessLogService.Read(reportConfig.LogFile)
 
 	fmt.Println("💃 saving the browser report...")
 
-	browserReportService.GenerateReport(reportConfig.ReportFile, accessLogRecords)
+	browserReportService.GenerateReport(reportConfig.ReportFile, logChan)
 
 	fmt.Println("🎉 browser report has been generated")
 

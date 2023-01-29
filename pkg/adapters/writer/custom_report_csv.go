@@ -30,7 +30,7 @@ func NewCustomReportCsvWriter() *CustomReportCsvWriter {
 }
 
 // Save GeoLocation Report to CSV file
-func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.AccessLogRecord) {
+func (w *CustomReportCsvWriter) Save(filePath string, logChan <-chan entity.AccessLogRecord) {
 	file, err := os.Create(filePath)
 
 	if err != nil {
@@ -46,7 +46,7 @@ func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.Access
 	}
 
 	// Body
-	for _, accessLog := range accessLogs {
+	for accessLog := range logChan {
 		err := writer.Write([]string{
 			accessLog.Time.Format(timeFormat),
 			strings.Join(accessLog.IP, ", "),

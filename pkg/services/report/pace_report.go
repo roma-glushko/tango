@@ -1,6 +1,7 @@
 package report
 
 import (
+	"sync"
 	"tango/pkg/entity"
 )
 
@@ -46,33 +47,49 @@ func NewPaceReportService(paceReportWriter PaceReportWriter) *PaceReportService 
 }
 
 // GenerateReport processes access logs and collects request pace reports
-func (u *PaceReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *PaceReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
 	var paceReport = make([]*PaceHourReportItem, 0)
+	var mutex sync.Mutex // TODO: try to use sync.Map
 
-	for _, accessRecord := range accessRecords {
-		ipList := accessRecord.IP
-		browser := accessRecord.UserAgent
-		hourTimeGroup := accessRecord.Time.Format(hourTimeFormat)
-		minuteTimeGroup := accessRecord.Time.Format(minuteTimeFormat)
+	var waitGroup sync.WaitGroup
 
-		lastHourReportItem := u.findPaceHourReportItem(&paceReport, hourTimeGroup)
-		lastMinuteReportItem := u.findPaceMinuteReportItem(&lastHourReportItem.MinutePaceItems, minuteTimeGroup)
+	for i := 0; i < 4; i++ {
+		waitGroup.Add(1)
+		go func() {
+			defer waitGroup.Done()
 
-		for _, ip := range ipList {
-			if _, found := lastMinuteReportItem.IpPaces[ip]; !found {
-				lastMinuteReportItem.IpPaces[ip] = &PaceIpReportItem{
-					IP:       ip,
-					Requests: 0,
-					Browser:  browser,
+			for accessRecord := range logChan {
+				ipList := accessRecord.IP
+				browser := accessRecord.UserAgent
+				hourTimeGroup := accessRecord.Time.Format(hourTimeFormat)
+				minuteTimeGroup := accessRecord.Time.Format(minuteTimeFormat)
+
+				lastHourReportItem := u.findPaceHourReportItem(&paceReport, hourTimeGroup)
+				lastMinuteReportItem := u.findPaceMinuteReportItem(&lastHourReportItem.MinutePaceItems, minuteTimeGroup)
+
+				mutex.Lock()
+
+				for _, ip := range ipList {
+					if _, found := lastMinuteReportItem.IpPaces[ip]; !found {
+						lastMinuteReportItem.IpPaces[ip] = &PaceIpReportItem{
+							IP:       ip,
+							Requests: 0,
+							Browser:  browser,
+						}
+					}
+
+					lastMinuteReportItem.IpPaces[ip].Requests++
 				}
+
+				lastMinuteReportItem.Requests++
+				lastHourReportItem.Requests++
+
+				mutex.Unlock()
 			}
-
-			lastMinuteReportItem.IpPaces[ip].Requests++
-		}
-
-		lastMinuteReportItem.Requests++
-		lastHourReportItem.Requests++
+		}()
 	}
+
+	waitGroup.Wait()
 
 	u.paceReportWriter.Save(reportPath, paceReport)
 }
