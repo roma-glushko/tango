@@ -13,6 +13,7 @@ type ReadAccessLogFunc func(accessLogRecord string, bytes int)
 
 //
 type ReadAccessLogService struct {
+	logMapper        *mapper.AccessLogMapper
 	logReader        *adapters.AccessLogReader
 	readProgress     *adapters.ReadProgress
 	filterLogService FilterAccessLogService
@@ -21,12 +22,14 @@ type ReadAccessLogService struct {
 
 // NewReadAccessLogService Create a new ReadAccessLogService
 func NewReadAccessLogService(
+	logMapper *mapper.AccessLogMapper,
 	accessLogReader *adapters.AccessLogReader,
 	readProgress *adapters.ReadProgress,
 	filterLogService FilterAccessLogService,
 	ipProcessor processor.IPProcessor,
 ) *ReadAccessLogService {
 	return &ReadAccessLogService{
+		logMapper:        logMapper,
 		logReader:        accessLogReader,
 		readProgress:     readProgress,
 		filterLogService: filterLogService,
@@ -34,14 +37,14 @@ func NewReadAccessLogService(
 	}
 }
 
-// Read Access Logs and convert them to array of AccessLogRecord-s
-func (u *ReadAccessLogService) Read(filePath string) <-chan entity.AccessLogRecord {
-	logFileSize := u.logReader.FileSize(filePath)
-	rawLogChan, bytesReadChan := u.logReader.Read(filePath)
+// Read Access Logs (filter them out if needed) and add to the channel
+func (s *ReadAccessLogService) Read(filePath string) <-chan entity.AccessLogRecord {
+	logFileSize := s.logReader.FileSize(filePath)
+	rawLogChan, bytesReadChan := s.logReader.Read(filePath)
 
 	parsedLogChan := make(chan entity.AccessLogRecord)
 
-	u.readProgress.Track(bytesReadChan, logFileSize)
+	s.readProgress.Track(bytesReadChan, logFileSize)
 
 	var waitGroup sync.WaitGroup
 
@@ -53,13 +56,15 @@ func (u *ReadAccessLogService) Read(filePath string) <-chan entity.AccessLogReco
 			defer waitGroup.Done()
 
 			for rawLog := range rawLogChan {
-				logRecord := mapper.MapAccessLogRecord(rawLog)
+				logRecord := s.logMapper.Map(rawLog)
 
 				// process a parsed access log record
-				logRecord = u.ipProcessor.Process(logRecord)
+				logRecord = s.ipProcessor.Process(logRecord)
 
 				// filter/skip parsed access log record if needed
-				if u.filterLogService.Filter(logRecord) {
+				if s.filterLogService.Filter(logRecord) {
+					s.logMapper.Recycle(logRecord)
+
 					continue
 				}
 

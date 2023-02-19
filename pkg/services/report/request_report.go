@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"sync"
 	"tango/pkg/entity"
+	"tango/pkg/services/mapper"
 )
 
 // RequestReportItem
@@ -62,18 +63,20 @@ type RequestReportWriter interface {
 
 // RequestReportService
 type RequestReportService struct {
+	logMapper           *mapper.AccessLogMapper
 	requestReportWriter RequestReportWriter
 }
 
 //
-func NewRequestReportService(requestReportWriter RequestReportWriter) *RequestReportService {
+func NewRequestReportService(logMapper *mapper.AccessLogMapper, requestReportWriter RequestReportWriter) *RequestReportService {
 	return &RequestReportService{
+		logMapper:           logMapper,
 		requestReportWriter: requestReportWriter,
 	}
 }
 
 // GenerateReport processes access logs and collect request reports
-func (u *RequestReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
+func (s *RequestReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
 	requestReport := NewRequestReport()
 
 	// todo: move to configs
@@ -124,6 +127,7 @@ func (u *RequestReportService) GenerateReport(reportPath string, logChan <-chan 
 				}
 
 				requestReport.AddRequest(path, refererURL, accessRecord)
+				s.logMapper.Recycle(accessRecord)
 			}
 		}()
 	}
@@ -131,5 +135,5 @@ func (u *RequestReportService) GenerateReport(reportPath string, logChan <-chan 
 	waitGroup.Wait()
 
 	fmt.Println("💃 saving the request report...")
-	u.requestReportWriter.Save(reportPath, requestReport)
+	s.requestReportWriter.Save(reportPath, requestReport)
 }

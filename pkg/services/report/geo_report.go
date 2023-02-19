@@ -3,6 +3,7 @@ package report
 import (
 	"sync"
 	"tango/pkg/entity"
+	"tango/pkg/services/mapper"
 )
 
 // GeoData Location Data
@@ -69,23 +70,25 @@ type GeoReportWriter interface {
 
 // GeoReportService knows how to generate geo reports
 type GeoReportService struct {
+	logMapper           *mapper.AccessLogMapper
 	geoLocationProvider GeoLocationProvider
 	geoReportWriter     GeoReportWriter
 }
 
 // NewGeoReportService
-func NewGeoReportService(geoLocationProvider GeoLocationProvider, geoReportWriter GeoReportWriter) *GeoReportService {
+func NewGeoReportService(logMapper *mapper.AccessLogMapper, geoLocationProvider GeoLocationProvider, geoReportWriter GeoReportWriter) *GeoReportService {
 	return &GeoReportService{
+		logMapper:           logMapper,
 		geoLocationProvider: geoLocationProvider,
 		geoReportWriter:     geoReportWriter,
 	}
 }
 
 // GenerateReport processes access logs and collect geo reports
-func (u *GeoReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
+func (s *GeoReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
 	geoReport := NewGeoReport()
 
-	defer u.geoLocationProvider.Close()
+	defer s.geoLocationProvider.Close()
 
 	var waitGroup sync.WaitGroup
 
@@ -97,14 +100,16 @@ func (u *GeoReportService) GenerateReport(reportPath string, logChan <-chan enti
 
 			for accessRecord := range logChan {
 				for _, ip := range accessRecord.IP {
-					geoData := u.geoLocationProvider.GetGeoDataByIP(ip)
+					geoData := s.geoLocationProvider.GetGeoDataByIP(ip)
 					geoReport.AddRequest(accessRecord, ip, geoData)
 				}
+
+				s.logMapper.Recycle(accessRecord)
 			}
 		}()
 	}
 
 	waitGroup.Wait()
 
-	u.geoReportWriter.Save(reportPath, geoReport)
+	s.geoReportWriter.Save(reportPath, geoReport)
 }

@@ -3,7 +3,8 @@ package report
 import (
 	"strings"
 	"sync"
-	entity2 "tango/pkg/entity"
+	entity "tango/pkg/entity"
+	"tango/pkg/services/mapper"
 )
 
 //
@@ -23,22 +24,24 @@ type BrowserReportWriter interface {
 
 //
 type BrowserReportService struct {
+	logMapper           *mapper.AccessLogMapper
 	browserReportWriter BrowserReportWriter
 }
 
 //
-func NewBrowserReportService(browserReportWriter BrowserReportWriter) *BrowserReportService {
+func NewBrowserReportService(logMapper *mapper.AccessLogMapper, browserReportWriter BrowserReportWriter) *BrowserReportService {
 	return &BrowserReportService{
+		logMapper:           logMapper,
 		browserReportWriter: browserReportWriter,
 	}
 }
 
 // Process access logs and collect browser reports
-func (u *BrowserReportService) GenerateReport(reportPath string, logChan <-chan entity2.AccessLogRecord) {
-	var browserCategories = entity2.GetBrowserClassification()
+func (s *BrowserReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
+	var browserCategories = entity.GetBrowserClassification()
 
 	var browserReport = make(map[string]*BrowserReportItem)
-	var mutex sync.Mutex // TODO: try to use sync.Map
+	var mutex sync.Mutex
 
 	var waitGroup sync.WaitGroup
 
@@ -75,6 +78,7 @@ func (u *BrowserReportService) GenerateReport(reportPath string, logChan <-chan 
 						browserReport[browserAgent].UserAgents[userAgent] = true
 					}
 
+					s.logMapper.Recycle(accessRecord)
 					mutex.Unlock()
 					continue
 				}
@@ -87,6 +91,7 @@ func (u *BrowserReportService) GenerateReport(reportPath string, logChan <-chan 
 					Bandwidth:  accessRecord.ResponseSize,
 					UserAgents: map[string]bool{userAgent: true},
 				}
+				s.logMapper.Recycle(accessRecord)
 				mutex.Unlock()
 			}
 		}()
@@ -94,5 +99,5 @@ func (u *BrowserReportService) GenerateReport(reportPath string, logChan <-chan 
 
 	waitGroup.Wait()
 
-	u.browserReportWriter.Save(reportPath, browserReport)
+	s.browserReportWriter.Save(reportPath, browserReport)
 }

@@ -8,6 +8,7 @@ import (
 	"sync"
 	entity2 "tango/pkg/entity"
 	"tango/pkg/services/config"
+	"tango/pkg/services/mapper"
 )
 
 // JourneyReportWriter knows how to save journey report
@@ -17,13 +18,15 @@ type JourneyReportWriter interface {
 
 // JourneyReportService knows how to prepare journey reports
 type JourneyReportService struct {
+	logMapper           *mapper.AccessLogMapper
 	baseURL             string
 	journeyReportWriter JourneyReportWriter
 }
 
 // NewJourneyReportService creates a new instance of the services
-func NewJourneyReportService(generalConfig config.GeneralConfig, journeyReportWriter JourneyReportWriter) *JourneyReportService {
+func NewJourneyReportService(logMapper *mapper.AccessLogMapper, generalConfig config.GeneralConfig, journeyReportWriter JourneyReportWriter) *JourneyReportService {
 	return &JourneyReportService{
+		logMapper:           logMapper,
 		baseURL:             generalConfig.BaseURL,
 		journeyReportWriter: journeyReportWriter,
 	}
@@ -42,7 +45,7 @@ func getUUID() string {
 }
 
 // GenerateReport processes access logs and determine visitor's journeys on the website
-func (u *JourneyReportService) GenerateReport(reportPath string, logChan <-chan entity2.AccessLogRecord) {
+func (s *JourneyReportService) GenerateReport(reportPath string, logChan <-chan entity2.AccessLogRecord) {
 	journeyReport := make(map[string]*entity2.Journey, 0)
 	var mutex sync.Mutex // TODO: try to use sync.Map
 	var waitGroup sync.WaitGroup
@@ -65,7 +68,8 @@ func (u *JourneyReportService) GenerateReport(reportPath string, logChan <-chan 
 						}
 					}
 
-					u.addPlace(journeyReport[ip], accessRecord)
+					s.addPlace(journeyReport[ip], accessRecord)
+					s.logMapper.Recycle(accessRecord)
 					mutex.Unlock()
 				}
 			}
@@ -74,7 +78,7 @@ func (u *JourneyReportService) GenerateReport(reportPath string, logChan <-chan 
 
 	waitGroup.Wait()
 
-	u.journeyReportWriter.Save(reportPath, journeyReport)
+	s.journeyReportWriter.Save(reportPath, journeyReport)
 }
 
 // addPlace

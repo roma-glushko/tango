@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"tango/pkg/di"
+	"tango/pkg/services/mapper"
 
 	"github.com/urfave/cli"
 )
@@ -13,9 +14,10 @@ func JourneyReportCommand(cliContext *cli.Context) error {
 	generalConfig := di.InitGeneralConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
 	processorConfig := di.InitProcessorConfig(cliContext)
-	readAccessLogService := di.InitReadAccessLogService(processorConfig, filterConfig)
 
-	journeyReportService := di.InitJourneyReportService(generalConfig)
+	logMapper := mapper.NewAccessLogMapper()
+	readAccessLogService := di.InitReadAccessLogService(logMapper, processorConfig, filterConfig)
+	journeyReportService := di.InitJourneyReportService(logMapper, generalConfig)
 
 	fmt.Println("💃 Tango is on the scene!")
 	fmt.Println("💃 started to generate a visitor's journey report...")

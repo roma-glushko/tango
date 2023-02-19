@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"tango/pkg/entity"
+	"tango/pkg/services/mapper"
 )
 
 var timeFormat = "2006-01-02 15:04:05 -0700" // todo: add localization for US/EU formats
@@ -22,11 +23,14 @@ var CustomReportHeader = []string{
 
 //
 type CustomReportCsvWriter struct {
+	logMapper *mapper.AccessLogMapper
 }
 
 //
-func NewCustomReportCsvWriter() *CustomReportCsvWriter {
-	return &CustomReportCsvWriter{}
+func NewCustomReportCsvWriter(logMapper *mapper.AccessLogMapper) *CustomReportCsvWriter {
+	return &CustomReportCsvWriter{
+		logMapper: logMapper,
+	}
 }
 
 // Save GeoLocation Report to CSV file
@@ -59,5 +63,7 @@ func (w *CustomReportCsvWriter) Save(filePath string, logChan <-chan entity.Acce
 		if err != nil {
 			log.Fatal("Error on writing custom report: ", err)
 		}
+
+		w.logMapper.Recycle(accessLog)
 	}
 }

@@ -3,6 +3,7 @@ package report
 import (
 	"sync"
 	"tango/pkg/entity"
+	"tango/pkg/services/mapper"
 )
 
 var minuteTimeFormat = "2006-01-02 15:04" // minute time group template
@@ -36,18 +37,20 @@ type PaceReportWriter interface {
 
 // PaceReportService
 type PaceReportService struct {
+	logMapper        *mapper.AccessLogMapper
 	paceReportWriter PaceReportWriter
 }
 
 //
-func NewPaceReportService(paceReportWriter PaceReportWriter) *PaceReportService {
+func NewPaceReportService(logMapper *mapper.AccessLogMapper, paceReportWriter PaceReportWriter) *PaceReportService {
 	return &PaceReportService{
+		logMapper:        logMapper,
 		paceReportWriter: paceReportWriter,
 	}
 }
 
 // GenerateReport processes access logs and collects request pace reports
-func (u *PaceReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
+func (s *PaceReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
 	var paceReport = make([]*PaceHourReportItem, 0)
 	var mutex sync.Mutex // TODO: try to use sync.Map
 
@@ -65,8 +68,8 @@ func (u *PaceReportService) GenerateReport(reportPath string, logChan <-chan ent
 				minuteTimeGroup := accessRecord.Time.Format(minuteTimeFormat)
 
 				mutex.Lock()
-				lastHourReportItem := u.findPaceHourReportItem(&paceReport, hourTimeGroup)
-				lastMinuteReportItem := u.findPaceMinuteReportItem(&lastHourReportItem.MinutePaceItems, minuteTimeGroup)
+				lastHourReportItem := s.findPaceHourReportItem(&paceReport, hourTimeGroup)
+				lastMinuteReportItem := s.findPaceMinuteReportItem(&lastHourReportItem.MinutePaceItems, minuteTimeGroup)
 
 				for _, ip := range ipList {
 					if _, found := lastMinuteReportItem.IpPaces[ip]; !found {
@@ -83,6 +86,7 @@ func (u *PaceReportService) GenerateReport(reportPath string, logChan <-chan ent
 				lastMinuteReportItem.Requests++
 				lastHourReportItem.Requests++
 
+				s.logMapper.Recycle(accessRecord)
 				mutex.Unlock()
 			}
 		}()
@@ -90,7 +94,7 @@ func (u *PaceReportService) GenerateReport(reportPath string, logChan <-chan ent
 
 	waitGroup.Wait()
 
-	u.paceReportWriter.Save(reportPath, paceReport)
+	s.paceReportWriter.Save(reportPath, paceReport)
 }
 
 func (u *PaceReportService) findPaceHourReportItem(paceHourReport *[]*PaceHourReportItem, time string) *PaceHourReportItem {
