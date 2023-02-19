@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"tango/pkg/di"
+	"tango/pkg/services/mapper"
 
 	"github.com/urfave/cli"
 )
@@ -13,7 +14,9 @@ func GeoReportCommand(cliContext *cli.Context) error {
 	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
 	processorConfig := di.InitProcessorConfig(cliContext)
-	readAccessLogService := di.InitReadAccessLogService(processorConfig, filterConfig)
+
+	logMapper := mapper.NewAccessLogMapper()
+	readAccessLogService := di.InitReadAccessLogService(logMapper, processorConfig, filterConfig)
 	geoLibResolver := di.InitMaxmindGeoLibResolver()
 
 	fmt.Println("💃 Tango is on the scene!")
@@ -28,16 +31,16 @@ func GeoReportCommand(cliContext *cli.Context) error {
 		return nil
 	}
 
-	geoReportService := di.InitGeoReportService(geoLibPath)
+	geoReportService := di.InitGeoReportService(logMapper, geoLibPath)
 
 	fmt.Println("💃 started to generate a geo report...")
 	fmt.Println("💃 reading access logs...")
 
-	accessLogRecords := readAccessLogService.Read(reportConfig.LogFile)
+	logChan := readAccessLogService.Read(reportConfig.LogFile)
 
 	fmt.Println("💃 saving the geo report...")
 
-	geoReportService.GenerateReport(reportConfig.ReportFile, accessLogRecords)
+	geoReportService.GenerateReport(reportConfig.ReportFile, logChan)
 
 	fmt.Println("🎉 geo report has been generated")
 

@@ -24,7 +24,7 @@ func NewRequestReportCsvWriter() *RequestReportCsvWriter {
 }
 
 // Save request report to CSV file
-func (w *RequestReportCsvWriter) Save(filePath string, requestReport map[string]*report.RequestReportItem) {
+func (w *RequestReportCsvWriter) Save(filePath string, requestReport *report.RequestReport) {
 	file, err := os.Create(filePath)
 
 	if err != nil {
@@ -40,7 +40,7 @@ func (w *RequestReportCsvWriter) Save(filePath string, requestReport map[string]
 	}
 
 	// Body
-	for _, requestReportItem := range requestReport {
+	for _, requestReportItem := range requestReport.Report() {
 		err := writer.Write([]string{
 			requestReportItem.Path,
 			strconv.FormatUint(requestReportItem.Requests, 10),

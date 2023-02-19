@@ -2,7 +2,9 @@ package report
 
 import (
 	"strings"
-	entity2 "tango/pkg/entity"
+	"sync"
+	entity "tango/pkg/entity"
+	"tango/pkg/services/mapper"
 )
 
 //
@@ -22,58 +24,80 @@ type BrowserReportWriter interface {
 
 //
 type BrowserReportService struct {
+	logMapper           *mapper.AccessLogMapper
 	browserReportWriter BrowserReportWriter
 }
 
 //
-func NewBrowserReportService(browserReportWriter BrowserReportWriter) *BrowserReportService {
+func NewBrowserReportService(logMapper *mapper.AccessLogMapper, browserReportWriter BrowserReportWriter) *BrowserReportService {
 	return &BrowserReportService{
+		logMapper:           logMapper,
 		browserReportWriter: browserReportWriter,
 	}
 }
 
 // Process access logs and collect browser reports
-func (u *BrowserReportService) GenerateReport(reportPath string, accessRecords []entity2.AccessLogRecord) {
+func (s *BrowserReportService) GenerateReport(reportPath string, logChan <-chan entity.AccessLogRecord) {
+	var browserCategories = entity.GetBrowserClassification()
+
 	var browserReport = make(map[string]*BrowserReportItem)
-	var browserCategories = entity2.GetBrowserClassification()
+	var mutex sync.Mutex
 
-	for _, accessRecord := range accessRecords {
-		userAgent := accessRecord.UserAgent
+	var waitGroup sync.WaitGroup
 
-		browserAgent := userAgent
-		browserCategory := "Unknown"
+	for i := 0; i < 4; i++ {
+		waitGroup.Add(1)
 
-		// classify the current browser
-		for _, browserCategoryItem := range browserCategories {
-			if strings.Contains(userAgent, browserCategoryItem.Agent) {
-				browserAgent = browserCategoryItem.Agent
-				browserCategory = browserCategoryItem.Category
+		go func() {
+			defer waitGroup.Done()
 
-				break
+			for accessRecord := range logChan {
+				userAgent := accessRecord.UserAgent
+
+				browserAgent := userAgent
+				browserCategory := "Unknown"
+
+				// classify the current browser
+				for _, browserCategoryItem := range browserCategories {
+					if strings.Contains(userAgent, browserCategoryItem.Agent) {
+						browserAgent = browserCategoryItem.Agent
+						browserCategory = browserCategoryItem.Category
+
+						break
+					}
+				}
+
+				mutex.Lock()
+
+				if _, ok := browserReport[browserAgent]; ok {
+					browserReport[browserAgent].Requests++
+					browserReport[browserAgent].Bandwidth += accessRecord.ResponseSize
+
+					// add a new unique occurance of user agent
+					if _, found := browserReport[browserAgent].UserAgents[userAgent]; !found {
+						browserReport[browserAgent].UserAgents[userAgent] = true
+					}
+
+					s.logMapper.Recycle(accessRecord)
+					mutex.Unlock()
+					continue
+				}
+
+				browserReport[browserAgent] = &BrowserReportItem{
+					Browser:    browserAgent,
+					Category:   browserCategory,
+					SampleUrl:  accessRecord.URI,
+					Requests:   1,
+					Bandwidth:  accessRecord.ResponseSize,
+					UserAgents: map[string]bool{userAgent: true},
+				}
+				s.logMapper.Recycle(accessRecord)
+				mutex.Unlock()
 			}
-		}
-
-		if _, ok := browserReport[browserAgent]; ok {
-			browserReport[browserAgent].Requests++
-			browserReport[browserAgent].Bandwidth += accessRecord.ResponseSize
-
-			// add a new unique occurance of user agent
-			if _, found := browserReport[browserAgent].UserAgents[userAgent]; !found {
-				browserReport[browserAgent].UserAgents[userAgent] = true
-			}
-
-			continue
-		}
-
-		browserReport[browserAgent] = &BrowserReportItem{
-			Browser:    browserAgent,
-			Category:   browserCategory,
-			SampleUrl:  accessRecord.URI,
-			Requests:   1,
-			Bandwidth:  accessRecord.ResponseSize,
-			UserAgents: map[string]bool{userAgent: true},
-		}
+		}()
 	}
 
-	u.browserReportWriter.Save(reportPath, browserReport)
+	waitGroup.Wait()
+
+	s.browserReportWriter.Save(reportPath, browserReport)
 }

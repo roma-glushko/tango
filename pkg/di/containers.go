@@ -5,12 +5,12 @@ import (
 	"tango/pkg/adapters/geo"
 	"tango/pkg/adapters/reader"
 	"tango/pkg/adapters/writer"
-	"tango/pkg/cli/component"
 	"tango/pkg/cli/factory"
 	"tango/pkg/services"
 	"tango/pkg/services/config"
 	"tango/pkg/services/filter"
 	"tango/pkg/services/geodata"
+	"tango/pkg/services/mapper"
 	"tango/pkg/services/processor"
 	"tango/pkg/services/report"
 
@@ -85,54 +85,61 @@ func InitGenerateMaxmindConfService() *geodata.GenerateMaxmindConfService {
 }
 
 // InitReadAccessLogService inits a services
-func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig) *services.ReadAccessLogService {
-	accessLogReader := reader.NewAccessLogReader()
-	readerProgressDecorator := component.NewReaderProgressDecorator(accessLogReader)
+func InitReadAccessLogService(logMapper *mapper.AccessLogMapper, processorConfig config.ProcessorConfig, filterConfig config.FilterConfig) *services.ReadAccessLogService {
+	logReader := reader.NewAccessLogReader()
+	readProgress := reader.NewReadProgress()
+
 	ipProcessor := InitIpProcessor(processorConfig)
 	filterAccessLogService := InitFilterAccessLogService(filterConfig)
 
-	return services.NewReadAccessLogService(readerProgressDecorator, filterAccessLogService, ipProcessor)
+	return services.NewReadAccessLogService(
+		logMapper,
+		logReader,
+		readProgress,
+		filterAccessLogService,
+		ipProcessor,
+	)
 }
 
 // InitGeoReportService inits a services
-func InitGeoReportService(maxmindGeoLibPath string) *report.GeoReportService {
+func InitGeoReportService(logMapper *mapper.AccessLogMapper, maxmindGeoLibPath string) *report.GeoReportService {
 	geoProvider := geo.NewMaxMindGeoProvider(maxmindGeoLibPath)
 	geoReportWriter := writer.NewGeoReportCsvWriter()
 
-	return report.NewGeoReportService(geoProvider, geoReportWriter)
+	return report.NewGeoReportService(logMapper, geoProvider, geoReportWriter)
 }
 
 // InitBrowserReportService inits a services
-func InitBrowserReportService() *report.BrowserReportService {
+func InitBrowserReportService(logMapper *mapper.AccessLogMapper) *report.BrowserReportService {
 	browserReportWriter := writer.NewBrowserReportCsvWriter()
 
-	return report.NewBrowserReportService(browserReportWriter)
+	return report.NewBrowserReportService(logMapper, browserReportWriter)
 }
 
 // InitRequestReportService inits a services
-func InitRequestReportService() *report.RequestReportService {
+func InitRequestReportService(logMapper *mapper.AccessLogMapper) *report.RequestReportService {
 	requestReportWriter := writer.NewRequestReportCsvWriter()
 
-	return report.NewRequestReportService(requestReportWriter)
+	return report.NewRequestReportService(logMapper, requestReportWriter)
 }
 
 // InitPaceReportService inits a services
-func InitPaceReportService() *report.PaceReportService {
+func InitPaceReportService(logMapper *mapper.AccessLogMapper) *report.PaceReportService {
 	paceReportWriter := writer.NewPaceReportCsvWriter()
 
-	return report.NewPaceReportService(paceReportWriter)
+	return report.NewPaceReportService(logMapper, paceReportWriter)
 }
 
 // InitJourneyReportService inits a services
-func InitJourneyReportService(generalConfig config.GeneralConfig) *report.JourneyReportService {
+func InitJourneyReportService(logMapper *mapper.AccessLogMapper, generalConfig config.GeneralConfig) *report.JourneyReportService {
 	journeyReportWriter := writer.NewJourneyReportHTMLWriter()
 
-	return report.NewJourneyReportService(generalConfig, journeyReportWriter)
+	return report.NewJourneyReportService(logMapper, generalConfig, journeyReportWriter)
 }
 
 // InitCustomReportService inits a services
-func InitCustomReportService() *report.CustomReportService {
-	customReportWriter := writer.NewCustomReportCsvWriter()
+func InitCustomReportService(logMapper *mapper.AccessLogMapper) *report.CustomReportService {
+	customReportWriter := writer.NewCustomReportCsvWriter(logMapper)
 
 	return report.NewCustomReportService(customReportWriter)
 }

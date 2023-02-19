@@ -27,7 +27,7 @@ func NewGeoReportCsvWriter() *GeoReportCsvWriter {
 }
 
 // Save GeoLocation Report to CSV file
-func (w *GeoReportCsvWriter) Save(filePath string, geolocationReport map[string]*report.Geolocation) {
+func (w *GeoReportCsvWriter) Save(filePath string, geoReport *report.GeoReport) {
 	file, err := os.Create(filePath)
 
 	if err != nil {
@@ -43,15 +43,15 @@ func (w *GeoReportCsvWriter) Save(filePath string, geolocationReport map[string]
 	}
 
 	// Body
-	for ip, geoLocation := range geolocationReport {
+	for ip, geoRecord := range geoReport.Report() {
 		err := writer.Write([]string{
 			ip,
-			geoLocation.GeoData.Country,
-			geoLocation.GeoData.City,
-			geoLocation.GeoData.Continent,
-			geoLocation.SampleRequest,
-			geoLocation.BrowserAgent,
-			strconv.FormatUint(geoLocation.Requests, 10),
+			geoRecord.GeoData.Country,
+			geoRecord.GeoData.City,
+			geoRecord.GeoData.Continent,
+			geoRecord.SampleRequest,
+			geoRecord.BrowserAgent,
+			strconv.FormatUint(geoRecord.Requests, 10),
 		})
 
 		if err != nil {

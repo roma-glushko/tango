@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"log"
 	"os"
-	"tango/pkg/services"
 )
 
 // AccessLogReader
@@ -17,22 +16,54 @@ func NewAccessLogReader() *AccessLogReader {
 }
 
 // Read given access log file
-func (r *AccessLogReader) Read(filePath string, readAccessLogFunc services.ReadAccessLogFunc) {
+func (r *AccessLogReader) Read(filePath string) (<-chan string, <-chan int) {
 	file, err := os.Open(filePath)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer file.Close()
+	logChan := make(chan string)
+	bytesReadChan := make(chan int)
 
-	scanner := bufio.NewScanner(file)
+	go func() {
+		defer func() {
+			err := file.Close()
+			if err != nil {
+				log.Fatal(err)
+			}
+		}()
 
-	for scanner.Scan() {
-		readAccessLogFunc(scanner.Text(), len(scanner.Bytes()))
-	}
+		scanner := bufio.NewScanner(file)
 
-	if err := scanner.Err(); err != nil {
+		for scanner.Scan() {
+			logChan <- scanner.Text()
+			bytesReadChan <- len(scanner.Bytes())
+		}
+
+		close(logChan)
+		close(bytesReadChan)
+
+		if err := scanner.Err(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	return logChan, bytesReadChan
+}
+
+func (r *AccessLogReader) FileSize(filePath string) int64 {
+	file, err := os.Open(filePath)
+
+	if err != nil {
 		log.Fatal(err)
 	}
+
+	fileInfo, err := file.Stat()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return fileInfo.Size()
 }

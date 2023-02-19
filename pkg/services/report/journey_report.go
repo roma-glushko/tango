@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"sync"
 	entity2 "tango/pkg/entity"
 	"tango/pkg/services/config"
+	"tango/pkg/services/mapper"
 )
 
 // JourneyReportWriter knows how to save journey report
@@ -16,13 +18,15 @@ type JourneyReportWriter interface {
 
 // JourneyReportService knows how to prepare journey reports
 type JourneyReportService struct {
+	logMapper           *mapper.AccessLogMapper
 	baseURL             string
 	journeyReportWriter JourneyReportWriter
 }
 
 // NewJourneyReportService creates a new instance of the services
-func NewJourneyReportService(generalConfig config.GeneralConfig, journeyReportWriter JourneyReportWriter) *JourneyReportService {
+func NewJourneyReportService(logMapper *mapper.AccessLogMapper, generalConfig config.GeneralConfig, journeyReportWriter JourneyReportWriter) *JourneyReportService {
 	return &JourneyReportService{
+		logMapper:           logMapper,
 		baseURL:             generalConfig.BaseURL,
 		journeyReportWriter: journeyReportWriter,
 	}
@@ -41,25 +45,40 @@ func getUUID() string {
 }
 
 // GenerateReport processes access logs and determine visitor's journeys on the website
-func (u *JourneyReportService) GenerateReport(reportPath string, accessRecords []entity2.AccessLogRecord) {
+func (s *JourneyReportService) GenerateReport(reportPath string, logChan <-chan entity2.AccessLogRecord) {
 	journeyReport := make(map[string]*entity2.Journey, 0)
+	var mutex sync.Mutex // TODO: try to use sync.Map
+	var waitGroup sync.WaitGroup
 
-	for _, accessRecord := range accessRecords {
-		ipList := accessRecord.IP
+	for i := 0; i < 4; i++ {
+		waitGroup.Add(1)
 
-		for _, ip := range ipList {
-			if _, ok := journeyReport[ip]; !ok {
-				journeyReport[ip] = &entity2.Journey{
-					ID: getUUID(),
-					IP: ip,
+		go func() {
+			defer waitGroup.Done()
+
+			for accessRecord := range logChan {
+				ipList := accessRecord.IP
+
+				for _, ip := range ipList {
+					mutex.Lock()
+					if _, ok := journeyReport[ip]; !ok {
+						journeyReport[ip] = &entity2.Journey{
+							ID: getUUID(),
+							IP: ip,
+						}
+					}
+
+					s.addPlace(journeyReport[ip], accessRecord)
+					s.logMapper.Recycle(accessRecord)
+					mutex.Unlock()
 				}
 			}
-
-			u.addPlace(journeyReport[ip], accessRecord)
-		}
+		}()
 	}
 
-	u.journeyReportWriter.Save(reportPath, journeyReport)
+	waitGroup.Wait()
+
+	s.journeyReportWriter.Save(reportPath, journeyReport)
 }
 
 // addPlace
@@ -85,7 +104,7 @@ func (u *JourneyReportService) addPlace(journey *entity2.Journey, accessLogRecor
 				Time:          accessLogRecord.Time,
 				UserAgent:     accessLogRecord.UserAgent,
 				Protocol:      accessLogRecord.Protocol,
-				ResponseCode:  200,   // assume that previous request was successfull
+				ResponseCode:  200,   // assume that previous request was successful
 				ResponseSize:  0,     // hard to say about size, keep 0 bytes
 				RequestMethod: "GET", // usually GET method is cachable, so assume it was used for this request as well
 				RefererURL:    "-",

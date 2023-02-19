@@ -3,6 +3,7 @@ package geo
 import (
 	"log"
 	"net"
+	"sync"
 	"tango/pkg/services/report"
 
 	"github.com/oschwald/geoip2-golang"
@@ -11,6 +12,7 @@ import (
 // MaxMindGeoProvider
 type MaxMindGeoProvider struct {
 	maxmindCityDatabase *geoip2.Reader
+	mu                  sync.Mutex
 }
 
 // NewMaxMindGeoProvider creates a new instance of MaxMindGeoProvider
@@ -23,12 +25,16 @@ func NewMaxMindGeoProvider(maxmindGeoLibPath string) *MaxMindGeoProvider {
 
 	return &MaxMindGeoProvider{
 		maxmindCityDatabase: maxmindCityDatabase,
+		mu:                  sync.Mutex{},
 	}
 }
 
 // GetGeoDataByIP provides geo location data by IP
-func (p *MaxMindGeoProvider) GetGeoDataByIP(ip string) *report.GeoData {
-	parsedIP := net.ParseIP(ip)
+func (p *MaxMindGeoProvider) GetGeoDataByIP(IP string) *report.GeoData {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	parsedIP := net.ParseIP(IP)
 	geoLocation, err := p.maxmindCityDatabase.City(parsedIP)
 
 	if err != nil {
