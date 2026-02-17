@@ -105,11 +105,11 @@ func (w *JourneyReportHtmlWriter) getJourneyPlaceHTMLData(journeyPlaces []*entit
 }
 
 // getJourneyRoadHTMLData
-func (w *JourneyReportHtmlWriter) getJourneyRoadHTMLData(journeyPlaces []*entity.JourneyPlace, journeyRoads map[entity.JourneyPlace][]*entity.JourneyPlace) []JourneyRoadHtmlReport {
+func (w *JourneyReportHtmlWriter) getJourneyRoadHTMLData(journeyPlaces []*entity.JourneyPlace, journeyRoads map[string][]*entity.JourneyPlace) []JourneyRoadHtmlReport {
 	journeyRoadHtmlReport := make([]JourneyRoadHtmlReport, 0)
 
 	for _, journeyPlaceFrom := range journeyPlaces {
-		for _, journeyPlaceTo := range journeyRoads[*journeyPlaceFrom] {
+		for _, journeyPlaceTo := range journeyRoads[journeyPlaceFrom.ID] {
 			journeyRoadHtmlReport = append(journeyRoadHtmlReport, JourneyRoadHtmlReport{
 				From: journeyPlaceFrom.ID,
 				To:   journeyPlaceTo.ID,

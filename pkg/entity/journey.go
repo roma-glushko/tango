@@ -25,7 +25,7 @@ type Journey struct {
 	ID     string
 	IP     string
 	Places []*JourneyPlace
-	Roads  map[JourneyPlace][]*JourneyPlace
+	Roads  map[string][]*JourneyPlace
 }
 
 // AddPlace adds a journey Places to the journey
@@ -47,10 +47,10 @@ func (jg *Journey) GetLastPlace() *JourneyPlace {
 // AddRoad adds an road between journey Places
 func (jg *Journey) AddRoad(n1, n2 *JourneyPlace) {
 	if jg.Roads == nil {
-		jg.Roads = make(map[JourneyPlace][]*JourneyPlace)
+		jg.Roads = make(map[string][]*JourneyPlace)
 	}
 
-	jg.Roads[*n1] = append(jg.Roads[*n1], n2)
+	jg.Roads[n1.ID] = append(jg.Roads[n1.ID], n2)
 }
 
 // Print a debug info about journey graph structure
@@ -59,7 +59,7 @@ func (jg *Journey) Print() {
 
 	for i := 0; i < len(jg.Places); i++ {
 		s += jg.Places[i].Print() + " -> "
-		near := jg.Roads[*jg.Places[i]]
+		near := jg.Roads[jg.Places[i].ID]
 
 		for j := 0; j < len(near); j++ {
 			s += near[j].Print() + " "
