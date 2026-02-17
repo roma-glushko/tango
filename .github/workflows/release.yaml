@@ -23,12 +23,12 @@ jobs:
           SNAP_TOKEN: ${{secrets.SNAP_TOKEN}}
           SNAPCRAFT_BUILD_ENVIRONMENT: host
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v6
         with:
           go-version: "1.26"
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -36,7 +36,7 @@ jobs:
         run: git fetch --force --tags
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: latest
