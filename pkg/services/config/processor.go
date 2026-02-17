@@ -1,15 +1,15 @@
 package config
 
-//
+// ProcessorConfig holds configuration for access log processors.
 type ProcessorConfig struct {
-	SystemIpList []string
+	SystemIPList []string
 }
 
-//
+// NewProcessorConfig creates a new ProcessorConfig with the given parameters.
 func NewProcessorConfig(
-	systemIpList []string,
+	systemIPList []string,
 ) ProcessorConfig {
 	return ProcessorConfig{
-		SystemIpList: systemIpList,
+		SystemIPList: systemIPList,
 	}
 }

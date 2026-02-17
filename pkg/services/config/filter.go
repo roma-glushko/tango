@@ -1,35 +1,35 @@
 package config
 
-//
+// FilterConfig holds configuration for access log filtering.
 type FilterConfig struct {
 	AssetFilters   []string
 	KeepTimeFrames []string
-	UriFilters     []string
-	KeepUriFilters []string
-	IpFilters      []string
-	KeepIpFilters  []string
+	URIFilters     []string
+	KeepURIFilters []string
+	IPFilters      []string
+	KeepIPFilters  []string
 	UaFilters      []string
 	KeepUaFilters  []string
 }
 
-//
+// NewFilterConfig creates a new FilterConfig with the given parameters.
 func NewFilterConfig(
 	assetFilters []string,
 	keepTimeFrames []string,
 	uriFilters []string,
-	keepUriFilters []string,
+	keepURIFilters []string,
 	ipFilters []string,
-	keepIpFilters []string,
+	keepIPFilters []string,
 	uaFilters []string,
 	keepUaFilters []string,
 ) FilterConfig {
 	return FilterConfig{
 		AssetFilters:   assetFilters,
 		KeepTimeFrames: keepTimeFrames,
-		UriFilters:     uriFilters,
-		KeepUriFilters: keepUriFilters,
-		IpFilters:      ipFilters,
-		KeepIpFilters:  keepIpFilters,
+		URIFilters:     uriFilters,
+		KeepURIFilters: keepURIFilters,
+		IPFilters:      ipFilters,
+		KeepIPFilters:  keepIPFilters,
 		UaFilters:      uaFilters,
 		KeepUaFilters:  keepUaFilters,
 	}

@@ -37,7 +37,7 @@ func InitTangoConfigSourceWithContext(flags []cli.Flag, createInputSource func(c
 		}
 
 		if err != nil {
-			return fmt.Errorf("Unable to create input source with context: inner error: \n'%v'", err.Error())
+			return fmt.Errorf("unable to create input source with context: inner error: \n'%v'", err.Error())
 		}
 
 		return altsrc.ApplyInputSourceValues(context, inputSource, flags)

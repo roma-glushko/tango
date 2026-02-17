@@ -8,6 +8,7 @@ import (
 	"tango/pkg/services/report"
 )
 
+// GeoReportHeader defines CSV header columns for the geo report.
 var GeoReportHeader = []string{
 	"IP",
 	"Country",
@@ -18,28 +19,31 @@ var GeoReportHeader = []string{
 	"Count of Requests",
 }
 
+// GeoReportCsvWriter writes geo location reports to CSV files.
 type GeoReportCsvWriter struct {
 }
 
-//
+// NewGeoReportCsvWriter creates a new GeoReportCsvWriter instance.
 func NewGeoReportCsvWriter() *GeoReportCsvWriter {
 	return &GeoReportCsvWriter{}
 }
 
-// Save GeoLocation Report to CSV file
+// Save writes a geo location report to a CSV file.
 func (w *GeoReportCsvWriter) Save(filePath string, geolocationReport map[string]*report.Geolocation) {
 	file, err := os.Create(filePath)
-
 	if err != nil {
 		log.Fatal("Error on writing geo report: ", err)
 	}
+
+	defer func() { _ = file.Close() }()
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
 	// Header
 	if err := writer.Write(GeoReportHeader); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	// Body
@@ -55,7 +59,8 @@ func (w *GeoReportCsvWriter) Save(filePath string, geolocationReport map[string]
 		})
 
 		if err != nil {
-			log.Fatal("Error on writing geo report: ", err)
+			log.Println("Error on writing geo report: ", err)
+			return
 		}
 	}
 }

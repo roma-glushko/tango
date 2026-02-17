@@ -7,24 +7,23 @@ import (
 	"tango/pkg/services"
 )
 
-// AccessLogReader
+// AccessLogReader reads access log files line by line.
 type AccessLogReader struct {
 }
 
-// NewAccessLogReader
+// NewAccessLogReader creates a new AccessLogReader instance.
 func NewAccessLogReader() *AccessLogReader {
 	return &AccessLogReader{}
 }
 
-// Read given access log file
+// Read opens and reads a given access log file, calling readAccessLogFunc for each line.
 func (r *AccessLogReader) Read(filePath string, readAccessLogFunc services.ReadAccessLogFunc) {
 	file, err := os.Open(filePath)
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	scanner := bufio.NewScanner(file)
 
@@ -33,6 +32,7 @@ func (r *AccessLogReader) Read(filePath string, readAccessLogFunc services.ReadA
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 }

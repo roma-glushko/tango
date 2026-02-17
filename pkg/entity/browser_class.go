@@ -1,12 +1,12 @@
 package entity
 
-//
+// BrowserCategory represents a browser agent and its category.
 type BrowserCategory struct {
 	Agent    string
 	Category string
 }
 
-//
+// GetBrowserClassification returns the list of known browser categories.
 func GetBrowserClassification() []BrowserCategory {
 	return []BrowserCategory{
 		{Agent: "Xbox One", Category: "Game Systems"},

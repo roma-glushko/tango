@@ -27,7 +27,7 @@ func (r *HomeDirResolver) GetPath() string {
 
 	// ensure that tango home dir is in place
 	if _, err := os.Stat(tangoDir); os.IsNotExist(err) {
-		err := os.Mkdir(tangoDir, os.ModePerm)
+		err := os.Mkdir(tangoDir, 0750)
 
 		if err != nil {
 			log.Fatal(err)

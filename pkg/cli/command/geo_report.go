@@ -8,12 +8,15 @@ import (
 	"github.com/urfave/cli"
 )
 
-// GeoReportCommand
+// GeoReportCommand handles the geo report CLI command.
 func GeoReportCommand(cliContext *cli.Context) error {
 	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
 	processorConfig := di.InitProcessorConfig(cliContext)
-	readAccessLogService := di.InitReadAccessLogService(processorConfig, filterConfig)
+	readAccessLogService, err := di.InitReadAccessLogService(processorConfig, filterConfig)
+	if err != nil {
+		return err
+	}
 	geoLibResolver := di.InitMaxmindGeoLibResolver()
 
 	fmt.Println("💃 Tango is on the scene!")

@@ -8,6 +8,7 @@ import (
 	"tango/pkg/services/report"
 )
 
+// PaceReportHeader defines CSV header columns for the pace report.
 var PaceReportHeader = []string{
 	"Hour Group",
 	"Minute Group",
@@ -17,29 +18,31 @@ var PaceReportHeader = []string{
 	"Pace (req/hour)",
 }
 
-// PaceReportCsvWriter
+// PaceReportCsvWriter writes pace reports to CSV files.
 type PaceReportCsvWriter struct {
 }
 
-// NewPaceReportCsvWriter
+// NewPaceReportCsvWriter creates a new PaceReportCsvWriter instance.
 func NewPaceReportCsvWriter() *PaceReportCsvWriter {
 	return &PaceReportCsvWriter{}
 }
 
-// Save stores pace report to CSV file
+// Save writes a pace report to a CSV file.
 func (w *PaceReportCsvWriter) Save(filePath string, paceReport []*report.PaceHourReportItem) {
 	file, err := os.Create(filePath)
-
 	if err != nil {
 		log.Fatal("Error on writing request report: ", err)
 	}
+
+	defer func() { _ = file.Close() }()
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
 	// Header
 	if err := writer.Write(PaceReportHeader); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	// Body
@@ -55,7 +58,8 @@ func (w *PaceReportCsvWriter) Save(filePath string, paceReport []*report.PaceHou
 		})
 
 		if err != nil {
-			log.Fatal("Error on writing request report: ", err)
+			log.Println("Error on writing request report: ", err)
+			return
 		}
 
 		for _, paceMinuteItem := range hourPaceItem.MinutePaceItems {
@@ -70,10 +74,11 @@ func (w *PaceReportCsvWriter) Save(filePath string, paceReport []*report.PaceHou
 			})
 
 			if err != nil {
-				log.Fatal("Error on writing request report: ", err)
+				log.Println("Error on writing request report: ", err)
+				return
 			}
 
-			for ip, ipPaceItem := range paceMinuteItem.IpPaces {
+			for ip, ipPaceItem := range paceMinuteItem.IPPaces {
 				// render ip paces
 				err = writer.Write([]string{
 					"",
@@ -85,7 +90,8 @@ func (w *PaceReportCsvWriter) Save(filePath string, paceReport []*report.PaceHou
 				})
 
 				if err != nil {
-					log.Fatal("Error on writing request report: ", err)
+					log.Println("Error on writing request report: ", err)
+					return
 				}
 			}
 
@@ -100,7 +106,8 @@ func (w *PaceReportCsvWriter) Save(filePath string, paceReport []*report.PaceHou
 			})
 
 			if err != nil {
-				log.Fatal("Error on writing request report: ", err)
+				log.Println("Error on writing request report: ", err)
+				return
 			}
 		}
 
@@ -115,7 +122,8 @@ func (w *PaceReportCsvWriter) Save(filePath string, paceReport []*report.PaceHou
 		})
 
 		if err != nil {
-			log.Fatal("Error on writing request report: ", err)
+			log.Println("Error on writing request report: ", err)
+			return
 		}
 	}
 }

@@ -6,11 +6,11 @@ import (
 	"github.com/urfave/cli"
 )
 
-//
+// NewProcessorConfig creates a ProcessorConfig from CLI context flags.
 func NewProcessorConfig(cliContext *cli.Context) config.ProcessorConfig {
-	systemIpList := cliContext.GlobalStringSlice("system-ips")
+	systemIPList := cliContext.GlobalStringSlice("system-ips")
 
 	return config.NewProcessorConfig(
-		systemIpList,
+		systemIPList,
 	)
 }

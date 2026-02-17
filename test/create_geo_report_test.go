@@ -7,11 +7,11 @@ import (
 	"tango/pkg/di"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestInstallGeoLib(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	tangoCli.Run([]string{
@@ -24,14 +24,14 @@ func TestInstallGeoLib(t *testing.T) {
 	})
 
 	_, geoConfExistErr := di.InitMaxmindConfResolver().GetPath()
-	assert.False(os.IsNotExist(geoConfExistErr), "MaxMind Configuration File was not created")
+	require.False(os.IsNotExist(geoConfExistErr))
 
 	_, geoLibExistErr := di.InitMaxmindGeoLibResolver().GetPath()
-	assert.False(os.IsNotExist(geoLibExistErr), "MaxMind Geo Lib was not created")
+	require.False(os.IsNotExist(geoLibExistErr))
 }
 
 func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	reportFilePath := "results/geo-report-with-system-ip-processor.csv"
@@ -51,31 +51,31 @@ func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.GeoReportHeader, "Geo Report Header is different")
-	assert.Len(reportBody, 40, "Geo Report should contain 40 record")
+	require.Equal(reportHeader, writer.GeoReportHeader)
+	require.Len(reportBody, 40)
 
 	testGeoData := map[string][]string{
-		"130.93.253.236": []string{
+		"130.93.253.236": {
 			"130.93.253.236", // IP
 			"Hungary",        // Country
 			"",               // City
-			"/cstm/sec/load?sections=&updsecid=false&_=1562558398896", // Sample Request
-			"Europe", // Continent
-			"Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Mobile/15E148 Safari/604.1", //Browser Agent
+			"Europe",         // Continent
+			"/cstm/sec/load?sections=&updsecid=false&_=1562558398896",                                                                                     // Sample Request
+			"Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Mobile/15E148 Safari/604.1", // Browser Agent
 			"18", // Count of Requests
 		},
-		"121.79.80.29": []string{
+		"121.79.80.29": {
 			"121.79.80.29",              // IP
 			"Australia",                 // Country
-			"",                          // City
-			"/product-tk8-smawbtk.html", // Sample Request
+			"Brisbane",                  // City
 			"Oceania",                   // Continent
-			"Mozilla/5.0 (X11; CrOS x86_64 12105.75.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.102 Safari/537.36", //Browser Agent
+			"/product-tk8-smawbtk.html", // Sample Request
+			"Mozilla/5.0 (X11; CrOS x86_64 12105.75.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.102 Safari/537.36", // Browser Agent
 			"4", // Count of Requests
 		},
 	}
 
-	testSystemIpList := []string{
+	testSystemIPList := []string{
 		"157.52.99.32",
 		"157.52.99.35",
 		"157.52.99.37",
@@ -93,10 +93,9 @@ func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
 		ip := reportItem[0]
 
 		if expectedItem, ok := testGeoData[ip]; ok {
-			assert.ElementsMatch(expectedItem, reportItem, "Sample Geo Report Item should match")
+			require.ElementsMatch(expectedItem, reportItem)
 		}
 
-		assert.NotContains(testSystemIpList, ip, "System IP should be filtered")
+		require.NotContains(testSystemIPList, ip)
 	}
-
 }

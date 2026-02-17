@@ -7,12 +7,15 @@ import (
 	"github.com/urfave/cli"
 )
 
-// BrowserReportCommand
+// BrowserReportCommand handles the browser report CLI command.
 func BrowserReportCommand(cliContext *cli.Context) error {
 	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
 	processorConfig := di.InitProcessorConfig(cliContext)
-	readAccessLogService := di.InitReadAccessLogService(processorConfig, filterConfig)
+	readAccessLogService, err := di.InitReadAccessLogService(processorConfig, filterConfig)
+	if err != nil {
+		return err
+	}
 	browserReportService := di.InitBrowserReportService()
 
 	fmt.Println("💃 Tango is on the scene!")

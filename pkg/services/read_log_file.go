@@ -6,22 +6,22 @@ import (
 	"tango/pkg/services/processor"
 )
 
-//
+// ReadAccessLogFunc is a callback function for processing access log lines.
 type ReadAccessLogFunc func(accessLogRecord string, bytes int)
 
-//
+// AccessLogReader defines the interface for reading access log files.
 type AccessLogReader interface {
 	Read(filePath string, readAccessLogFunc ReadAccessLogFunc)
 }
 
-//
+// ReadAccessLogService reads access logs, processes and filters them.
 type ReadAccessLogService struct {
 	accessLogReader        AccessLogReader
 	filterAccessLogService FilterAccessLogService
 	ipProcessor            processor.IPProcessor
 }
 
-// NewReadAccessLogService Create a new ReadAccessLogService
+// NewReadAccessLogService creates a new ReadAccessLogService instance.
 func NewReadAccessLogService(
 	accessLogReader AccessLogReader,
 	filterAccessLogService FilterAccessLogService,
@@ -34,12 +34,16 @@ func NewReadAccessLogService(
 	}
 }
 
-// Read Access Logs and convert them to array of AccessLogRecord-s
+// Read parses access logs and converts them to AccessLogRecord slices.
 func (u *ReadAccessLogService) Read(filePath string) []entity.AccessLogRecord {
-	accessRecords := make([]entity.AccessLogRecord, 0)
+	accessRecords := make([]entity.AccessLogRecord, 0, 1024)
 
 	u.accessLogReader.Read(filePath, func(accessLogRecord string, bytes int) {
-		accessRecord := mapper.MapAccessLogRecord(accessLogRecord)
+		accessRecord, err := mapper.MapAccessLogRecord(accessLogRecord)
+		if err != nil {
+			// skip unparseable lines (e.g. malformed log entries)
+			return
+		}
 
 		// process parsed access log record
 		accessRecord = u.ipProcessor.Process(accessRecord)

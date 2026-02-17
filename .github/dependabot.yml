@@ -1,0 +1,34 @@
+version: 2
+
+updates:
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "github.com/oschwald/*"
+          - "github.com/urfave/*"
+        update-types:
+          - minor
+          - patch
+      go-geoip:
+        patterns:
+          - "github.com/oschwald/*"
+      go-cli:
+        patterns:
+          - "github.com/urfave/*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns:
+          - "*"

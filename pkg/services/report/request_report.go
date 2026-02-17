@@ -7,7 +7,7 @@ import (
 	"tango/pkg/entity"
 )
 
-// RequestReportItem
+// RequestReportItem represents a single request entry in the request report.
 type RequestReportItem struct {
 	Path         string
 	Requests     uint64
@@ -15,19 +15,27 @@ type RequestReportItem struct {
 	RefererURLs  map[string]bool
 }
 
-// RequestReportWriter
+// RequestReportWriter is an interface for saving request reports.
 type RequestReportWriter interface {
 	Save(reportPath string, browserReport map[string]*RequestReportItem)
 }
 
-// RequestReportService
+// DefaultQueryStripPatterns are regex patterns stripped from request paths by default
+var DefaultQueryStripPatterns = []string{
+	"/key(.*)/",
+	"/referer(.*)/",
+}
+
+// RequestReportService knows how to generate request reports.
 type RequestReportService struct {
+	queryStripPatterns  []string
 	requestReportWriter RequestReportWriter
 }
 
-//
+// NewRequestReportService creates a new RequestReportService instance.
 func NewRequestReportService(requestReportWriter RequestReportWriter) *RequestReportService {
 	return &RequestReportService{
+		queryStripPatterns:  DefaultQueryStripPatterns,
 		requestReportWriter: requestReportWriter,
 	}
 }
@@ -36,20 +44,14 @@ func NewRequestReportService(requestReportWriter RequestReportWriter) *RequestRe
 func (u *RequestReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
 	var requestReport = make(map[string]*RequestReportItem)
 
-	// todo: move to configs
-	queryPatterns := []string{
-		"/key(.*)/",
-		"/referer(.*)/",
-	}
+	pathFilters := make([]*regexp.Regexp, 0, len(u.queryStripPatterns))
 
-	// init additional query filters
-	pathFilters := make([]*regexp.Regexp, 0)
-
-	for _, pattern := range queryPatterns {
+	for _, pattern := range u.queryStripPatterns {
 		filter, err := regexp.Compile(pattern)
 
 		if err != nil {
 			fmt.Println(err)
+			continue
 		}
 
 		pathFilters = append(pathFilters, filter)

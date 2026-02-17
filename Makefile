@@ -5,34 +5,29 @@ help:
 
 PROJECT_DIR := $(shell git rev-parse --show-toplevel)
 BIN_DIR := $(PROJECT_DIR)/bin
+TMP_DIR := $(PROJECT_DIR)/tmp/bin
 
 export PATH := $(BIN_DIR):$(PATH)
 
-bin/packr2:
-	@GOBIN=$(BIN_DIR) go install github.com/gobuffalo/packr/v2/packr2
-
-bin/goreleaser:
-	@GOBIN=$(BIN_DIR) go install github.com/goreleaser/goreleaser@latest
-
-.PHONY: install
-install: go.mod bin/packr2 bin/goreleaser ## Install project dependencies
-	@go get -t -v ./...
+.PHONY: tools
+tools: ## Install static checkers & other binaries
+	@echo "🚚 Downloading tools.."
+	@mkdir -p $(TMP_DIR)
+	@test -f $(TMP_DIR)/goreleaser || GOBIN=$(TMP_DIR) go install github.com/goreleaser/goreleaser/v2@v2.13.3
+	@test -f $(TMP_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(TMP_DIR) v2.9.0
 
 .PHONY: lint
-lint: ## Lint the codebase
+lint: tools ## Lint the codebase
 	@go mod tidy
-	@go fmt ./...
-	@go vet ./...
+	@$(TMP_DIR)/golangci-lint run ./...
 
 .PHONY: build
-build: lint bin/packr2 ## Build tango binary
-	@$(BIN_DIR)/packr2
+build: lint ## Build tango binary
 	@go build -o bin/tango
 
 .PHONY: release
-release: bin/goreleaser ## Release a new version of Tango
-	@export PATH="$(BIN_DIR):$$PATH"
-	@$(BIN_DIR)/goreleaser
+release: tools ## Release a new version of Tango
+	@$(TMP_DIR)/goreleaser
 
 .PHONY: run
 run: ## Run tango in dev mode
@@ -40,8 +35,12 @@ run: ## Run tango in dev mode
 
 .PHONY: test
 test: ## Run tests
+	@go test ./test/ -run 'TestCreate(Custom|Browser)Report'
+
+.PHONY: test-all
+test-all: ## Run all tests (requires GeoIP database)
 	@go test ./test/
 
 .PHONY: clean
 clean:
-	@rm -rf bin dist packrd
+	@rm -rf bin dist tmp

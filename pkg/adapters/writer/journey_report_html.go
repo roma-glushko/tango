@@ -4,51 +4,43 @@ import (
 	"log"
 	"os"
 	"tango/pkg/entity"
+	"tango/tmpl"
 	"text/template"
-
-	"github.com/gobuffalo/packr/v2"
 )
 
-// JourneyReportHtmlWriter
-type JourneyReportHtmlWriter struct {
+// JourneyReportHTMLWriter writes journey reports to HTML files.
+type JourneyReportHTMLWriter struct {
 }
 
-// JourneyPlaceHtmlReport
-type JourneyPlaceHtmlReport struct {
+// JourneyPlaceHTMLReport represents a place in the journey HTML report.
+type JourneyPlaceHTMLReport struct {
 	ID    string
 	Label string
 	Color string
 }
 
-// JourneyRoadHtmlReport
-type JourneyRoadHtmlReport struct {
+// JourneyRoadHTMLReport represents a road between places in the journey HTML report.
+type JourneyRoadHTMLReport struct {
 	From string
 	To   string
 }
 
-// JourneyHtmlReport
-type JourneyHtmlReport struct {
+// JourneyHTMLReport represents a complete journey in the HTML report.
+type JourneyHTMLReport struct {
 	ID     string
 	IP     string
-	Places []JourneyPlaceHtmlReport
-	Roads  []JourneyRoadHtmlReport
+	Places []JourneyPlaceHTMLReport
+	Roads  []JourneyRoadHTMLReport
 }
 
-// NewJourneyReportHTMLWriter inits a new html report writer
-func NewJourneyReportHTMLWriter() *JourneyReportHtmlWriter {
-	return &JourneyReportHtmlWriter{}
+// NewJourneyReportHTMLWriter creates a new JourneyReportHTMLWriter instance.
+func NewJourneyReportHTMLWriter() *JourneyReportHTMLWriter {
+	return &JourneyReportHTMLWriter{}
 }
 
-// Save journey report to html file
-func (w *JourneyReportHtmlWriter) Save(filePath string, journeyReportData map[string]*entity.Journey) {
-	templateBox := packr.New("template-box", "../../../template")
-	journewReportContent, err := templateBox.FindString("journey-report.tmpl")
-
-	if err != nil {
-		log.Fatal("Error on loading journey template file", err)
-	}
-
-	journeyReportTemplate, err := template.New("journey-report").Parse(journewReportContent)
+// Save writes a journey report to an HTML file.
+func (w *JourneyReportHTMLWriter) Save(filePath string, journeyReportData map[string]*entity.Journey) {
+	journeyReportTemplate, err := template.New("journey-report").Parse(tmpl.JourneyReportTemplate)
 
 	if err != nil {
 		log.Fatal("Error on loading journey template file", err)
@@ -61,7 +53,7 @@ func (w *JourneyReportHtmlWriter) Save(filePath string, journeyReportData map[st
 		return
 	}
 
-	defer reportWriter.Close()
+	defer func() { _ = reportWriter.Close() }()
 
 	err = journeyReportTemplate.Execute(reportWriter, w.getJourneyReportHTMLData(journeyReportData))
 
@@ -71,12 +63,11 @@ func (w *JourneyReportHtmlWriter) Save(filePath string, journeyReportData map[st
 	}
 }
 
-// getJourneyReportHTMLData
-func (w *JourneyReportHtmlWriter) getJourneyReportHTMLData(journeyReport map[string]*entity.Journey) []JourneyHtmlReport {
-	journeyHtmlReport := make([]JourneyHtmlReport, 0)
+func (w *JourneyReportHTMLWriter) getJourneyReportHTMLData(journeyReport map[string]*entity.Journey) []JourneyHTMLReport {
+	journeyHTMLReport := make([]JourneyHTMLReport, 0)
 
 	for _, journey := range journeyReport {
-		journeyHtmlReport = append(journeyHtmlReport, JourneyHtmlReport{
+		journeyHTMLReport = append(journeyHTMLReport, JourneyHTMLReport{
 			ID:     journey.ID,
 			IP:     journey.IP,
 			Places: w.getJourneyPlaceHTMLData(journey.Places),
@@ -84,44 +75,41 @@ func (w *JourneyReportHtmlWriter) getJourneyReportHTMLData(journeyReport map[str
 		})
 	}
 
-	return journeyHtmlReport
+	return journeyHTMLReport
 }
 
-// getJourneyPlaceHTMLData
-func (w *JourneyReportHtmlWriter) getJourneyPlaceHTMLData(journeyPlaces []*entity.JourneyPlace) []JourneyPlaceHtmlReport {
-	journeyPlaceHtmlReport := make([]JourneyPlaceHtmlReport, 0)
+func (w *JourneyReportHTMLWriter) getJourneyPlaceHTMLData(journeyPlaces []*entity.JourneyPlace) []JourneyPlaceHTMLReport {
+	journeyPlaceHTMLReport := make([]JourneyPlaceHTMLReport, 0)
 
 	for index, journeyPlace := range journeyPlaces {
 		color := w.getPlaceColor(index, journeyPlace)
 
-		journeyPlaceHtmlReport = append(journeyPlaceHtmlReport, JourneyPlaceHtmlReport{
+		journeyPlaceHTMLReport = append(journeyPlaceHTMLReport, JourneyPlaceHTMLReport{
 			ID:    journeyPlace.ID,
 			Label: journeyPlace.Data.URI,
 			Color: color,
 		})
 	}
 
-	return journeyPlaceHtmlReport
+	return journeyPlaceHTMLReport
 }
 
-// getJourneyRoadHTMLData
-func (w *JourneyReportHtmlWriter) getJourneyRoadHTMLData(journeyPlaces []*entity.JourneyPlace, journeyRoads map[entity.JourneyPlace][]*entity.JourneyPlace) []JourneyRoadHtmlReport {
-	journeyRoadHtmlReport := make([]JourneyRoadHtmlReport, 0)
+func (w *JourneyReportHTMLWriter) getJourneyRoadHTMLData(journeyPlaces []*entity.JourneyPlace, journeyRoads map[string][]*entity.JourneyPlace) []JourneyRoadHTMLReport {
+	journeyRoadHTMLReport := make([]JourneyRoadHTMLReport, 0)
 
 	for _, journeyPlaceFrom := range journeyPlaces {
-		for _, journeyPlaceTo := range journeyRoads[*journeyPlaceFrom] {
-			journeyRoadHtmlReport = append(journeyRoadHtmlReport, JourneyRoadHtmlReport{
+		for _, journeyPlaceTo := range journeyRoads[journeyPlaceFrom.ID] {
+			journeyRoadHTMLReport = append(journeyRoadHTMLReport, JourneyRoadHTMLReport{
 				From: journeyPlaceFrom.ID,
 				To:   journeyPlaceTo.ID,
 			})
 		}
 	}
 
-	return journeyRoadHtmlReport
+	return journeyRoadHTMLReport
 }
 
-// getPlaceColor retrieves color of journey place color
-func (w *JourneyReportHtmlWriter) getPlaceColor(index int, journeyPlace *entity.JourneyPlace) string {
+func (w *JourneyReportHTMLWriter) getPlaceColor(index int, journeyPlace *entity.JourneyPlace) string {
 	color := "#3498db" // blue color
 
 	if !journeyPlace.WasLogged {
@@ -138,7 +126,7 @@ func (w *JourneyReportHtmlWriter) getPlaceColor(index int, journeyPlace *entity.
 		color = "#e74c3c" // red color
 	}
 
-	// begining of the network will be highlighted by another color
+	// beginning of the network will be highlighted by another color
 	if index == 0 {
 		color = "#1abc9c" // green color
 	}

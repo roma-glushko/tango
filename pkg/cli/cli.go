@@ -11,7 +11,7 @@ import (
 	"github.com/urfave/cli/altsrc"
 )
 
-// TangoCli
+// TangoCli is the main CLI application for Tango.
 type TangoCli struct {
 	cliApp *cli.App
 }

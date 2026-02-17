@@ -1,22 +1,25 @@
 package report
 
 import (
-	"crypto/rand"
-	"fmt"
-	"log"
 	"strings"
-	entity2 "tango/pkg/entity"
+	"tango/pkg/entity"
 	"tango/pkg/services/config"
+
+	"github.com/google/uuid"
 )
 
 // JourneyReportWriter knows how to save journey report
 type JourneyReportWriter interface {
-	Save(reportPath string, journeyReport map[string]*entity2.Journey)
+	Save(reportPath string, journeyReport map[string]*entity.Journey)
 }
+
+// DefaultExcludedURIs are URI patterns excluded from journey places by default
+var DefaultExcludedURIs = []string{"/customer/section/load"}
 
 // JourneyReportService knows how to prepare journey reports
 type JourneyReportService struct {
 	baseURL             string
+	excludedURIs        []string
 	journeyReportWriter JourneyReportWriter
 }
 
@@ -24,32 +27,26 @@ type JourneyReportService struct {
 func NewJourneyReportService(generalConfig config.GeneralConfig, journeyReportWriter JourneyReportWriter) *JourneyReportService {
 	return &JourneyReportService{
 		baseURL:             generalConfig.BaseURL,
+		excludedURIs:        DefaultExcludedURIs,
 		journeyReportWriter: journeyReportWriter,
 	}
 }
 
 // getUUID retrieves unique ID for journey places
 func getUUID() string {
-	b := make([]byte, 16)
-	_, err := rand.Read(b)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return fmt.Sprintf("%x%x%x%x%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+	return uuid.New().String()
 }
 
 // GenerateReport processes access logs and determine visitor's journeys on the website
-func (u *JourneyReportService) GenerateReport(reportPath string, accessRecords []entity2.AccessLogRecord) {
-	journeyReport := make(map[string]*entity2.Journey, 0)
+func (u *JourneyReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+	journeyReport := make(map[string]*entity.Journey, 0)
 
 	for _, accessRecord := range accessRecords {
 		ipList := accessRecord.IP
 
 		for _, ip := range ipList {
 			if _, ok := journeyReport[ip]; !ok {
-				journeyReport[ip] = &entity2.Journey{
+				journeyReport[ip] = &entity.Journey{
 					ID: getUUID(),
 					IP: ip,
 				}
@@ -63,7 +60,7 @@ func (u *JourneyReportService) GenerateReport(reportPath string, accessRecords [
 }
 
 // addPlace
-func (u *JourneyReportService) addPlace(journey *entity2.Journey, accessLogRecord entity2.AccessLogRecord) {
+func (u *JourneyReportService) addPlace(journey *entity.Journey, accessLogRecord entity.AccessLogRecord) {
 	refererURI := accessLogRecord.RefererURL
 
 	if u.isInternalReferer(refererURI) {
@@ -76,16 +73,16 @@ func (u *JourneyReportService) addPlace(journey *entity2.Journey, accessLogRecor
 	if refererPlace == nil {
 		lastAddedPlace := journey.GetLastPlace()
 
-		refererPlace = journey.AddPlace(&entity2.JourneyPlace{
+		refererPlace = journey.AddPlace(&entity.JourneyPlace{
 			ID:        getUUID(),
 			WasLogged: false,
-			Data: &entity2.AccessLogRecord{
+			Data: &entity.AccessLogRecord{
 				IP:            accessLogRecord.IP,
 				URI:           refererURI,
 				Time:          accessLogRecord.Time,
 				UserAgent:     accessLogRecord.UserAgent,
 				Protocol:      accessLogRecord.Protocol,
-				ResponseCode:  200,   // assume that previous request was successfull
+				ResponseCode:  200,   // assume that previous request was successful
 				ResponseSize:  0,     // hard to say about size, keep 0 bytes
 				RequestMethod: "GET", // usually GET method is cachable, so assume it was used for this request as well
 				RefererURL:    "-",
@@ -97,8 +94,8 @@ func (u *JourneyReportService) addPlace(journey *entity2.Journey, accessLogRecor
 		}
 	}
 
-	if !strings.Contains(accessLogRecord.URI, "/customer/section/load") { // todo: refactor and remove hardcoded uri
-		currentPlace := journey.AddPlace(&entity2.JourneyPlace{
+	if !u.isExcludedURI(accessLogRecord.URI) {
+		currentPlace := journey.AddPlace(&entity.JourneyPlace{
 			ID:        getUUID(),
 			WasLogged: true,
 			Data:      &accessLogRecord,
@@ -106,6 +103,16 @@ func (u *JourneyReportService) addPlace(journey *entity2.Journey, accessLogRecor
 
 		journey.AddRoad(refererPlace, currentPlace)
 	}
+}
+
+// isExcludedURI checks if a URI should be excluded from journey places
+func (u *JourneyReportService) isExcludedURI(uri string) bool {
+	for _, excluded := range u.excludedURIs {
+		if strings.Contains(uri, excluded) {
+			return true
+		}
+	}
+	return false
 }
 
 // isInternalReferer checks if given URL is internal referer link
