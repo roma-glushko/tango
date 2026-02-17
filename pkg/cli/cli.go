@@ -176,6 +176,7 @@ func getTangoGlobalFlags() []cli.Flag {
 		// pipeline
 		altsrc.NewIntFlag(cli.IntFlag{Name: "workers, w", Usage: "Number of parallel workers for log processing (default: number of CPUs)", Value: 0}),
 		altsrc.NewIntFlag(cli.IntFlag{Name: "read-buffer-size", Usage: "Buffer size in bytes for reading log files", Value: 65536}),
+		altsrc.NewStringFlag(cli.StringFlag{Name: "log-format", Usage: "Access log format (apache-combined, apache-common)", Value: "apache-combined"}),
 
 		// filters
 		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "asset-filter", Usage: "Filter js, css, image files from access logs"}),

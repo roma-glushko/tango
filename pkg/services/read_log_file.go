@@ -22,6 +22,7 @@ type ReadAccessLogService struct {
 	filterAccessLogService FilterAccessLogService
 	ipProcessor            processor.IPProcessor
 	pipelineConfig         config.PipelineConfig
+	parser                 mapper.AccessLogParser
 }
 
 // NewReadAccessLogService creates a new ReadAccessLogService instance.
@@ -30,12 +31,14 @@ func NewReadAccessLogService(
 	filterAccessLogService FilterAccessLogService,
 	ipProcessor processor.IPProcessor,
 	pipelineConfig config.PipelineConfig,
+	parser mapper.AccessLogParser,
 ) *ReadAccessLogService {
 	return &ReadAccessLogService{
 		accessLogReader:        accessLogReader,
 		filterAccessLogService: filterAccessLogService,
 		ipProcessor:            ipProcessor,
 		pipelineConfig:         pipelineConfig,
+		parser:                 parser,
 	}
 }
 
@@ -54,7 +57,7 @@ func (u *ReadAccessLogService) readSequential(filePath string) []entity.AccessLo
 	accessRecords := make([]entity.AccessLogRecord, 0, 1024)
 
 	u.accessLogReader.Read(filePath, func(accessLogRecord string, bytes int) {
-		accessRecord, err := mapper.MapAccessLogRecord(accessLogRecord)
+		accessRecord, err := u.parser(accessLogRecord)
 		if err != nil {
 			// skip unparseable lines (e.g. malformed log entries)
 			return
@@ -113,7 +116,7 @@ func (u *ReadAccessLogService) readConcurrent(filePath string, numWorkers int) [
 				results := make([]entity.AccessLogRecord, 0, len(lines))
 
 				for _, line := range lines {
-					record, err := mapper.MapAccessLogRecord(line)
+					record, err := u.parser(line)
 					if err != nil {
 						continue
 					}

@@ -11,6 +11,7 @@ import (
 	"tango/pkg/services/config"
 	"tango/pkg/services/filter"
 	"tango/pkg/services/geodata"
+	"tango/pkg/services/mapper"
 	"tango/pkg/services/processor"
 	"tango/pkg/services/report"
 
@@ -99,7 +100,12 @@ func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConf
 	}
 	filterAccessLogService := InitFilterAccessLogService(filterConfig)
 
-	return services.NewReadAccessLogService(readerProgressDecorator, filterAccessLogService, ipProcessor, pipelineConfig), nil
+	parser, err := mapper.NewAccessLogParser(pipelineConfig.LogFormat)
+	if err != nil {
+		return nil, err
+	}
+
+	return services.NewReadAccessLogService(readerProgressDecorator, filterAccessLogService, ipProcessor, pipelineConfig, parser), nil
 }
 
 // InitGeoReportService inits a services

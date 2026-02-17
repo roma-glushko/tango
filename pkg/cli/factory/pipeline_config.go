@@ -3,6 +3,7 @@ package factory
 import (
 	"runtime"
 	"tango/pkg/services/config"
+	"tango/pkg/services/mapper"
 
 	"github.com/urfave/cli"
 )
@@ -24,8 +25,14 @@ func NewPipelineConfig(cliContext *cli.Context) config.PipelineConfig {
 		readBufferSize = DefaultReadBufferSize
 	}
 
+	logFormat := cliContext.GlobalString("log-format")
+	if logFormat == "" {
+		logFormat = mapper.DefaultLogFormat
+	}
+
 	return config.NewPipelineConfig(
 		workers,
 		readBufferSize,
+		logFormat,
 	)
 }
