@@ -8,14 +8,11 @@ BIN_DIR := $(PROJECT_DIR)/bin
 
 export PATH := $(BIN_DIR):$(PATH)
 
-bin/packr2:
-	@GOBIN=$(BIN_DIR) go install github.com/gobuffalo/packr/v2/packr2
-
 bin/goreleaser:
 	@GOBIN=$(BIN_DIR) go install github.com/goreleaser/goreleaser@latest
 
 .PHONY: install
-install: go.mod bin/packr2 bin/goreleaser ## Install project dependencies
+install: go.mod bin/goreleaser ## Install project dependencies
 	@go get -t -v ./...
 
 .PHONY: lint
@@ -25,8 +22,7 @@ lint: ## Lint the codebase
 	@go vet ./...
 
 .PHONY: build
-build: lint bin/packr2 ## Build tango binary
-	@$(BIN_DIR)/packr2
+build: lint ## Build tango binary
 	@go build -o bin/tango
 
 .PHONY: release
@@ -44,4 +40,4 @@ test: ## Run tests
 
 .PHONY: clean
 clean:
-	@rm -rf bin dist packrd
+	@rm -rf bin dist

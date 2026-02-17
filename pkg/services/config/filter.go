@@ -1,6 +1,5 @@
 package config
 
-//
 type FilterConfig struct {
 	AssetFilters   []string
 	KeepTimeFrames []string
@@ -12,7 +11,6 @@ type FilterConfig struct {
 	KeepUaFilters  []string
 }
 
-//
 func NewFilterConfig(
 	assetFilters []string,
 	keepTimeFrames []string,

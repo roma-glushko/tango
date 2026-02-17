@@ -6,7 +6,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-//
 func NewProcessorConfig(cliContext *cli.Context) config.ProcessorConfig {
 	systemIpList := cliContext.GlobalStringSlice("system-ips")
 

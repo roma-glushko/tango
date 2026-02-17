@@ -6,13 +6,11 @@ import (
 	"tango/pkg/services/config"
 )
 
-//
 type UserAgentFilter struct {
 	keepUaFilters []string
 	uaFilters     []string
 }
 
-//
 func NewUserAgentFilter(filterConfig config.FilterConfig) *UserAgentFilter {
 	keepUaFilters := filterConfig.KeepUaFilters
 	uaFilters := filterConfig.UaFilters
@@ -23,7 +21,6 @@ func NewUserAgentFilter(filterConfig config.FilterConfig) *UserAgentFilter {
 	}
 }
 
-//
 func (f *UserAgentFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
 	if len(f.keepUaFilters) == 0 && len(f.uaFilters) == 0 {
 		return false

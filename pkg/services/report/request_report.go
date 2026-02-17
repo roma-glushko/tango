@@ -20,13 +20,21 @@ type RequestReportWriter interface {
 	Save(reportPath string, browserReport map[string]*RequestReportItem)
 }
 
+// DefaultQueryStripPatterns are regex patterns stripped from request paths by default
+var DefaultQueryStripPatterns = []string{
+	"/key(.*)/",
+	"/referer(.*)/",
+}
+
 // RequestReportService
 type RequestReportService struct {
+	queryStripPatterns  []string
 	requestReportWriter RequestReportWriter
 }
 
 func NewRequestReportService(requestReportWriter RequestReportWriter) *RequestReportService {
 	return &RequestReportService{
+		queryStripPatterns:  DefaultQueryStripPatterns,
 		requestReportWriter: requestReportWriter,
 	}
 }
@@ -35,16 +43,9 @@ func NewRequestReportService(requestReportWriter RequestReportWriter) *RequestRe
 func (u *RequestReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
 	var requestReport = make(map[string]*RequestReportItem)
 
-	// todo: move to configs
-	queryPatterns := []string{
-		"/key(.*)/",
-		"/referer(.*)/",
-	}
+	pathFilters := make([]*regexp.Regexp, 0, len(u.queryStripPatterns))
 
-	// init additional query filters
-	pathFilters := make([]*regexp.Regexp, 0)
-
-	for _, pattern := range queryPatterns {
+	for _, pattern := range u.queryStripPatterns {
 		filter, err := regexp.Compile(pattern)
 
 		if err != nil {

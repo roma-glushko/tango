@@ -8,13 +8,11 @@ import (
 
 var EuropeFormat = "2006-01-02 15:04:05 -0700"
 
-//
 type TimeFilter struct {
 	timeStart time.Time
 	timeEnd   time.Time
 }
 
-//
 func NewTimeFilter(filterConfig config.FilterConfig) *TimeFilter {
 	timeStart := time.Time{}
 	timeEnd := time.Time{}
@@ -34,7 +32,6 @@ func NewTimeFilter(filterConfig config.FilterConfig) *TimeFilter {
 	}
 }
 
-//
 func (f *TimeFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
 	if f.timeStart.IsZero() && f.timeEnd.IsZero() {
 		return false

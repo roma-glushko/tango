@@ -6,19 +6,16 @@ import (
 	"tango/pkg/services/config"
 )
 
-//
 type AssetFilter struct {
 	assetFilters []string
 }
 
-//
 func NewAssetFilter(filterConfig config.FilterConfig) *AssetFilter {
 	return &AssetFilter{
 		assetFilters: filterConfig.AssetFilters,
 	}
 }
 
-//
 func (f *AssetFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
 	if len(f.assetFilters) == 0 {
 		return false

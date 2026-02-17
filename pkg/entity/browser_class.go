@@ -1,12 +1,10 @@
 package entity
 
-//
 type BrowserCategory struct {
 	Agent    string
 	Category string
 }
 
-//
 func GetBrowserClassification() []BrowserCategory {
 	return []BrowserCategory{
 		{Agent: "Xbox One", Category: "Game Systems"},

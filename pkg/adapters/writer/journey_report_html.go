@@ -4,9 +4,8 @@ import (
 	"log"
 	"os"
 	"tango/pkg/entity"
+	tmpl "tango/template"
 	"text/template"
-
-	"github.com/gobuffalo/packr/v2"
 )
 
 // JourneyReportHtmlWriter
@@ -41,14 +40,7 @@ func NewJourneyReportHTMLWriter() *JourneyReportHtmlWriter {
 
 // Save journey report to html file
 func (w *JourneyReportHtmlWriter) Save(filePath string, journeyReportData map[string]*entity.Journey) {
-	templateBox := packr.New("template-box", "../../../template")
-	journewReportContent, err := templateBox.FindString("journey-report.tmpl")
-
-	if err != nil {
-		log.Fatal("Error on loading journey template file", err)
-	}
-
-	journeyReportTemplate, err := template.New("journey-report").Parse(journewReportContent)
+	journeyReportTemplate, err := template.New("journey-report").Parse(tmpl.JourneyReportTemplate)
 
 	if err != nil {
 		log.Fatal("Error on loading journey template file", err)

@@ -5,13 +5,11 @@ import (
 	"tango/pkg/services/config"
 )
 
-//
 type IPFilter struct {
 	ipFilters     []string
 	keepIpFilters []string
 }
 
-//
 func NewIPFilter(filterConfig config.FilterConfig) *IPFilter {
 	return &IPFilter{
 		ipFilters:     filterConfig.IpFilters,
@@ -19,7 +17,6 @@ func NewIPFilter(filterConfig config.FilterConfig) *IPFilter {
 	}
 }
 
-// todo: remove duplicated code
 func contains(ipList []string, ip string) bool {
 	for _, ipItem := range ipList {
 		if ipItem == ip {
@@ -29,7 +26,6 @@ func contains(ipList []string, ip string) bool {
 	return false
 }
 
-//
 func (f *IPFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
 	if len(f.keepIpFilters) == 0 && len(f.ipFilters) == 0 {
 		return false

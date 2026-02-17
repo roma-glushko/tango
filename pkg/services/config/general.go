@@ -1,6 +1,5 @@
 package config
 
-//
 type GeneralConfig struct {
 	ConfigFile string
 	BaseURL    string

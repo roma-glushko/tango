@@ -6,7 +6,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-//
 func NewFilterConfig(cliContext *cli.Context) config.FilterConfig {
 	assetFilters := cliContext.GlobalStringSlice("asset-filter")
 	keepTimeFrames := cliContext.GlobalStringSlice("keep-time-filter")

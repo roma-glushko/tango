@@ -14,7 +14,6 @@ type ReaderProgressDecorator struct {
 	progressBar     *pb.ProgressBar
 }
 
-//
 func NewReaderProgressDecorator(accessLogReader *reader.AccessLogReader) *ReaderProgressDecorator {
 	return &ReaderProgressDecorator{
 		accessLogReader: *accessLogReader,
@@ -55,12 +54,10 @@ func (r *ReaderProgressDecorator) Read(filePath string, readAccessLogFunc servic
 	r.progressBar.Finish()
 }
 
-//
 func (r *ReaderProgressDecorator) start() {
 	r.progressBar.Start()
 }
 
-//
 func (r *ReaderProgressDecorator) update(byteCount int) {
 	r.progressBar.Add(byteCount)
 }

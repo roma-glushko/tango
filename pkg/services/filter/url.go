@@ -6,13 +6,11 @@ import (
 	"tango/pkg/services/config"
 )
 
-//
 type UrlFilter struct {
 	uriFilters     []string
 	keepUriFilters []string
 }
 
-//
 func NewUrlFilter(filterConfig config.FilterConfig) *UrlFilter {
 	uriFilters := filterConfig.UriFilters
 	keepUriFilters := filterConfig.KeepUriFilters
@@ -23,7 +21,6 @@ func NewUrlFilter(filterConfig config.FilterConfig) *UrlFilter {
 	}
 }
 
-//
 func (f *UrlFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
 	if len(f.uriFilters) == 0 && len(f.keepUriFilters) == 0 {
 		return false

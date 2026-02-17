@@ -4,17 +4,14 @@ import (
 	"tango/pkg/entity"
 )
 
-//
 type CustomReportWriter interface {
 	Save(reportPath string, accessLogs []entity.AccessLogRecord)
 }
 
-//
 type CustomReportService struct {
 	customReportWriter CustomReportWriter
 }
 
-//
 func NewCustomReportService(customReportWriter CustomReportWriter) *CustomReportService {
 	return &CustomReportService{
 		customReportWriter: customReportWriter,
