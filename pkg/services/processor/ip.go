@@ -1,20 +1,19 @@
 package processor
 
 import (
+	"fmt"
 	"net"
 	"strings"
 	"tango/pkg/entity"
 	"tango/pkg/services/config"
 )
 
-//
 type IPProcessor struct {
 	systemIPs       []string
 	systemIPSubnets []*net.IPNet
 }
 
-//
-func NewIPProcessor(processorConfig config.ProcessorConfig) IPProcessor {
+func NewIPProcessor(processorConfig config.ProcessorConfig) (IPProcessor, error) {
 	systemIpPatterns := processorConfig.SystemIpList
 
 	systemIPs := make([]string, 0)
@@ -23,19 +22,25 @@ func NewIPProcessor(processorConfig config.ProcessorConfig) IPProcessor {
 	for _, ipPattern := range systemIpPatterns {
 		// IP subnet pattern
 		if strings.Contains(ipPattern, "/") {
-			_, systemIpNet, _ := net.ParseCIDR(ipPattern)
+			_, systemIpNet, err := net.ParseCIDR(ipPattern)
+			if err != nil {
+				return IPProcessor{}, fmt.Errorf("invalid CIDR pattern %q: %w", ipPattern, err)
+			}
 			systemIPSubnets = append(systemIPSubnets, systemIpNet)
 			continue
 		}
 
 		// single IP pattern
+		if net.ParseIP(ipPattern) == nil {
+			return IPProcessor{}, fmt.Errorf("invalid IP address %q", ipPattern)
+		}
 		systemIPs = append(systemIPs, ipPattern)
 	}
 
 	return IPProcessor{
 		systemIPs:       systemIPs,
 		systemIPSubnets: systemIPSubnets,
-	}
+	}, nil
 }
 
 // Process list of parsed IPs for access log record and remove system IPs

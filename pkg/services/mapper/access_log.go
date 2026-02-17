@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -33,9 +34,13 @@ func findNamedMatches(regex *regexp.Regexp, str string) map[string]string {
 	return results
 }
 
-// Map access logs line to AccessLogRecord type
-func MapAccessLogRecord(accessLogRecord string) entity.AccessLogRecord {
+// MapAccessLogRecord maps access log line to AccessLogRecord type
+func MapAccessLogRecord(accessLogRecord string) (entity.AccessLogRecord, error) {
 	accessRecordInformation := findNamedMatches(accessLogParser, strings.TrimSpace(accessLogRecord))
+
+	if len(accessRecordInformation) == 0 {
+		return entity.AccessLogRecord{}, fmt.Errorf("failed to parse access log line: %s", accessLogRecord)
+	}
 
 	ipList := filter(
 		strings.Split(
@@ -45,20 +50,30 @@ func MapAccessLogRecord(accessLogRecord string) entity.AccessLogRecord {
 		"-",
 	)
 
-	time, _ := time.Parse(timeFormat, accessRecordInformation["time"])
+	parsedTime, err := time.Parse(timeFormat, accessRecordInformation["time"])
+	if err != nil {
+		return entity.AccessLogRecord{}, fmt.Errorf("failed to parse time %q: %w", accessRecordInformation["time"], err)
+	}
 
-	responseCode, _ := strconv.ParseUint(accessRecordInformation["response_code"], 10, 64)
-	responseSize, _ := strconv.ParseUint(accessRecordInformation["response_size"], 10, 64)
+	responseCode, err := strconv.ParseUint(accessRecordInformation["response_code"], 10, 64)
+	if err != nil {
+		return entity.AccessLogRecord{}, fmt.Errorf("failed to parse response code %q: %w", accessRecordInformation["response_code"], err)
+	}
+
+	responseSize, err := strconv.ParseUint(accessRecordInformation["response_size"], 10, 64)
+	if err != nil {
+		return entity.AccessLogRecord{}, fmt.Errorf("failed to parse response size %q: %w", accessRecordInformation["response_size"], err)
+	}
 
 	return entity.AccessLogRecord{
 		IP:            ipList,
 		URI:           accessRecordInformation["uri"],
-		Time:          time,
+		Time:          parsedTime,
 		RequestMethod: accessRecordInformation["request_method"],
 		Protocol:      accessRecordInformation["protocol"],
 		ResponseCode:  responseCode,
 		ResponseSize:  responseSize,
 		RefererURL:    accessRecordInformation["referer_url"],
 		UserAgent:     accessRecordInformation["user_agent"],
-	}
+	}, nil
 }

@@ -6,15 +6,12 @@ import (
 	"tango/pkg/services/processor"
 )
 
-//
 type ReadAccessLogFunc func(accessLogRecord string, bytes int)
 
-//
 type AccessLogReader interface {
 	Read(filePath string, readAccessLogFunc ReadAccessLogFunc)
 }
 
-//
 type ReadAccessLogService struct {
 	accessLogReader        AccessLogReader
 	filterAccessLogService FilterAccessLogService
@@ -39,7 +36,11 @@ func (u *ReadAccessLogService) Read(filePath string) []entity.AccessLogRecord {
 	accessRecords := make([]entity.AccessLogRecord, 0)
 
 	u.accessLogReader.Read(filePath, func(accessLogRecord string, bytes int) {
-		accessRecord := mapper.MapAccessLogRecord(accessLogRecord)
+		accessRecord, err := mapper.MapAccessLogRecord(accessLogRecord)
+		if err != nil {
+			// skip unparseable lines (e.g. malformed log entries)
+			return
+		}
 
 		// process parsed access log record
 		accessRecord = u.ipProcessor.Process(accessRecord)

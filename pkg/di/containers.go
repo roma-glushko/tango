@@ -51,7 +51,7 @@ func InitFilterAccessLogService(filterConfig config.FilterConfig) services.Filte
 }
 
 // InitIpProcessor
-func InitIpProcessor(processorConfig config.ProcessorConfig) processor.IPProcessor {
+func InitIpProcessor(processorConfig config.ProcessorConfig) (processor.IPProcessor, error) {
 	return processor.NewIPProcessor(processorConfig)
 }
 
@@ -85,13 +85,16 @@ func InitGenerateMaxmindConfService() *geodata.GenerateMaxmindConfService {
 }
 
 // InitReadAccessLogService inits a services
-func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig) *services.ReadAccessLogService {
+func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig) (*services.ReadAccessLogService, error) {
 	accessLogReader := reader.NewAccessLogReader()
 	readerProgressDecorator := component.NewReaderProgressDecorator(accessLogReader)
-	ipProcessor := InitIpProcessor(processorConfig)
+	ipProcessor, err := InitIpProcessor(processorConfig)
+	if err != nil {
+		return nil, err
+	}
 	filterAccessLogService := InitFilterAccessLogService(filterConfig)
 
-	return services.NewReadAccessLogService(readerProgressDecorator, filterAccessLogService, ipProcessor)
+	return services.NewReadAccessLogService(readerProgressDecorator, filterAccessLogService, ipProcessor), nil
 }
 
 // InitGeoReportService inits a services

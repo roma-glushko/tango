@@ -12,7 +12,10 @@ func CustomReportCommand(cliContext *cli.Context) error {
 	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
 	processorConfig := di.InitProcessorConfig(cliContext)
-	readAccessLogService := di.InitReadAccessLogService(processorConfig, filterConfig)
+	readAccessLogService, err := di.InitReadAccessLogService(processorConfig, filterConfig)
+	if err != nil {
+		return err
+	}
 	customReportService := di.InitCustomReportService()
 
 	fmt.Println("💃 Tango is on the scene!")

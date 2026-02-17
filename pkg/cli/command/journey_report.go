@@ -13,7 +13,10 @@ func JourneyReportCommand(cliContext *cli.Context) error {
 	generalConfig := di.InitGeneralConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
 	processorConfig := di.InitProcessorConfig(cliContext)
-	readAccessLogService := di.InitReadAccessLogService(processorConfig, filterConfig)
+	readAccessLogService, err := di.InitReadAccessLogService(processorConfig, filterConfig)
+	if err != nil {
+		return err
+	}
 
 	journeyReportService := di.InitJourneyReportService(generalConfig)
 
