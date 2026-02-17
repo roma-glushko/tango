@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-// GeoReportCommand
+// GeoReportCommand handles the geo report CLI command.
 func GeoReportCommand(cliContext *cli.Context) error {
 	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)

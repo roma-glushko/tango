@@ -7,7 +7,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-// CustomReportCommand
+// CustomReportCommand handles the custom report CLI command.
 func CustomReportCommand(cliContext *cli.Context) error {
 	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)

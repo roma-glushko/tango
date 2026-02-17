@@ -8,7 +8,7 @@ import (
 	"github.com/oschwald/geoip2-golang"
 )
 
-// MaxMindGeoProvider
+// MaxMindGeoProvider provides geolocation data using MaxMind GeoIP2.
 type MaxMindGeoProvider struct {
 	maxmindCityDatabase *geoip2.Reader
 }
@@ -47,7 +47,7 @@ func (p *MaxMindGeoProvider) GetGeoDataByIP(ip string) *report.GeoData {
 	}
 }
 
-// Close
+// Close releases the MaxMind database resources.
 func (p *MaxMindGeoProvider) Close() error {
 	return p.maxmindCityDatabase.Close()
 }

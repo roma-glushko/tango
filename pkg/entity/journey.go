@@ -35,7 +35,7 @@ func (jg *Journey) AddPlace(n *JourneyPlace) *JourneyPlace {
 	return n
 }
 
-// GetLastPlace
+// GetLastPlace returns the most recently added place in the journey.
 func (jg *Journey) GetLastPlace() *JourneyPlace {
 	if len(jg.Places) == 0 {
 		return nil
@@ -84,7 +84,7 @@ func (jg *Journey) FindPlace(uri string) *JourneyPlace {
 	return nil
 }
 
-// FindPlace finds a place in journey by place URI
+// FindLastPlace finds the last place in journey by place URI.
 func (jg *Journey) FindLastPlace(uri string) *JourneyPlace {
 	for i := len(jg.Places) - 1; i >= 0; i-- {
 		place := jg.Places[i]
