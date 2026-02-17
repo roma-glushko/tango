@@ -6,31 +6,34 @@ import (
 	"tango/pkg/services/config"
 )
 
-type UrlFilter struct {
+// URLFilter filters access log records by URI patterns.
+type URLFilter struct {
 	uriFilters     []string
-	keepUriFilters []string
+	keepURIFilters []string
 }
 
-func NewUrlFilter(filterConfig config.FilterConfig) *UrlFilter {
-	uriFilters := filterConfig.UriFilters
-	keepUriFilters := filterConfig.KeepUriFilters
+// NewURLFilter creates a new URLFilter from the given filter config.
+func NewURLFilter(filterConfig config.FilterConfig) *URLFilter {
+	uriFilters := filterConfig.URIFilters
+	keepURIFilters := filterConfig.KeepURIFilters
 
-	return &UrlFilter{
+	return &URLFilter{
 		uriFilters:     uriFilters,
-		keepUriFilters: keepUriFilters,
+		keepURIFilters: keepURIFilters,
 	}
 }
 
-func (f *UrlFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
-	if len(f.uriFilters) == 0 && len(f.keepUriFilters) == 0 {
+// Filter returns true if the access log record should be filtered by URI.
+func (f *URLFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
+	if len(f.uriFilters) == 0 && len(f.keepURIFilters) == 0 {
 		return false
 	}
 
 	uri := accessLogRecord.URI
 
 	// if keep filter is enabled, than keep only specified
-	if len(f.keepUriFilters) > 0 {
-		for _, urlPart := range f.keepUriFilters {
+	if len(f.keepURIFilters) > 0 {
+		for _, urlPart := range f.keepURIFilters {
 			if strings.Contains(uri, urlPart) {
 				return false
 			}

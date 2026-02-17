@@ -37,12 +37,12 @@ func InitFilterConfig(cliContext *cli.Context) config.FilterConfig {
 	return factory.NewFilterConfig(cliContext)
 }
 
-// InitFilterAccessLogService
+// InitFilterAccessLogService creates a FilterAccessLogService with all filters.
 func InitFilterAccessLogService(filterConfig config.FilterConfig) services.FilterAccessLogService {
 	filters := []services.AccessLogFilter{
 		filter.NewIPFilter(filterConfig),
 		filter.NewTimeFilter(filterConfig),
-		filter.NewUrlFilter(filterConfig),
+		filter.NewURLFilter(filterConfig),
 		filter.NewAssetFilter(filterConfig),
 		filter.NewUserAgentFilter(filterConfig),
 	}
@@ -50,8 +50,8 @@ func InitFilterAccessLogService(filterConfig config.FilterConfig) services.Filte
 	return services.NewFilterAccessLogService(filters)
 }
 
-// InitIpProcessor
-func InitIpProcessor(processorConfig config.ProcessorConfig) (processor.IPProcessor, error) {
+// InitIPProcessor creates an IPProcessor from the given config.
+func InitIPProcessor(processorConfig config.ProcessorConfig) (processor.IPProcessor, error) {
 	return processor.NewIPProcessor(processorConfig)
 }
 
@@ -88,7 +88,7 @@ func InitGenerateMaxmindConfService() *geodata.GenerateMaxmindConfService {
 func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig) (*services.ReadAccessLogService, error) {
 	accessLogReader := reader.NewAccessLogReader()
 	readerProgressDecorator := component.NewReaderProgressDecorator(accessLogReader)
-	ipProcessor, err := InitIpProcessor(processorConfig)
+	ipProcessor, err := InitIPProcessor(processorConfig)
 	if err != nil {
 		return nil, err
 	}

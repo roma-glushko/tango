@@ -8,25 +8,27 @@ import (
 	"tango/pkg/services/config"
 )
 
+// IPProcessor removes system IPs from access log records.
 type IPProcessor struct {
 	systemIPs       map[string]struct{}
 	systemIPSubnets []*net.IPNet
 }
 
+// NewIPProcessor creates a new IPProcessor from the given processor config.
 func NewIPProcessor(processorConfig config.ProcessorConfig) (IPProcessor, error) {
-	systemIpPatterns := processorConfig.SystemIpList
+	systemIPPatterns := processorConfig.SystemIPList
 
 	systemIPs := make(map[string]struct{})
 	systemIPSubnets := make([]*net.IPNet, 0)
 
-	for _, ipPattern := range systemIpPatterns {
+	for _, ipPattern := range systemIPPatterns {
 		// IP subnet pattern
 		if strings.Contains(ipPattern, "/") {
-			_, systemIpNet, err := net.ParseCIDR(ipPattern)
+			_, systemIPNet, err := net.ParseCIDR(ipPattern)
 			if err != nil {
 				return IPProcessor{}, fmt.Errorf("invalid CIDR pattern %q: %w", ipPattern, err)
 			}
-			systemIPSubnets = append(systemIPSubnets, systemIpNet)
+			systemIPSubnets = append(systemIPSubnets, systemIPNet)
 			continue
 		}
 
@@ -43,7 +45,7 @@ func NewIPProcessor(processorConfig config.ProcessorConfig) (IPProcessor, error)
 	}, nil
 }
 
-// Process list of parsed IPs for access log record and remove system IPs
+// Process removes system IPs from the access log record's IP list.
 func (f *IPProcessor) Process(accessLogRecord entity.AccessLogRecord) entity.AccessLogRecord {
 	if len(f.systemIPs) == 0 && len(f.systemIPSubnets) == 0 {
 		return accessLogRecord
@@ -52,12 +54,12 @@ func (f *IPProcessor) Process(accessLogRecord entity.AccessLogRecord) entity.Acc
 	ipList := make([]string, 0)
 
 	// filter system IPs
-	for _, accessLogIp := range accessLogRecord.IP {
+	for _, accessLogIP := range accessLogRecord.IP {
 		filtered := false
-		ip := net.ParseIP(accessLogIp)
+		ip := net.ParseIP(accessLogIP)
 
 		// check ip subnet patterns
-		// goes first as potencially covers more IPs than singe IP pattern
+		// goes first as potentially covers more IPs than single IP pattern
 		for _, ipSubnet := range f.systemIPSubnets {
 			if ipSubnet.Contains(ip) {
 				filtered = true
@@ -67,14 +69,14 @@ func (f *IPProcessor) Process(accessLogRecord entity.AccessLogRecord) entity.Acc
 
 		// check single ip patterns
 		if !filtered {
-			if _, ok := f.systemIPs[accessLogIp]; ok {
+			if _, ok := f.systemIPs[accessLogIP]; ok {
 				filtered = true
 			}
 		}
 
 		// was IP filtered during checks?
 		if !filtered {
-			ipList = append(ipList, accessLogIp)
+			ipList = append(ipList, accessLogIP)
 		}
 	}
 

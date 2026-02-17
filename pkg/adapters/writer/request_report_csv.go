@@ -8,6 +8,7 @@ import (
 	"tango/pkg/services/report"
 )
 
+// RequestReportHeaders defines CSV header columns for the request report.
 var RequestReportHeaders = []string{
 	"Path",
 	"Requests",
@@ -15,29 +16,31 @@ var RequestReportHeaders = []string{
 	"Referer URLs",
 }
 
+// RequestReportCsvWriter writes request reports to CSV files.
 type RequestReportCsvWriter struct {
 }
 
+// NewRequestReportCsvWriter creates a new RequestReportCsvWriter instance.
 func NewRequestReportCsvWriter() *RequestReportCsvWriter {
 	return &RequestReportCsvWriter{}
 }
 
-// Save request report to CSV file
+// Save writes a request report to a CSV file.
 func (w *RequestReportCsvWriter) Save(filePath string, requestReport map[string]*report.RequestReportItem) {
 	file, err := os.Create(filePath)
-
 	if err != nil {
 		log.Fatal("Error on writing request report: ", err)
 	}
 
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
 	// Header
 	if err := writer.Write(RequestReportHeaders); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	// Body
@@ -50,7 +53,8 @@ func (w *RequestReportCsvWriter) Save(filePath string, requestReport map[string]
 		})
 
 		if err != nil {
-			log.Fatal("Error on writing request report: ", err)
+			log.Println("Error on writing request report: ", err)
+			return
 		}
 	}
 }

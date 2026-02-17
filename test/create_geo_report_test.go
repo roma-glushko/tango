@@ -61,7 +61,7 @@ func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
 			"",               // City
 			"Europe",         // Continent
 			"/cstm/sec/load?sections=&updsecid=false&_=1562558398896",                                                                                     // Sample Request
-			"Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Mobile/15E148 Safari/604.1", //Browser Agent
+			"Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Mobile/15E148 Safari/604.1", // Browser Agent
 			"18", // Count of Requests
 		},
 		"121.79.80.29": {
@@ -70,12 +70,12 @@ func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
 			"Brisbane",                  // City
 			"Oceania",                   // Continent
 			"/product-tk8-smawbtk.html", // Sample Request
-			"Mozilla/5.0 (X11; CrOS x86_64 12105.75.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.102 Safari/537.36", //Browser Agent
+			"Mozilla/5.0 (X11; CrOS x86_64 12105.75.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.102 Safari/537.36", // Browser Agent
 			"4", // Count of Requests
 		},
 	}
 
-	testSystemIpList := []string{
+	testSystemIPList := []string{
 		"157.52.99.32",
 		"157.52.99.35",
 		"157.52.99.37",
@@ -96,6 +96,6 @@ func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
 			require.ElementsMatch(expectedItem, reportItem)
 		}
 
-		require.NotContains(testSystemIpList, ip)
+		require.NotContains(testSystemIPList, ip)
 	}
 }

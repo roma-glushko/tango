@@ -1,5 +1,6 @@
 package config
 
+// GeneralConfig holds general application configuration.
 type GeneralConfig struct {
 	ConfigFile string
 	BaseURL    string

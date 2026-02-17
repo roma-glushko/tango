@@ -14,13 +14,12 @@ tools: ## Install static checkers & other binaries
 	@echo "🚚 Downloading tools.."
 	@mkdir -p $(TMP_DIR)
 	@test -f $(TMP_DIR)/goreleaser || GOBIN=$(TMP_DIR) go install github.com/goreleaser/goreleaser/v2@v2.13.3
-	@test -f $(TMP_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(TMP_DIR) v2.7.2
+	@test -f $(TMP_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(TMP_DIR) v2.9.0
 
 .PHONY: lint
-lint: ## Lint the codebase
+lint: tools ## Lint the codebase
 	@go mod tidy
-	@go fmt ./...
-	@go vet ./...
+	@$(TMP_DIR)/golangci-lint run ./...
 
 .PHONY: build
 build: lint ## Build tango binary

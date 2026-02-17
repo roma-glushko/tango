@@ -10,6 +10,7 @@ import (
 	"tango/pkg/services/report"
 )
 
+// BrowserReportHeader defines CSV header columns for the browser report.
 var BrowserReportHeader = []string{
 	"Category",
 	"Browser",
@@ -19,9 +20,11 @@ var BrowserReportHeader = []string{
 	"User Agents",
 }
 
+// BrowserReportCsvWriter writes browser reports to CSV files.
 type BrowserReportCsvWriter struct {
 }
 
+// NewBrowserReportCsvWriter creates a new BrowserReportCsvWriter instance.
 func NewBrowserReportCsvWriter() *BrowserReportCsvWriter {
 	return &BrowserReportCsvWriter{}
 }
@@ -58,21 +61,23 @@ func newLineSeparated(boolMap map[string]bool) string {
 	return b.String()
 }
 
-// Save Browser Report to CSV file
+// Save writes a browser report to a CSV file.
 func (w *BrowserReportCsvWriter) Save(reportPath string, browserReport map[string]*report.BrowserReportItem) {
 	file, err := os.Create(reportPath)
-
 	if err != nil {
 		log.Fatal("Error on writing browser report: ", err)
 	}
 
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
 	// Header
-	writer.Write(BrowserReportHeader)
+	if err := writer.Write(BrowserReportHeader); err != nil {
+		log.Println("Error on writing browser report header: ", err)
+		return
+	}
 
 	// Body
 	for _, browserReportItem := range browserReport {
@@ -81,12 +86,13 @@ func (w *BrowserReportCsvWriter) Save(reportPath string, browserReport map[strin
 			browserReportItem.Browser,
 			strconv.FormatUint(browserReportItem.Requests, 10),
 			byteCountDecimal(browserReportItem.Bandwidth),
-			browserReportItem.SampleUrl,
+			browserReportItem.SampleURL,
 			newLineSeparated(browserReportItem.UserAgents),
 		})
 
 		if err != nil {
-			log.Fatal("Error on writing geolocation report: ", err)
+			log.Println("Error on writing browser report: ", err)
+			return
 		}
 	}
 }

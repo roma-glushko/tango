@@ -11,6 +11,7 @@ import (
 
 var timeFormat = "2006-01-02 15:04:05 -0700" // todo: add localization for US/EU formats
 
+// CustomReportHeader defines CSV header columns for the custom report.
 var CustomReportHeader = []string{
 	"Time",
 	"IP",
@@ -20,29 +21,31 @@ var CustomReportHeader = []string{
 	"User Agent",
 }
 
+// CustomReportCsvWriter writes custom reports to CSV files.
 type CustomReportCsvWriter struct {
 }
 
+// NewCustomReportCsvWriter creates a new CustomReportCsvWriter instance.
 func NewCustomReportCsvWriter() *CustomReportCsvWriter {
 	return &CustomReportCsvWriter{}
 }
 
-// Save GeoLocation Report to CSV file
+// Save writes a custom report to a CSV file.
 func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.AccessLogRecord) {
 	file, err := os.Create(filePath)
-
 	if err != nil {
 		log.Fatal("Error on writing custom report: ", err)
 	}
 
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
 	// Header
 	if err := writer.Write(CustomReportHeader); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	// Body
@@ -57,7 +60,8 @@ func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.Access
 		})
 
 		if err != nil {
-			log.Fatal("Error on writing custom report: ", err)
+			log.Println("Error on writing custom report: ", err)
+			return
 		}
 	}
 }

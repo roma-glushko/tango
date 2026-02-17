@@ -9,11 +9,13 @@ import (
 	"github.com/cheggaaa/pb"
 )
 
+// ReaderProgressDecorator decorates an AccessLogReader with a progress bar.
 type ReaderProgressDecorator struct {
 	accessLogReader reader.AccessLogReader
 	progressBar     *pb.ProgressBar
 }
 
+// NewReaderProgressDecorator creates a new ReaderProgressDecorator instance.
 func NewReaderProgressDecorator(accessLogReader *reader.AccessLogReader) *ReaderProgressDecorator {
 	return &ReaderProgressDecorator{
 		accessLogReader: *accessLogReader,
@@ -21,18 +23,20 @@ func NewReaderProgressDecorator(accessLogReader *reader.AccessLogReader) *Reader
 	}
 }
 
+// Read opens a file, displays a progress bar, and delegates reading to the wrapped reader.
 func (r *ReaderProgressDecorator) Read(filePath string, readAccessLogFunc services.ReadAccessLogFunc) {
 	file, err := os.Open(filePath)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	fileInfo, err := file.Stat()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	fileSize := fileInfo.Size()

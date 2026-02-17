@@ -37,7 +37,7 @@ func TestCreateBrowserReport(t *testing.T) {
 				"Crawlers",          // Category
 				"bingbot",           // Browser
 				"2",                 // Request
-				"200.5 kB",          // Bandwith
+				"200.5 kB",          // Bandwidth
 				"/category200?p=22", // Requests
 			},
 			"browsers": {
@@ -49,7 +49,7 @@ func TestCreateBrowserReport(t *testing.T) {
 				"Crawlers",                   // Category
 				"Googlebot",                  // Browser
 				"10",                         // Requests
-				"797.5 kB",                   // Bandwith
+				"797.5 kB",                   // Bandwidth
 				"/product-dsm88-shmoav.html", // Request
 			},
 			"browsers": {

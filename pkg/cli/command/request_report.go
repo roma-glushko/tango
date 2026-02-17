@@ -7,7 +7,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-// RequestReportCommand
+// RequestReportCommand handles the request report CLI command.
 func RequestReportCommand(cliContext *cli.Context) error {
 	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)

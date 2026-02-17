@@ -6,15 +6,16 @@ import (
 	"github.com/urfave/cli"
 )
 
+// NewFilterConfig creates a FilterConfig from CLI context flags.
 func NewFilterConfig(cliContext *cli.Context) config.FilterConfig {
 	assetFilters := cliContext.GlobalStringSlice("asset-filter")
 	keepTimeFrames := cliContext.GlobalStringSlice("keep-time-filter")
 
 	uriFilters := cliContext.GlobalStringSlice("uri-filter")
-	keepUriFilters := cliContext.GlobalStringSlice("keep-uri-filter")
+	keepURIFilters := cliContext.GlobalStringSlice("keep-uri-filter")
 
 	ipFilters := cliContext.GlobalStringSlice("ip-filter")
-	keepIpFilters := cliContext.GlobalStringSlice("keep-ip-filter")
+	keepIPFilters := cliContext.GlobalStringSlice("keep-ip-filter")
 
 	uaFilters := cliContext.GlobalStringSlice("ua-filter")
 	keepUaFilters := cliContext.GlobalStringSlice("keep-ua-filter")
@@ -23,9 +24,9 @@ func NewFilterConfig(cliContext *cli.Context) config.FilterConfig {
 		assetFilters,
 		keepTimeFrames,
 		uriFilters,
-		keepUriFilters,
+		keepURIFilters,
 		ipFilters,
-		keepIpFilters,
+		keepIPFilters,
 		uaFilters,
 		keepUaFilters,
 	)

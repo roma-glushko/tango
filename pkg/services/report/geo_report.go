@@ -4,7 +4,7 @@ import (
 	"tango/pkg/entity"
 )
 
-// Geo Location Data
+// GeoData holds geolocation information.
 type GeoData struct {
 	Country   string
 	City      string
@@ -36,7 +36,7 @@ type GeoReportService struct {
 	geoReportWriter     GeoReportWriter
 }
 
-// NewGeoReportService
+// NewGeoReportService creates a new GeoReportService instance.
 func NewGeoReportService(geoLocationProvider GeoLocationProvider, geoReportWriter GeoReportWriter) *GeoReportService {
 	return &GeoReportService{
 		geoLocationProvider: geoLocationProvider,
@@ -48,7 +48,7 @@ func NewGeoReportService(geoLocationProvider GeoLocationProvider, geoReportWrite
 func (u *GeoReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
 	var geoReport = make(map[string]*Geolocation)
 
-	defer u.geoLocationProvider.Close()
+	defer func() { _ = u.geoLocationProvider.Close() }()
 
 	for _, accessRecord := range accessRecords {
 		for _, ip := range accessRecord.IP {

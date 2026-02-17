@@ -7,7 +7,7 @@ import (
 	"tango/pkg/entity"
 )
 
-// RequestReportItem
+// RequestReportItem represents a single request entry in the request report.
 type RequestReportItem struct {
 	Path         string
 	Requests     uint64
@@ -15,7 +15,7 @@ type RequestReportItem struct {
 	RefererURLs  map[string]bool
 }
 
-// RequestReportWriter
+// RequestReportWriter is an interface for saving request reports.
 type RequestReportWriter interface {
 	Save(reportPath string, browserReport map[string]*RequestReportItem)
 }
@@ -26,12 +26,13 @@ var DefaultQueryStripPatterns = []string{
 	"/referer(.*)/",
 }
 
-// RequestReportService
+// RequestReportService knows how to generate request reports.
 type RequestReportService struct {
 	queryStripPatterns  []string
 	requestReportWriter RequestReportWriter
 }
 
+// NewRequestReportService creates a new RequestReportService instance.
 func NewRequestReportService(requestReportWriter RequestReportWriter) *RequestReportService {
 	return &RequestReportService{
 		queryStripPatterns:  DefaultQueryStripPatterns,

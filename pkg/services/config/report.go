@@ -1,6 +1,6 @@
 package config
 
-// ReportConfig
+// ReportConfig holds configuration for report generation.
 type ReportConfig struct {
 	LogFile    string
 	ReportFile string

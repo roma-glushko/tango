@@ -11,15 +11,15 @@ func GetTestCsvReport(reportPath string, t *testing.T) [][]string {
 	reportFile, err := os.Open(reportPath)
 
 	if err != nil {
-		t.Fatalf("Error occured during readin test report file %v", err)
+		t.Fatalf("Error occurred during reading test report file %v", err)
 	}
 
-	defer reportFile.Close()
+	defer func() { _ = reportFile.Close() }()
 
 	testReport, err := csv.NewReader(reportFile).ReadAll()
 
 	if err != nil {
-		t.Fatalf("Error occured during readin test report records %v", err)
+		t.Fatalf("Error occurred during reading test report records %v", err)
 	}
 
 	return testReport

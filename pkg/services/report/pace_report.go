@@ -7,44 +7,45 @@ import (
 var minuteTimeFormat = "2006-01-02 15:04" // minute time group template
 var hourTimeFormat = "2006-01-02 15 h"    // hour time group template
 
-// PaceIpReportItem
-type PaceIpReportItem struct {
+// PaceIPReportItem represents an IP entry in the pace report.
+type PaceIPReportItem struct {
 	IP       string
 	Requests uint64
 	Browser  string
 }
 
-// PaceMinuteReportItem
+// PaceMinuteReportItem represents a minute interval in the pace report.
 type PaceMinuteReportItem struct {
 	Time     string
-	IpPaces  map[string]*PaceIpReportItem
+	IPPaces  map[string]*PaceIPReportItem
 	Requests uint64
 }
 
-// PaceHourReportItem
+// PaceHourReportItem represents an hour interval in the pace report.
 type PaceHourReportItem struct {
 	Time            string
 	MinutePaceItems []*PaceMinuteReportItem
 	Requests        uint64
 }
 
-// PaceReportWriter
+// PaceReportWriter is an interface for saving pace reports.
 type PaceReportWriter interface {
 	Save(reportPath string, paceReport []*PaceHourReportItem)
 }
 
-// PaceReportService
+// PaceReportService knows how to generate pace reports.
 type PaceReportService struct {
 	paceReportWriter PaceReportWriter
 }
 
+// NewPaceReportService creates a new PaceReportService instance.
 func NewPaceReportService(paceReportWriter PaceReportWriter) *PaceReportService {
 	return &PaceReportService{
 		paceReportWriter: paceReportWriter,
 	}
 }
 
-// GenerateReport processes access logs and collects request pace reports
+// GenerateReport processes access logs and collects request pace reports.
 func (u *PaceReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
 	var paceReport = make([]*PaceHourReportItem, 0)
 
@@ -58,15 +59,15 @@ func (u *PaceReportService) GenerateReport(reportPath string, accessRecords []en
 		lastMinuteReportItem := u.findPaceMinuteReportItem(&lastHourReportItem.MinutePaceItems, minuteTimeGroup)
 
 		for _, ip := range ipList {
-			if _, found := lastMinuteReportItem.IpPaces[ip]; !found {
-				lastMinuteReportItem.IpPaces[ip] = &PaceIpReportItem{
+			if _, found := lastMinuteReportItem.IPPaces[ip]; !found {
+				lastMinuteReportItem.IPPaces[ip] = &PaceIPReportItem{
 					IP:       ip,
 					Requests: 0,
 					Browser:  browser,
 				}
 			}
 
-			lastMinuteReportItem.IpPaces[ip].Requests++
+			lastMinuteReportItem.IPPaces[ip].Requests++
 		}
 
 		lastMinuteReportItem.Requests++
@@ -102,7 +103,7 @@ func (u *PaceReportService) findPaceMinuteReportItem(items *[]*PaceMinuteReportI
 
 	item := &PaceMinuteReportItem{
 		Time:     timeGroup,
-		IpPaces:  make(map[string]*PaceIpReportItem),
+		IPPaces:  make(map[string]*PaceIPReportItem),
 		Requests: 0,
 	}
 	*items = append(*items, item)
