@@ -8,6 +8,7 @@
 
 <p align="center">
   <a href="https://github.com/roma-glushko/tango/actions" alt="Build Status"><img alt="Build" src="https://github.com/roma-glushko/tango/actions/workflows/release.yaml/badge.svg" /></a>
+  <a href="https://snapcraft.io/tango" alt="Snapcraft Version"><img alt="Snapcraft Version" src="https://img.shields.io/snapcraft/v/tango/latest/stable" /></a>
   <a href="https://github.com/roma-glushko/tango/blob/master/LICENSE" alt="License"><img alt="License" src="https://img.shields.io/github/license/roma-glushko/tango" /></a>
 </p>
 
