@@ -2,14 +2,16 @@ module tango
 
 go 1.26
 
-require github.com/cheggaaa/pb v0.0.0-20190702094313-40231cf7fa00
+require (
+	github.com/cheggaaa/pb v0.0.0-20190702094313-40231cf7fa00
+	github.com/google/uuid v1.6.0
+)
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/gofrs/flock v0.7.1 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.9 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
