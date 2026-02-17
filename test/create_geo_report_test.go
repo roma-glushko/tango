@@ -54,24 +54,23 @@ func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
 	require.Equal(reportHeader, writer.GeoReportHeader)
 	require.Len(reportBody, 40)
 
-	testGeoData := map[string][]string{
+	testGeoData := map[string]struct {
+		Country   string
+		City      string
+		Continent string
+		Requests  string
+	}{
 		"130.93.253.236": {
-			"130.93.253.236", // IP
-			"Hungary",        // Country
-			"",               // City
-			"Europe",         // Continent
-			"/cstm/sec/load?sections=&updsecid=false&_=1562558398896",                                                                                     // Sample Request
-			"Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Mobile/15E148 Safari/604.1", // Browser Agent
-			"18", // Count of Requests
+			Country:   "Hungary",
+			City:      "",
+			Continent: "Europe",
+			Requests:  "18",
 		},
 		"121.79.80.29": {
-			"121.79.80.29",              // IP
-			"Australia",                 // Country
-			"Brisbane",                  // City
-			"Oceania",                   // Continent
-			"/product-tk8-smawbtk.html", // Sample Request
-			"Mozilla/5.0 (X11; CrOS x86_64 12105.75.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.102 Safari/537.36", // Browser Agent
-			"4", // Count of Requests
+			Country:   "Australia",
+			City:      "Brisbane",
+			Continent: "Oceania",
+			Requests:  "4",
 		},
 	}
 
@@ -92,8 +91,13 @@ func TestCreateGeoReportWithSystemIpProcessor(t *testing.T) {
 	for _, reportItem := range reportBody {
 		ip := reportItem[0]
 
-		if expectedItem, ok := testGeoData[ip]; ok {
-			require.ElementsMatch(expectedItem, reportItem)
+		if expected, ok := testGeoData[ip]; ok {
+			require.Equal(expected.Country, reportItem[1])
+			require.Equal(expected.City, reportItem[2])
+			require.Equal(expected.Continent, reportItem[3])
+			require.NotEmpty(reportItem[4]) // Sample Request (order-dependent)
+			require.NotEmpty(reportItem[5]) // Browser Agent (order-dependent)
+			require.Equal(expected.Requests, reportItem[6])
 		}
 
 		require.NotContains(testSystemIPList, ip)

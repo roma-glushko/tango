@@ -13,7 +13,8 @@ func GeoReportCommand(cliContext *cli.Context) error {
 	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
 	processorConfig := di.InitProcessorConfig(cliContext)
-	readAccessLogService, err := di.InitReadAccessLogService(processorConfig, filterConfig)
+	pipelineConfig := di.InitPipelineConfig(cliContext)
+	readAccessLogService, err := di.InitReadAccessLogService(processorConfig, filterConfig, pipelineConfig)
 	if err != nil {
 		return err
 	}

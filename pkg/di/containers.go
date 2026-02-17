@@ -84,9 +84,14 @@ func InitGenerateMaxmindConfService() *geodata.GenerateMaxmindConfService {
 	return geodata.NewGenerateMaxmindConfService()
 }
 
+// InitPipelineConfig inits pipeline config
+func InitPipelineConfig(cliContext *cli.Context) config.PipelineConfig {
+	return factory.NewPipelineConfig(cliContext)
+}
+
 // InitReadAccessLogService inits a services
-func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig) (*services.ReadAccessLogService, error) {
-	accessLogReader := reader.NewAccessLogReader()
+func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig, pipelineConfig config.PipelineConfig) (*services.ReadAccessLogService, error) {
+	accessLogReader := reader.NewAccessLogReader(pipelineConfig.ReadBufferSize)
 	readerProgressDecorator := component.NewReaderProgressDecorator(accessLogReader)
 	ipProcessor, err := InitIPProcessor(processorConfig)
 	if err != nil {
@@ -94,7 +99,7 @@ func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConf
 	}
 	filterAccessLogService := InitFilterAccessLogService(filterConfig)
 
-	return services.NewReadAccessLogService(readerProgressDecorator, filterAccessLogService, ipProcessor), nil
+	return services.NewReadAccessLogService(readerProgressDecorator, filterAccessLogService, ipProcessor, pipelineConfig), nil
 }
 
 // InitGeoReportService inits a services

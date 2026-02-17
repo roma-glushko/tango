@@ -173,6 +173,10 @@ func getTangoGlobalFlags() []cli.Flag {
 		cli.StringFlag{Name: "config-file, c", Usage: "Configuration file for storing preset of filters", Value: component.DefaultConfigFileName},
 		altsrc.NewStringFlag(cli.StringFlag{Name: "base-url", Usage: "Website Base Url"}),
 
+		// pipeline
+		altsrc.NewIntFlag(cli.IntFlag{Name: "workers, w", Usage: "Number of parallel workers for log processing (default: number of CPUs)", Value: 0}),
+		altsrc.NewIntFlag(cli.IntFlag{Name: "read-buffer-size", Usage: "Buffer size in bytes for reading log files", Value: 65536}),
+
 		// filters
 		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "asset-filter", Usage: "Filter js, css, image files from access logs"}),
 		altsrc.NewStringSliceFlag(cli.StringSliceFlag{Name: "keep-time-filter", Usage: "Keep only specified time frame"}),
