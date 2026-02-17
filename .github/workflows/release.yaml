@@ -29,12 +29,7 @@ jobs:
         run: git fetch --force --tags
 
       - name: Setup Snapcraft
-        run: |
-          sudo snap install snapcraft --classic
-          mkdir -p $HOME/.local/share/snapcraft
-          echo "$SNAP_TOKEN" > $HOME/.local/share/snapcraft/credentials
-        env:
-          SNAP_TOKEN: ${{ secrets.SNAP_TOKEN }}
+        run: sudo snap install snapcraft --classic
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
@@ -44,3 +39,4 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} # A custom classic GH token that has access to brew and scoop packages
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
