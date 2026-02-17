@@ -1,7 +1,6 @@
 package writer
 
 import (
-	"encoding/csv"
 	"log"
 	"os"
 	"strconv"
@@ -34,7 +33,8 @@ func (w *RequestReportCsvWriter) Save(filePath string, requestReport map[string]
 
 	defer func() { _ = file.Close() }()
 
-	writer := csv.NewWriter(file)
+	writer, buffered := newBufferedCsvWriter(file)
+	defer buffered.Flush()
 	defer writer.Flush()
 
 	// Header

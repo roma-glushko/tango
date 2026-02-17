@@ -1,7 +1,6 @@
 package writer
 
 import (
-	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
@@ -70,7 +69,8 @@ func (w *BrowserReportCsvWriter) Save(reportPath string, browserReport map[strin
 
 	defer func() { _ = file.Close() }()
 
-	writer := csv.NewWriter(file)
+	writer, buffered := newBufferedCsvWriter(file)
+	defer buffered.Flush()
 	defer writer.Flush()
 
 	// Header

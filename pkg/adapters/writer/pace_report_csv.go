@@ -1,7 +1,6 @@
 package writer
 
 import (
-	"encoding/csv"
 	"log"
 	"os"
 	"strconv"
@@ -36,7 +35,8 @@ func (w *PaceReportCsvWriter) Save(filePath string, paceReport []*report.PaceHou
 
 	defer func() { _ = file.Close() }()
 
-	writer := csv.NewWriter(file)
+	writer, buffered := newBufferedCsvWriter(file)
+	defer buffered.Flush()
 	defer writer.Flush()
 
 	// Header
