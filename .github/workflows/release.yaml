@@ -35,4 +35,4 @@ jobs:
           version: "~> v2"
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} # A custom classic GH token that has access to brew and scoop packages
