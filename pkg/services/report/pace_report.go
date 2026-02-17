@@ -50,7 +50,6 @@ func (u *PaceReportService) GenerateReport(reportPath string, accessRecords []en
 	var paceReport = make([]*PaceHourReportItem, 0)
 
 	for _, accessRecord := range accessRecords {
-		ipList := accessRecord.IP
 		browser := accessRecord.UserAgent
 		hourTimeGroup := accessRecord.Time.Format(hourTimeFormat)
 		minuteTimeGroup := accessRecord.Time.Format(minuteTimeFormat)
@@ -58,7 +57,7 @@ func (u *PaceReportService) GenerateReport(reportPath string, accessRecords []en
 		lastHourReportItem := u.findPaceHourReportItem(&paceReport, hourTimeGroup)
 		lastMinuteReportItem := u.findPaceMinuteReportItem(&lastHourReportItem.MinutePaceItems, minuteTimeGroup)
 
-		for _, ip := range ipList {
+		for _, ip := range accessRecord.SplitIPs() {
 			if _, found := lastMinuteReportItem.IPPaces[ip]; !found {
 				lastMinuteReportItem.IPPaces[ip] = &PaceIPReportItem{
 					IP:       ip,

@@ -81,7 +81,7 @@ func ParseApacheCombined(line string) (entity.AccessLogRecord, error) {
 	referer, userAgent := parseQuotedFields(rest)
 
 	// Parse fields into typed values
-	ipList := parseIPList(ipListRaw)
+	ipStr := cleanIPList(ipListRaw)
 
 	parsedTime, err := time.Parse(timeFormat, timeStr)
 	if err != nil {
@@ -99,7 +99,7 @@ func ParseApacheCombined(line string) (entity.AccessLogRecord, error) {
 	}
 
 	return entity.AccessLogRecord{
-		IP:            ipList,
+		IP:            ipStr,
 		URI:           uri,
 		Time:          parsedTime,
 		RequestMethod: method,
@@ -161,7 +161,7 @@ func ParseApacheCommon(line string) (entity.AccessLogRecord, error) {
 	// Trim any trailing whitespace from response size
 	responseSizeStr = strings.TrimSpace(responseSizeStr)
 
-	ipList := parseIPList(ipListRaw)
+	ipStr := cleanIPList(ipListRaw)
 
 	parsedTime, err := time.Parse(timeFormat, timeStr)
 	if err != nil {
@@ -179,7 +179,7 @@ func ParseApacheCommon(line string) (entity.AccessLogRecord, error) {
 	}
 
 	return entity.AccessLogRecord{
-		IP:            ipList,
+		IP:            ipStr,
 		URI:           uri,
 		Time:          parsedTime,
 		RequestMethod: method,
@@ -189,19 +189,26 @@ func ParseApacheCommon(line string) (entity.AccessLogRecord, error) {
 	}, nil
 }
 
-// parseIPList splits an IP list string into individual IPs, filtering out dashes.
-func parseIPList(raw string) []string {
+// cleanIPList normalizes an IP list string, removing dashes and extra separators.
+func cleanIPList(raw string) string {
 	normalized := strings.ReplaceAll(raw, ", ", " ")
-	parts := strings.Split(normalized, " ")
 
-	result := make([]string, 0, len(parts))
-	for _, p := range parts {
-		if p != "-" && p != "" {
-			result = append(result, p)
-		}
+	// Fast path: single IP with no dashes
+	if !strings.ContainsAny(normalized, " -") {
+		return normalized
 	}
 
-	return result
+	parts := strings.Split(normalized, " ")
+	var b strings.Builder
+	for _, p := range parts {
+		if p != "-" && p != "" {
+			if b.Len() > 0 {
+				b.WriteByte(' ')
+			}
+			b.WriteString(p)
+		}
+	}
+	return b.String()
 }
 
 // parseQuotedFields extracts referer and user agent from: "referer" "user_agent"

@@ -51,36 +51,34 @@ func (f *IPProcessor) Process(accessLogRecord entity.AccessLogRecord) entity.Acc
 		return accessLogRecord
 	}
 
-	ipList := make([]string, 0)
+	ipList := accessLogRecord.SplitIPs()
+	filtered := make([]string, 0, len(ipList))
 
-	// filter system IPs
-	for _, accessLogIP := range accessLogRecord.IP {
-		filtered := false
+	for _, accessLogIP := range ipList {
+		isSystem := false
 		ip := net.ParseIP(accessLogIP)
 
 		// check ip subnet patterns
-		// goes first as potentially covers more IPs than single IP pattern
 		for _, ipSubnet := range f.systemIPSubnets {
 			if ipSubnet.Contains(ip) {
-				filtered = true
+				isSystem = true
 				break
 			}
 		}
 
 		// check single ip patterns
-		if !filtered {
+		if !isSystem {
 			if _, ok := f.systemIPs[accessLogIP]; ok {
-				filtered = true
+				isSystem = true
 			}
 		}
 
-		// was IP filtered during checks?
-		if !filtered {
-			ipList = append(ipList, accessLogIP)
+		if !isSystem {
+			filtered = append(filtered, accessLogIP)
 		}
 	}
 
-	accessLogRecord.IP = ipList
+	accessLogRecord.IP = strings.Join(filtered, " ")
 
 	return accessLogRecord
 }

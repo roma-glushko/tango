@@ -51,7 +51,7 @@ func (u *GeoReportService) GenerateReport(reportPath string, accessRecords []ent
 	defer func() { _ = u.geoLocationProvider.Close() }()
 
 	for _, accessRecord := range accessRecords {
-		for _, ip := range accessRecord.IP {
+		for _, ip := range accessRecord.SplitIPs() {
 
 			if _, ok := geoReport[ip]; ok {
 				geoReport[ip].Requests++

@@ -42,9 +42,7 @@ func (u *JourneyReportService) GenerateReport(reportPath string, accessRecords [
 	journeyReport := make(map[string]*entity.Journey, 0)
 
 	for _, accessRecord := range accessRecords {
-		ipList := accessRecord.IP
-
-		for _, ip := range ipList {
+		for _, ip := range accessRecord.SplitIPs() {
 			if _, ok := journeyReport[ip]; !ok {
 				journeyReport[ip] = &entity.Journey{
 					ID: getUUID(),

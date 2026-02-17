@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"strings"
 	"tango/pkg/entity"
 )
 
@@ -57,7 +56,7 @@ func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.Access
 	row := make([]string, 6)
 	for _, accessLog := range accessLogs {
 		row[0] = accessLog.Time.Format(timeFormat)
-		row[1] = strings.Join(accessLog.IP, ", ")
+		row[1] = accessLog.IP
 		row[2] = accessLog.URI
 		row[3] = accessLog.RefererURL
 		row[4] = strconv.FormatUint(accessLog.ResponseCode, 10)
