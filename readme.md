@@ -7,20 +7,15 @@
 ---
 
 <p align="center">
-  <a href="https://travis-ci.org/roma-glushko/tango" alt="Build Status"><img alt="Tango" src="https://travis-ci.org/roma-glushko/tango.svg?branch=master" /></a>
+  <a href="https://github.com/roma-glushko/tango/actions" alt="Build Status"><img alt="Build" src="https://github.com/roma-glushko/tango/actions/workflows/release.yaml/badge.svg" /></a>
   <a href="https://github.com/roma-glushko/tango/blob/master/LICENSE" alt="License"><img alt="License" src="https://img.shields.io/github/license/roma-glushko/tango" /></a>
-  <img src="https://img.shields.io/badge/WIP-Work%20In%20Progress-yellow.svg" />
-   <a href="https://gitter.im/roma-glushko-tango/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge" alt="Gitter"><img alt="Gitter" src="https://badges.gitter.im/roma-glushko-tango/community.svg" /></a>
 </p>
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" width="500px" />
 </p>
 
-Tango is a dependency-free command-line tool for analyzing access logs 💃
-
-Currently, work on this project is in progress. 
-However, a few pre-releases are ready available to use 🎉
+Tango is a command-line tool for analyzing server access logs 💃
 
 ## Table of Contents
 
@@ -29,7 +24,7 @@ However, a few pre-releases are ready available to use 🎉
 - [Filters](#filters)
 - [Report Commands](#report-commands)
 - [Misc Commands](#misc-commands)
-- [Config File](#misc-commands)
+- [Config File](#config-file)
 
 ## Installation
 
@@ -109,42 +104,42 @@ tango -v
 #### Filters
 
 ```bash
-// IP filters
+# IP filters
 tango --ip-filter "127.0.0.1" custom -l access-log.log -r custom.csv
 tango --keep-ip-filter "8.8.8.8" custom -l access-log.log -r custom.csv
 ```
 
 ```bash
-// URI filters
+# URI filters
 tango --uri-filter "/test-page" custom -l access-log.log -r custom.csv
 tango --keep-uri-filter "/admin/" custom -l access-log.log -r custom.csv
 ```
 
 ```bash
-// Time Frame filter
+# Time Frame filter
 tango --keep-time-filter "2019-09-15 04:16:00 -0400" --keep-time-filter "2019-09-15 04:35:00 -0400" custom -l access-log.log -r custom.csv
 ```
 
 ```bash
-// User Agent filters
+# User Agent filters
 tango --ua-filter "iPhone OS 12_3_1 like Mac OS X" custom -l access-log.log -r custom.csv
 tango --keep-ua-filter "iPhone OS 12_3_1 like Mac OS X" custom -l access-log.log -r custom.csv
 ```
 
 ```bash
-// Asset filter
+# Asset filter
 tango --asset-filter "/pub/static/" --asset-filter "/pub/media/" custom -l access-log.log -r custom.csv
 ```
 
 ```bash
-// System IP filter
+# System IP filter
 tango --system-ips "127.0.0.1"  --system-ips "1.2.3.4" custom -l access-log.log -r custom.csv
 ```
 
 #### Other
 
 ```bash
-// Base URL info
+# Base URL info
 tango --base-url "https://example.com/" custom -l access-log.log -r custom.csv
 ```
 
@@ -274,7 +269,7 @@ tango journey -l access-log.log -r custom.csv
 #### Geo Lib
 
 ```bash
-// Install geo library to be able to generate geo reports
+# Install geo library to be able to generate geo reports
 tango geo-lib
 ```
 
