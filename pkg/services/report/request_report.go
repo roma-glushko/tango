@@ -25,7 +25,6 @@ type RequestReportService struct {
 	requestReportWriter RequestReportWriter
 }
 
-//
 func NewRequestReportService(requestReportWriter RequestReportWriter) *RequestReportService {
 	return &RequestReportService{
 		requestReportWriter: requestReportWriter,
@@ -50,6 +49,7 @@ func (u *RequestReportService) GenerateReport(reportPath string, accessRecords [
 
 		if err != nil {
 			fmt.Println(err)
+			continue
 		}
 
 		pathFilters = append(pathFilters, filter)

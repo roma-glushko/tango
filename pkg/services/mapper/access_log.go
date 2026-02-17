@@ -10,6 +10,7 @@ import (
 
 var timeFormat = "02/Jan/2006:15:04:05 -0700"
 var combinedLogFormat = `^(?P<ip_list>[\S, ]+) (\-) \[(?P<time>[\w:/]+\s[+\-]\d{4})\] "(?P<request_method>\S+)\s?(?P<uri>\S+)?\s?(?P<protocol>\S+)?" (?P<response_code>\d{3}|-) (?P<response_size>\d+|-)\s?"?(?P<referer_url>[^"]*)"?\s?"?(?P<user_agent>[^"]*)?"?$`
+var accessLogParser = regexp.MustCompile(combinedLogFormat)
 
 func filter(s []string, r string) []string {
 	for i, v := range s {
@@ -34,9 +35,6 @@ func findNamedMatches(regex *regexp.Regexp, str string) map[string]string {
 
 // Map access logs line to AccessLogRecord type
 func MapAccessLogRecord(accessLogRecord string) entity.AccessLogRecord {
-	// todo: move compiling from the map method, we need it once and then use compiled pattern
-	accessLogParser, _ := regexp.Compile(combinedLogFormat)
-
 	accessRecordInformation := findNamedMatches(accessLogParser, strings.TrimSpace(accessLogRecord))
 
 	ipList := filter(
