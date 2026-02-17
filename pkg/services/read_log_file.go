@@ -77,38 +77,59 @@ func (u *ReadAccessLogService) readSequential(filePath string) []entity.AccessLo
 	return accessRecords
 }
 
-// readConcurrent uses a fan-out/fan-in pipeline with goroutines and channels.
-func (u *ReadAccessLogService) readConcurrent(filePath string, numWorkers int) []entity.AccessLogRecord {
-	linesCh := make(chan string, numWorkers*64)
-	resultsCh := make(chan entity.AccessLogRecord, numWorkers*64)
+const lineBatchSize = 256
 
-	// Stage 1: Reader goroutine - reads file and sends raw lines to workers
+// readConcurrent uses a fan-out/fan-in pipeline with goroutines and channels.
+// Lines and results are batched to reduce channel contention.
+func (u *ReadAccessLogService) readConcurrent(filePath string, numWorkers int) []entity.AccessLogRecord {
+	linesCh := make(chan []string, numWorkers*4)
+	resultsCh := make(chan []entity.AccessLogRecord, numWorkers*4)
+
+	// Stage 1: Reader goroutine - reads file and sends batches of raw lines to workers
 	go func() {
 		defer close(linesCh)
+		batch := make([]string, 0, lineBatchSize)
+
 		u.accessLogReader.Read(filePath, func(line string, bytes int) {
-			linesCh <- line
+			batch = append(batch, line)
+			if len(batch) >= lineBatchSize {
+				linesCh <- batch
+				batch = make([]string, 0, lineBatchSize)
+			}
 		})
+
+		if len(batch) > 0 {
+			linesCh <- batch
+		}
 	}()
 
-	// Stage 2: Worker goroutines - parse, process, and filter records
+	// Stage 2: Worker goroutines - parse, process, and filter record batches
 	var workersWg sync.WaitGroup
 	for i := 0; i < numWorkers; i++ {
 		workersWg.Add(1)
 		go func() {
 			defer workersWg.Done()
-			for line := range linesCh {
-				record, err := mapper.MapAccessLogRecord(line)
-				if err != nil {
-					continue
+			for lines := range linesCh {
+				results := make([]entity.AccessLogRecord, 0, len(lines))
+
+				for _, line := range lines {
+					record, err := mapper.MapAccessLogRecord(line)
+					if err != nil {
+						continue
+					}
+
+					record = u.ipProcessor.Process(record)
+
+					if u.filterAccessLogService.Filter(record) {
+						continue
+					}
+
+					results = append(results, record)
 				}
 
-				record = u.ipProcessor.Process(record)
-
-				if u.filterAccessLogService.Filter(record) {
-					continue
+				if len(results) > 0 {
+					resultsCh <- results
 				}
-
-				resultsCh <- record
 			}
 		}()
 	}
@@ -119,10 +140,10 @@ func (u *ReadAccessLogService) readConcurrent(filePath string, numWorkers int) [
 		close(resultsCh)
 	}()
 
-	// Stage 3: Aggregator - collect processed records
+	// Stage 3: Aggregator - collect processed record batches
 	accessRecords := make([]entity.AccessLogRecord, 0, 1024)
-	for record := range resultsCh {
-		accessRecords = append(accessRecords, record)
+	for batch := range resultsCh {
+		accessRecords = append(accessRecords, batch...)
 	}
 
 	return accessRecords
