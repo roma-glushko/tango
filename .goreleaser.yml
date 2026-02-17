@@ -80,6 +80,8 @@ snapcrafts:
     confinement: strict
     license: MIT
     publish: true
+    channel_templates:
+      - stable
 
 scoops:
   - url_template: "https://github.com/roma-glushko/tango/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
