@@ -33,7 +33,7 @@ func NewReadAccessLogService(
 
 // Read Access Logs and convert them to array of AccessLogRecord-s
 func (u *ReadAccessLogService) Read(filePath string) []entity.AccessLogRecord {
-	accessRecords := make([]entity.AccessLogRecord, 0)
+	accessRecords := make([]entity.AccessLogRecord, 0, 1024)
 
 	u.accessLogReader.Read(filePath, func(accessLogRecord string, bytes int) {
 		accessRecord, err := mapper.MapAccessLogRecord(accessLogRecord)

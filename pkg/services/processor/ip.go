@@ -9,14 +9,14 @@ import (
 )
 
 type IPProcessor struct {
-	systemIPs       []string
+	systemIPs       map[string]struct{}
 	systemIPSubnets []*net.IPNet
 }
 
 func NewIPProcessor(processorConfig config.ProcessorConfig) (IPProcessor, error) {
 	systemIpPatterns := processorConfig.SystemIpList
 
-	systemIPs := make([]string, 0)
+	systemIPs := make(map[string]struct{})
 	systemIPSubnets := make([]*net.IPNet, 0)
 
 	for _, ipPattern := range systemIpPatterns {
@@ -34,7 +34,7 @@ func NewIPProcessor(processorConfig config.ProcessorConfig) (IPProcessor, error)
 		if net.ParseIP(ipPattern) == nil {
 			return IPProcessor{}, fmt.Errorf("invalid IP address %q", ipPattern)
 		}
-		systemIPs = append(systemIPs, ipPattern)
+		systemIPs[ipPattern] = struct{}{}
 	}
 
 	return IPProcessor{
@@ -67,11 +67,8 @@ func (f *IPProcessor) Process(accessLogRecord entity.AccessLogRecord) entity.Acc
 
 		// check single ip patterns
 		if !filtered {
-			for _, systemIP := range f.systemIPs {
-				if accessLogIp == systemIP {
-					filtered = true
-					break
-				}
+			if _, ok := f.systemIPs[accessLogIp]; ok {
+				filtered = true
 			}
 		}
 

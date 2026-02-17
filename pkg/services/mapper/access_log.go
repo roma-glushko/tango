@@ -14,12 +14,13 @@ var combinedLogFormat = `^(?P<ip_list>[\S, ]+) (\-) \[(?P<time>[\w:/]+\s[+\-]\d{
 var accessLogParser = regexp.MustCompile(combinedLogFormat)
 
 func filter(s []string, r string) []string {
-	for i, v := range s {
-		if v == r {
-			return append(s[:i], s[i+1:]...)
+	result := make([]string, 0, len(s))
+	for _, v := range s {
+		if v != r {
+			result = append(result, v)
 		}
 	}
-	return s
+	return result
 }
 
 func findNamedMatches(regex *regexp.Regexp, str string) map[string]string {
