@@ -17,7 +17,7 @@ func RequestReportCommand(cliContext *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	requestReportService := di.InitRequestReportService()
+	requestReportService := di.InitRequestReportService(pipelineConfig.WriteBufferSize)
 
 	fmt.Println("💃 Tango is on the scene!")
 	fmt.Println("💃 started to generate a request report...")

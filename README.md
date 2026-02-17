@@ -1,313 +1,203 @@
 <p align="center">
   <img alt="Tango" src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-logo.png" height="90" />
   <h3 align="center">Tango</h3>
-  <p align="center">Tool to get insights from the server access logs</p>
+  <p align="center">Fast, concurrent access log analyzer</p>
 </p>
 
 ---
 
 <p align="center">
-  <a href="https://github.com/roma-glushko/tango/actions" alt="Build Status"><img alt="Build" src="https://github.com/roma-glushko/tango/actions/workflows/release.yaml/badge.svg" /></a>
-  <a href="https://snapcraft.io/tango" alt="Snapcraft Version"><img alt="Snapcraft Version" src="https://img.shields.io/snapcraft/v/tango/latest/stable" /></a>
-  <a href="https://github.com/roma-glushko/tango/blob/master/LICENSE" alt="License"><img alt="License" src="https://img.shields.io/github/license/roma-glushko/tango" /></a>
+  <a href="https://github.com/roma-glushko/tango/actions"><img alt="Build" src="https://github.com/roma-glushko/tango/actions/workflows/release.yaml/badge.svg" /></a>
+  <a href="https://snapcraft.io/tango"><img alt="Snapcraft Version" src="https://img.shields.io/snapcraft/v/tango/latest/stable" /></a>
+  <a href="https://github.com/roma-glushko/tango/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/roma-glushko/tango" /></a>
 </p>
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" width="500px" />
+  <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" width="500px" />
 </p>
 
-Tango is a command-line tool for analyzing server access logs 💃
-
-## Table of Contents
-
-- [Installation](#installation)
-- [Usage](#usage)
-- [Filters](#filters)
-- [Report Commands](#report-commands)
-- [Misc Commands](#misc-commands)
-- [Config File](#config-file)
+Tango is a CLI tool that turns raw server access logs into actionable reports. It uses a concurrent fan-out/fan-in pipeline to process large log files across all available CPU cores, reaching **800K+ lines/sec** on commodity hardware.
 
 ## Installation
 
 ### macOS
-
-<p align="center">	
-  <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango-install-homebrew.gif" width="500px" />
-</p>
-
-Tango can be installed on macOS via <a href="https://brew.sh/">Homebrew</a>:
 
 ```bash
 brew tap roma-glushko/tango
 brew install roma-glushko/tango/tango
 ```
 
-To upgrade, try to run:
-
-```bash
-brew upgrade tango
-```
-
 ### Linux
 
-Tango is available on Linux via <a href="https://snapcraft.io/tango">Snapcraft</a>.
-This means that Tango can be installed on:
-
-- <a href="https://snapcraft.io/install/tango/ubuntu">Ubuntu</a>
-- <a href="https://snapcraft.io/install/tango/debian">Debian</a>
-- <a href="https://snapcraft.io/install/tango/centos">CentOS</a>
-- <a href="https://snapcraft.io/install/tango/opensuse">openSUSE</a>
-- <a href="https://snapcraft.io/install/tango/mint">Linux Mint</a>
-- <a href="https://snapcraft.io/install/tango/fedora">Fedora</a>
-- <a href="https://snapcraft.io/install/tango/kubuntu">Kubuntu</a>
-- <a href="https://snapcraft.io/install/tango/elementary">elementary OS</a>
-- <a href="https://snapcraft.io/install/tango/arch">Arch Linux</a>
-- <a href="https://snapcraft.io/install/tango/kde-neon">KDE Neon</a>
-- <a href="https://snapcraft.io/install/tango/manjaro">Manjaro</a>
-
-To upgrade, try to run:
+Available via [Snapcraft](https://snapcraft.io/tango) on Ubuntu, Debian, Fedora, Arch, and [other distros](https://snapcraft.io/tango).
 
 ```bash
-snap refresh tango
+sudo snap install tango
 ```
 
 ### Windows
-
-Tango can be installed on Windows via <a href="https://scoop.sh/">Scoop</a>:
 
 ```bash
 scoop bucket add tango https://github.com/roma-glushko/scoop-tango.git
 scoop install tango
 ```
 
-To upgrade, try to run:
+## Quick Start
 
 ```bash
-scoop update tango
+# Generate a custom filtered report
+tango custom -l access.log -r report.csv
+
+# Use 10 workers for faster processing
+tango --workers 10 custom -l access.log -r report.csv
+
+# Filter by IP and time range
+tango --keep-ip-filter "8.8.8.8" \
+      --keep-time-filter "2024-01-15 00:00:00 -0500" \
+      --keep-time-filter "2024-01-15 23:59:59 -0500" \
+      custom -l access.log -r report.csv
 ```
 
-## Usage
+## Reports
 
-List of available commands:
+### Custom Report
+
+Filter and export raw log entries matching your criteria.
 
 ```bash
-tango help
+tango custom -l access.log -r custom.csv
 ```
 
-Tango Version:
+### Geo Report
+
+Map IPs to countries, cities, and continents using MaxMind GeoLite2.
 
 ```bash
-tango -v
+tango geo -l access.log -r geo.csv
 ```
 
-### Global Options
-
-#### Filters
-
-```bash
-# IP filters
-tango --ip-filter "127.0.0.1" custom -l access-log.log -r custom.csv
-tango --keep-ip-filter "8.8.8.8" custom -l access-log.log -r custom.csv
-```
-
-```bash
-# URI filters
-tango --uri-filter "/test-page" custom -l access-log.log -r custom.csv
-tango --keep-uri-filter "/admin/" custom -l access-log.log -r custom.csv
-```
-
-```bash
-# Time Frame filter
-tango --keep-time-filter "2019-09-15 04:16:00 -0400" --keep-time-filter "2019-09-15 04:35:00 -0400" custom -l access-log.log -r custom.csv
-```
-
-```bash
-# User Agent filters
-tango --ua-filter "iPhone OS 12_3_1 like Mac OS X" custom -l access-log.log -r custom.csv
-tango --keep-ua-filter "iPhone OS 12_3_1 like Mac OS X" custom -l access-log.log -r custom.csv
-```
-
-```bash
-# Asset filter
-tango --asset-filter "/pub/static/" --asset-filter "/pub/media/" custom -l access-log.log -r custom.csv
-```
-
-```bash
-# System IP filter
-tango --system-ips "127.0.0.1"  --system-ips "1.2.3.4" custom -l access-log.log -r custom.csv
-```
-
-#### Other
-
-```bash
-# Base URL info
-tango --base-url "https://example.com/" custom -l access-log.log -r custom.csv
-```
-
-### Report Commands
-
-#### Custom Reports
-
-```bash
-tango --keep-uri-filter "/newsletter/subscriber/new/" custom -l access-log.log -r custom.csv
-```
-
-Use cases:
-
-- generate a report with all requests from a certain IP
-- generate a report with all requests to a certain URL
-
-#### Geo Reports
-
-```bash
-tango geo -l access-log.log -r custom.csv
-```
-
-Geo Report uses MaxMind Geo lib to get Geo information. 
-See <a href="#geo-lib">Geo Lib command</a> for more info.
-
-Use cases:
-
-- collects geo information about all IPs that requested the website
-- get request distribution by IP with geo information
-- see all IPs sorted by countries/continents/cities  
-
-Example of the report:
+Requires the MaxMind database — install it with `tango geo-lib` (see [Geo Lib](#geo-lib)).
 
 <details>
-  <summary>Example of the report</summary>
-  
-  | IP             | Country       | City    | Continent     | Sample Request | Browser Agent                                                            | Count of Requests |
-|----------------|---------------|---------|---------------|----------------|--------------------------------------------------------------------------|-------------------|
-| 46.229.173.68  | United States | Ashburn | North America | /robots.txt    | Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html) | 362               |
-| 40.77.167.91   | United States | Boydton | North America | /contact-us    | Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)  | 3                 |
-| 178.154.171.62 | Russia        |         | Europe        | /              | Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)         | 34                |
-  
+<summary>Example output</summary>
+
+| IP | Country | City | Continent | Sample Request | Browser Agent | Count of Requests |
+|---|---|---|---|---|---|---|
+| 46.229.173.68 | United States | Ashburn | North America | /robots.txt | Googlebot/2.1 | 362 |
+| 178.154.171.62 | Russia | | Europe | / | YandexBot/3.0 | 34 |
+
 </details>
 
-#### Browser Reports
+### Browser Report
+
+Break down traffic by browser, crawler, and user agent.
 
 ```bash
-tango browser -l access-log.log -r custom.csv
+tango browser -l access.log -r browser.csv
 ```
 
-Use cases:
-
-- check how many requests were sent by crawlers
-- check what kind of browsers requested the website
-- check bandwith that was transmitted to all kind of browsers
-- check what crawlers requested the website
-
 <details>
-  <summary>Example of the report</summary>
-  
-  | Category | Browser | Requests | Bandwith | Sample URL | User Agents |
-|----------|---------|----------|----------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Crawlers | bingbot | 629 | 28.8 MB | /black-bag-product | Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) |
-| Chrome | Chrome | 131998 | 1.3 GB | /gears/bags?p=3 | Mozilla/5.0 (Linux; Android 8.0.0; G8441) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.136 Mobile Safari/537.36<br>Mozilla/5.0 (Linux; Android 9; SM-G960F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.136 MobileSafari/537.36<br>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36<br>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36 |
-  
+<summary>Example output</summary>
+
+| Category | Browser | Requests | Bandwidth | Sample URL | User Agents |
+|---|---|---|---|---|---|
+| Crawlers | bingbot | 629 | 28.8 MB | /products | bingbot/2.0 |
+| Chrome | Chrome | 131998 | 1.3 GB | /bags?p=3 | Chrome/79.0, Chrome/78.0 |
+
 </details>
 
-#### Request Reports
+### Request Report
+
+Aggregate requests by URL and response code.
 
 ```bash
-tango request -l access-log.log -r custom.csv
+tango request -l access.log -r request.csv
 ```
 
-Use cases:
-
-- check how many requests were sent to a certain URL
-- check all URLs that were responded with 404/50X code
-- find requests from security scanners (sort by response codes and look at 404/50X codes which were requested only 1 time)
-
 <details>
-  <summary>Example of the report</summary>
-  
-  | Path | Requests | Response Code | Referer URLs |
-|---------------------------------------|----------|---------------|---------------------------------------|
-| /media/catalog/product/black-bag.jpg | 20 | 200 | /black-bag |
-| /admin/sales/order/view/order_id/1234 | 4 | 200 | /admin/sales/order/index/order_id/123 |
+<summary>Example output</summary>
+
+| Path | Requests | Response Code | Referer URLs |
+|---|---|---|---|
+| /media/catalog/product/bag.jpg | 20 | 200 | /black-bag |
 | /test321 | 1 | 404 | / |
-  
+
 </details>
 
-#### Pace Reports [Experimental]
+### Pace Report
+
+Track request rates per minute/hour by IP.
 
 ```bash
-tango pace -l access-log.log -r custom.csv
+tango pace -l access.log -r pace.csv
 ```
 
-Use cases:
+### Journey Report
 
-- check which IPs and how many requests they made during a certain time frame
-- check count of requests per minutes/hours
-
-<details>
-  <summary>Example of the report</summary>
-  
-  | Hour Group | Minute Group | IP | Browser | Pace (req/min) | Pace (req/hour) |
-|-----------------|------------------|---------------|--------------------------------------------------------------------|----------------|-----------------|
-| 2020-02-10 04 h |  |  |  |  | 35 |
-|  | 2020-02-10 04:06 |  |  | 15 |  |
-|  |  | 51.15.191.180 | Barkrowler/0.9 (+https://babbar.tech/crawler) | 10 |  |
-|  |  | 54.36.150.167 | Mozilla/5.0 (compatible; AhrefsBot/6.1; +http://ahrefs.com/robot/) | 5 |  |
-|  | 2020-02-10 04:06 |  |  | 15 |  |
-|  | 2020-02-10 04:07 |  |  | 20 |  |
-|  |  | 66.249.76.89 | Googlebot-Image/1.0 | 20 |  |
-|  | 2020-02-10 04:07 |  |  | 20 |  |
-| 2020-02-10 04 h |  |  |  |  | 35 |
-  
-</details>
-
-#### Journey Reports [Experimental]
+Visualize visitor navigation paths as an HTML report.
 
 ```bash
-tango journey -l access-log.log -r custom.csv
+tango journey -l access.log -r journey.html
 ```
 
-### Misc Commands
+## Filters
 
-#### Geo Lib
+All filters are global flags placed **before** the subcommand.
 
-```bash
-# Install geo library to be able to generate geo reports
-tango geo-lib
-```
+| Flag | Description | Example |
+|---|---|---|
+| `--ip-filter` | Exclude IPs | `--ip-filter "127.0.0.1"` |
+| `--keep-ip-filter` | Keep only matching IPs | `--keep-ip-filter "8.8.8.8"` |
+| `--uri-filter` | Exclude URIs | `--uri-filter "/health"` |
+| `--keep-uri-filter` | Keep only matching URIs | `--keep-uri-filter "/api/"` |
+| `--keep-time-filter` | Keep time range (start, end) | `--keep-time-filter "2024-01-15 00:00:00 -0500" --keep-time-filter "2024-01-15 12:00:00 -0500"` |
+| `--ua-filter` | Exclude user agents | `--ua-filter "bot"` |
+| `--keep-ua-filter` | Keep only matching user agents | `--keep-ua-filter "Chrome"` |
+| `--asset-filter` | Exclude static asset paths | `--asset-filter "/static/"` |
+| `--system-ips` | Mark proxy/CDN IPs for stripping | `--system-ips "151.101.0.0/16"` |
 
-Tango uses the MaxMind GeoLite2-City database and stores it under:
+## Pipeline Options
 
-- macOS - `/Users/[username]/.tango/GeoLite2-City.mmdb`
+Tango processes logs through a concurrent pipeline: one reader fans out to N workers, which parse, filter, and send results to an aggregator.
 
-To be able to manage the Geo lib, you need to generate acceses under <a href="https://www.maxmind.com/en/accounts/current/license-key">MaxMind Account</a> page
+| Flag | Default | Description |
+|---|---|---|
+| `--workers, -w` | Number of CPUs | Parallel workers for log processing |
+| `--read-buffer-size` | 256KB | Buffer size for reading log files |
+| `--write-buffer-size` | 256KB | Buffer size for writing reports |
+| `--log-format` | `apache-combined` | Log format (`apache-combined`, `apache-common`) |
+| `--cpu-profile` | | Write CPU profile to file for performance analysis |
 
-### Config File
+## Config File
 
-Put the similar content to a `.tango.yaml` file under your working directory where you analyze logs: 
+Save common options in `.tango.yaml` in your working directory:
 
 ```yaml
 "asset-filter":
   - "/pub/static/"
   - "/pub/media/"
-  - "/media/"
   - "/static/"
 "ip-filter":
   - "127.0.0.1"
 "system-ips":
-  # Fastly IPs
-  - "23.235.32.0/20"
-  - "43.249.72.0/22"
-  - "103.244.50.0/24"
-  - "103.245.222.0/23"
-  - "103.245.224.0/24"
-  - "104.156.80.0/20"
   - "151.101.0.0/16"
-  - "157.52.64.0/18"
-  - "167.82.0.0/17"
-  - "167.82.128.0/20"
-  - "167.82.160.0/20"
-  - "167.82.224.0/20"
-  - "172.111.64.0/18"
-  - "185.31.16.0/22"
-  - "199.27.72.0/21"
-  - "199.232.0.0/16"
+  - "23.235.32.0/20"
 ```
+
+## Geo Lib
+
+Tango uses the MaxMind GeoLite2-City database for geo reports.
+
+```bash
+# Install the database
+tango geo-lib
+
+# Update an existing installation
+tango geo-lib --update
+```
+
+Generate credentials at [MaxMind](https://www.maxmind.com/en/accounts/current/license-key). The database is stored at `~/.tango/GeoLite2-City.mmdb`.
+
+## License
+
+[Apache 2.0](LICENSE)

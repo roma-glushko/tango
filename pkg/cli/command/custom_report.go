@@ -17,7 +17,7 @@ func CustomReportCommand(cliContext *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	customReportService := di.InitCustomReportService()
+	customReportService := di.InitCustomReportService(pipelineConfig.WriteBufferSize)
 
 	fmt.Println("💃 Tango is on the scene!")
 	fmt.Println("💃 started to generate a custom report...")

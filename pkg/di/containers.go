@@ -109,30 +109,30 @@ func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConf
 }
 
 // InitGeoReportService inits a services
-func InitGeoReportService(maxmindGeoLibPath string) *report.GeoReportService {
+func InitGeoReportService(maxmindGeoLibPath string, writeBufferSize int) *report.GeoReportService {
 	geoProvider := geo.NewMaxMindGeoProvider(maxmindGeoLibPath)
-	geoReportWriter := writer.NewGeoReportCsvWriter()
+	geoReportWriter := writer.NewGeoReportCsvWriter(writeBufferSize)
 
 	return report.NewGeoReportService(geoProvider, geoReportWriter)
 }
 
 // InitBrowserReportService inits a services
-func InitBrowserReportService() *report.BrowserReportService {
-	browserReportWriter := writer.NewBrowserReportCsvWriter()
+func InitBrowserReportService(writeBufferSize int) *report.BrowserReportService {
+	browserReportWriter := writer.NewBrowserReportCsvWriter(writeBufferSize)
 
 	return report.NewBrowserReportService(browserReportWriter)
 }
 
 // InitRequestReportService inits a services
-func InitRequestReportService() *report.RequestReportService {
-	requestReportWriter := writer.NewRequestReportCsvWriter()
+func InitRequestReportService(writeBufferSize int) *report.RequestReportService {
+	requestReportWriter := writer.NewRequestReportCsvWriter(writeBufferSize)
 
 	return report.NewRequestReportService(requestReportWriter)
 }
 
 // InitPaceReportService inits a services
-func InitPaceReportService() *report.PaceReportService {
-	paceReportWriter := writer.NewPaceReportCsvWriter()
+func InitPaceReportService(writeBufferSize int) *report.PaceReportService {
+	paceReportWriter := writer.NewPaceReportCsvWriter(writeBufferSize)
 
 	return report.NewPaceReportService(paceReportWriter)
 }
@@ -145,8 +145,8 @@ func InitJourneyReportService(generalConfig config.GeneralConfig) *report.Journe
 }
 
 // InitCustomReportService inits a services
-func InitCustomReportService() *report.CustomReportService {
-	customReportWriter := writer.NewCustomReportCsvWriter()
+func InitCustomReportService(writeBufferSize int) *report.CustomReportService {
+	customReportWriter := writer.NewCustomReportCsvWriter(writeBufferSize)
 
 	return report.NewCustomReportService(customReportWriter)
 }

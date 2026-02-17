@@ -18,7 +18,7 @@ func PaceReportCommand(cliContext *cli.Context) error {
 		return err
 	}
 
-	paceReportService := di.InitPaceReportService()
+	paceReportService := di.InitPaceReportService(pipelineConfig.WriteBufferSize)
 
 	fmt.Println("💃 Tango is on the scene!")
 	fmt.Println("💃 started to generate a request pace report...")

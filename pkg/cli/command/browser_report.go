@@ -17,7 +17,7 @@ func BrowserReportCommand(cliContext *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	browserReportService := di.InitBrowserReportService()
+	browserReportService := di.InitBrowserReportService(pipelineConfig.WriteBufferSize)
 
 	fmt.Println("💃 Tango is on the scene!")
 	fmt.Println("💃 started to generate a browser report...")

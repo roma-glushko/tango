@@ -20,11 +20,12 @@ var GeoReportHeader = []string{
 
 // GeoReportCsvWriter writes geo location reports to CSV files.
 type GeoReportCsvWriter struct {
+	writeBufferSize int
 }
 
 // NewGeoReportCsvWriter creates a new GeoReportCsvWriter instance.
-func NewGeoReportCsvWriter() *GeoReportCsvWriter {
-	return &GeoReportCsvWriter{}
+func NewGeoReportCsvWriter(writeBufferSize int) *GeoReportCsvWriter {
+	return &GeoReportCsvWriter{writeBufferSize: writeBufferSize}
 }
 
 // Save writes a geo location report to a CSV file.
@@ -36,7 +37,7 @@ func (w *GeoReportCsvWriter) Save(filePath string, geolocationReport map[string]
 
 	defer func() { _ = file.Close() }()
 
-	writer, buffered := newBufferedCsvWriter(file)
+	writer, buffered := newBufferedCsvWriter(file, w.writeBufferSize)
 	defer buffered.Flush()
 	defer writer.Flush()
 
@@ -47,18 +48,17 @@ func (w *GeoReportCsvWriter) Save(filePath string, geolocationReport map[string]
 	}
 
 	// Body
+	row := make([]string, 7)
 	for ip, geoLocation := range geolocationReport {
-		err := writer.Write([]string{
-			ip,
-			geoLocation.GeoData.Country,
-			geoLocation.GeoData.City,
-			geoLocation.GeoData.Continent,
-			geoLocation.SampleRequest,
-			geoLocation.BrowserAgent,
-			strconv.FormatUint(geoLocation.Requests, 10),
-		})
+		row[0] = ip
+		row[1] = geoLocation.GeoData.Country
+		row[2] = geoLocation.GeoData.City
+		row[3] = geoLocation.GeoData.Continent
+		row[4] = geoLocation.SampleRequest
+		row[5] = geoLocation.BrowserAgent
+		row[6] = strconv.FormatUint(geoLocation.Requests, 10)
 
-		if err != nil {
+		if err := writer.Write(row); err != nil {
 			log.Println("Error on writing geo report: ", err)
 			return
 		}

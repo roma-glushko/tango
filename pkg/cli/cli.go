@@ -3,6 +3,8 @@ package cli
 import (
 	"fmt"
 	"log"
+	"os"
+	"runtime/pprof"
 	"tango/pkg/cli/command"
 	"tango/pkg/cli/component"
 	"time"
@@ -173,9 +175,13 @@ func getTangoGlobalFlags() []cli.Flag {
 		cli.StringFlag{Name: "config-file, c", Usage: "Configuration file for storing preset of filters", Value: component.DefaultConfigFileName},
 		altsrc.NewStringFlag(cli.StringFlag{Name: "base-url", Usage: "Website Base Url"}),
 
+		// profiling
+		cli.StringFlag{Name: "cpu-profile", Usage: "Write CPU profile to file"},
+
 		// pipeline
 		altsrc.NewIntFlag(cli.IntFlag{Name: "workers, w", Usage: "Number of parallel workers for log processing (default: number of CPUs)", Value: 0}),
 		altsrc.NewIntFlag(cli.IntFlag{Name: "read-buffer-size", Usage: "Buffer size in bytes for reading log files", Value: 65536}),
+		altsrc.NewIntFlag(cli.IntFlag{Name: "write-buffer-size", Usage: "Buffer size in bytes for writing report files", Value: 1048576}),
 		altsrc.NewStringFlag(cli.StringFlag{Name: "log-format", Usage: "Access log format (apache-combined, apache-common)", Value: "apache-combined"}),
 
 		// filters
@@ -212,10 +218,34 @@ func NewTangoCli(version string, commit string) TangoCli {
 	cliApp.Flags = getTangoGlobalFlags()
 	cliApp.Commands = getTangoCommands()
 
-	cliApp.Before = component.InitTangoConfigSourceWithContext(
+	initConfig := component.InitTangoConfigSourceWithContext(
 		cliApp.Flags,
 		component.NewTangoConfigYamlSourceFromFlagFunc("config-file"),
 	)
+
+	cliApp.Before = func(ctx *cli.Context) error {
+		if err := initConfig(ctx); err != nil {
+			return err
+		}
+
+		if profilePath := ctx.GlobalString("cpu-profile"); profilePath != "" {
+			f, err := os.Create(profilePath)
+			if err != nil {
+				return fmt.Errorf("could not create CPU profile: %w", err)
+			}
+			if err := pprof.StartCPUProfile(f); err != nil {
+				f.Close()
+				return fmt.Errorf("could not start CPU profile: %w", err)
+			}
+		}
+
+		return nil
+	}
+
+	cliApp.After = func(ctx *cli.Context) error {
+		pprof.StopCPUProfile()
+		return nil
+	}
 
 	return TangoCli{
 		cliApp: cliApp,

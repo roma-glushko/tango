@@ -22,11 +22,12 @@ var CustomReportHeader = []string{
 
 // CustomReportCsvWriter writes custom reports to CSV files.
 type CustomReportCsvWriter struct {
+	writeBufferSize int
 }
 
 // NewCustomReportCsvWriter creates a new CustomReportCsvWriter instance.
-func NewCustomReportCsvWriter() *CustomReportCsvWriter {
-	return &CustomReportCsvWriter{}
+func NewCustomReportCsvWriter(writeBufferSize int) *CustomReportCsvWriter {
+	return &CustomReportCsvWriter{writeBufferSize: writeBufferSize}
 }
 
 // Save writes a custom report to a CSV file.
@@ -38,7 +39,7 @@ func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.Access
 
 	defer func() { _ = file.Close() }()
 
-	writer, buffered := newBufferedCsvWriter(file)
+	writer, buffered := newBufferedCsvWriter(file, w.writeBufferSize)
 	defer buffered.Flush()
 	defer writer.Flush()
 
@@ -49,17 +50,16 @@ func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.Access
 	}
 
 	// Body
+	row := make([]string, 6)
 	for _, accessLog := range accessLogs {
-		err := writer.Write([]string{
-			accessLog.Time.Format(timeFormat),
-			strings.Join(accessLog.IP, ", "),
-			accessLog.URI,
-			accessLog.RefererURL,
-			strconv.FormatUint(accessLog.ResponseCode, 10),
-			accessLog.UserAgent,
-		})
+		row[0] = accessLog.Time.Format(timeFormat)
+		row[1] = strings.Join(accessLog.IP, ", ")
+		row[2] = accessLog.URI
+		row[3] = accessLog.RefererURL
+		row[4] = strconv.FormatUint(accessLog.ResponseCode, 10)
+		row[5] = accessLog.UserAgent
 
-		if err != nil {
+		if err := writer.Write(row); err != nil {
 			log.Println("Error on writing custom report: ", err)
 			return
 		}

@@ -9,8 +9,10 @@ import (
 )
 
 const (
-	// DefaultReadBufferSize is the default buffer size for reading log files (64KB).
-	DefaultReadBufferSize = 64 * 1024
+	// DefaultReadBufferSize is the default buffer size for reading log files (256KB).
+	DefaultReadBufferSize = 256 * 1024
+	// DefaultWriteBufferSize is the default buffer size for writing report files (256KB).
+	DefaultWriteBufferSize = 256 * 1024
 )
 
 // NewPipelineConfig creates a PipelineConfig from CLI context flags.
@@ -25,6 +27,11 @@ func NewPipelineConfig(cliContext *cli.Context) config.PipelineConfig {
 		readBufferSize = DefaultReadBufferSize
 	}
 
+	writeBufferSize := cliContext.GlobalInt("write-buffer-size")
+	if writeBufferSize <= 0 {
+		writeBufferSize = DefaultWriteBufferSize
+	}
+
 	logFormat := cliContext.GlobalString("log-format")
 	if logFormat == "" {
 		logFormat = mapper.DefaultLogFormat
@@ -33,6 +40,7 @@ func NewPipelineConfig(cliContext *cli.Context) config.PipelineConfig {
 	return config.NewPipelineConfig(
 		workers,
 		readBufferSize,
+		writeBufferSize,
 		logFormat,
 	)
 }

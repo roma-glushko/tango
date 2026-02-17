@@ -32,7 +32,7 @@ func GeoReportCommand(cliContext *cli.Context) error {
 		return nil
 	}
 
-	geoReportService := di.InitGeoReportService(geoLibPath)
+	geoReportService := di.InitGeoReportService(geoLibPath, pipelineConfig.WriteBufferSize)
 
 	fmt.Println("💃 started to generate a geo report...")
 	fmt.Println("💃 reading access logs...")
