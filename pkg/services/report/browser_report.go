@@ -33,11 +33,11 @@ func NewBrowserReportService(browserReportWriter BrowserReportWriter) *BrowserRe
 }
 
 // GenerateReport processes access logs and collects browser reports.
-func (u *BrowserReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *BrowserReportService) GenerateReport(reportPath string, accessRecords <-chan entity.AccessLogRecord) {
 	var browserReport = make(map[string]*BrowserReportItem)
 	var browserCategories = entity.GetBrowserClassification()
 
-	for _, accessRecord := range accessRecords {
+	for accessRecord := range accessRecords {
 		userAgent := accessRecord.UserAgent
 
 		browserAgent := userAgent

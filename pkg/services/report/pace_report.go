@@ -46,10 +46,10 @@ func NewPaceReportService(paceReportWriter PaceReportWriter) *PaceReportService 
 }
 
 // GenerateReport processes access logs and collects request pace reports.
-func (u *PaceReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *PaceReportService) GenerateReport(reportPath string, accessRecords <-chan entity.AccessLogRecord) {
 	var paceReport = make([]*PaceHourReportItem, 0)
 
-	for _, accessRecord := range accessRecords {
+	for accessRecord := range accessRecords {
 		browser := accessRecord.UserAgent
 		hourTimeGroup := accessRecord.Time.Format(hourTimeFormat)
 		minuteTimeGroup := accessRecord.Time.Format(minuteTimeFormat)

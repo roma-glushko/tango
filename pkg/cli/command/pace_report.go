@@ -21,14 +21,10 @@ func PaceReportCommand(cliContext *cli.Context) error {
 	paceReportService := di.InitPaceReportService(pipelineConfig.WriteBufferSize)
 
 	fmt.Println("💃 Tango is on the scene!")
-	fmt.Println("💃 started to generate a request pace report...")
-	fmt.Println("💃 reading access logs...")
+	fmt.Println("💃 generating a request pace report...")
 
-	accessLogRecords := readAccessLogService.Read(reportConfig.LogFile)
-
-	fmt.Println("💃 saving the request pace report...")
-
-	paceReportService.GenerateReport(reportConfig.ReportFile, accessLogRecords)
+	records := readAccessLogService.Read(reportConfig.LogFile)
+	paceReportService.GenerateReport(reportConfig.ReportFile, records)
 
 	fmt.Println("🎉 request pace report has been generated")
 

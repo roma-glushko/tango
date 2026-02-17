@@ -41,7 +41,7 @@ func NewRequestReportService(requestReportWriter RequestReportWriter) *RequestRe
 }
 
 // GenerateReport processes access logs and collect request reports
-func (u *RequestReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *RequestReportService) GenerateReport(reportPath string, accessRecords <-chan entity.AccessLogRecord) {
 	var requestReport = make(map[string]*RequestReportItem)
 
 	pathFilters := make([]*regexp.Regexp, 0, len(u.queryStripPatterns))
@@ -57,7 +57,7 @@ func (u *RequestReportService) GenerateReport(reportPath string, accessRecords [
 		pathFilters = append(pathFilters, filter)
 	}
 
-	for _, accessRecord := range accessRecords {
+	for accessRecord := range accessRecords {
 		requestURI := accessRecord.URI
 		refererURL := accessRecord.RefererURL
 

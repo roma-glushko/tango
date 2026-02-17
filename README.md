@@ -16,7 +16,7 @@
   <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" width="500px" />
 </p>
 
-Tango is a CLI tool that turns raw server access logs into actionable reports. It uses a concurrent fan-out/fan-in pipeline to process large log files across all available CPU cores, reaching **800K+ lines/sec** on commodity hardware.
+Tango is a CLI tool that turns raw server access logs into actionable reports. It uses a concurrent fan-out/fan-in streaming pipeline to process large log files across all available CPU cores, reaching **1M+ lines/sec** on commodity hardware.
 
 ## Installation
 
@@ -156,9 +156,44 @@ All filters are global flags placed **before** the subcommand.
 | `--asset-filter` | Exclude static asset paths | `--asset-filter "/static/"` |
 | `--system-ips` | Mark proxy/CDN IPs for stripping | `--system-ips "151.101.0.0/16"` |
 
-## Pipeline Options
+## Pipeline Architecture
 
-Tango processes logs through a concurrent pipeline: one reader fans out to N workers, which parse, filter, and send results to an aggregator.
+Tango processes logs through a streaming fan-out/fan-in pipeline. Records flow through channels without accumulating in memory, keeping heap usage minimal regardless of file size.
+
+```mermaid
+graph LR
+    subgraph "Stage 1: Read"
+        R[Reader]
+    end
+
+    subgraph "Stage 2: Process (N workers)"
+        W1[Worker 1]
+        W2[Worker 2]
+        Wn[Worker N]
+    end
+
+    subgraph "Stage 3: Unbatch"
+        U[Unbatcher]
+    end
+
+    subgraph "Stage 4: Report"
+        A[Report Service]
+    end
+
+    R -- "[]string batches" --> W1
+    R -- "[]string batches" --> W2
+    R -- "[]string batches" --> Wn
+
+    W1 -- "[]Record batches" --> U
+    W2 -- "[]Record batches" --> U
+    Wn -- "[]Record batches" --> U
+
+    U -- "Record stream" --> A
+```
+
+Each worker independently parses log lines, strips proxy IPs, and applies filters. Batching on both input and output channels minimizes contention. The report service consumes records one at a time from the stream — aggregating reports build in-memory maps, while custom reports write directly to CSV.
+
+### Pipeline Options
 
 | Flag | Default | Description |
 |---|---|---|

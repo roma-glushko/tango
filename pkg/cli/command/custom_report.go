@@ -20,14 +20,10 @@ func CustomReportCommand(cliContext *cli.Context) error {
 	customReportService := di.InitCustomReportService(pipelineConfig.WriteBufferSize)
 
 	fmt.Println("💃 Tango is on the scene!")
-	fmt.Println("💃 started to generate a custom report...")
-	fmt.Println("💃 reading access logs...")
+	fmt.Println("💃 generating a custom report...")
 
-	accessLogRecords := readAccessLogService.Read(reportConfig.LogFile)
-
-	fmt.Println("💃 saving the custom report...")
-
-	customReportService.GenerateReport(reportConfig.ReportFile, accessLogRecords)
+	records := readAccessLogService.Read(reportConfig.LogFile)
+	customReportService.GenerateReport(reportConfig.ReportFile, records)
 
 	fmt.Println("🎉 custom report has been generated")
 

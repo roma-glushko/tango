@@ -291,7 +291,7 @@ func TestCreateCustomReportWithMultipleSystemIpProcessor(t *testing.T) {
 	_, IPSubnet1, _ := net.ParseCIDR(systemIPSubnet1)
 
 	for _, reportItem := range reportBody {
-		ipList := strings.Split(reportItem[1], ", ")
+		ipList := strings.Split(reportItem[1], " ")
 
 		for _, ip := range ipList {
 			parsedIP := net.ParseIP(ip)
@@ -329,7 +329,7 @@ func TestCreateCustomReportWithSubnetSystemIpProcessor(t *testing.T) {
 	_, IPSubnet, _ := net.ParseCIDR(systemIPSubnet)
 
 	for _, reportItem := range reportBody {
-		ipList := strings.Split(reportItem[1], ", ")
+		ipList := strings.Split(reportItem[1], " ")
 
 		for _, ip := range ipList {
 			parsedIP := net.ParseIP(ip)
@@ -364,7 +364,7 @@ func TestCreateCustomReportWithSingleSystemIpProcessor(t *testing.T) {
 	require.Equal(reportHeader, writer.CustomReportHeader)
 
 	for _, reportItem := range reportBody {
-		ipList := strings.Split(reportItem[1], ", ")
+		ipList := strings.Split(reportItem[1], " ")
 
 		for _, ip := range ipList {
 			require.NotEqual(systemIP, ip)

@@ -20,14 +20,10 @@ func RequestReportCommand(cliContext *cli.Context) error {
 	requestReportService := di.InitRequestReportService(pipelineConfig.WriteBufferSize)
 
 	fmt.Println("💃 Tango is on the scene!")
-	fmt.Println("💃 started to generate a request report...")
-	fmt.Println("💃 reading access logs...")
+	fmt.Println("💃 generating a request report...")
 
-	accessLogRecords := readAccessLogService.Read(reportConfig.LogFile)
-
-	fmt.Println("💃 saving the request report...")
-
-	requestReportService.GenerateReport(reportConfig.ReportFile, accessLogRecords)
+	records := readAccessLogService.Read(reportConfig.LogFile)
+	requestReportService.GenerateReport(reportConfig.ReportFile, records)
 
 	fmt.Println("🎉 request report has been generated")
 

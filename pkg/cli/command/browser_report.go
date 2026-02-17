@@ -20,14 +20,10 @@ func BrowserReportCommand(cliContext *cli.Context) error {
 	browserReportService := di.InitBrowserReportService(pipelineConfig.WriteBufferSize)
 
 	fmt.Println("💃 Tango is on the scene!")
-	fmt.Println("💃 started to generate a browser report...")
-	fmt.Println("💃 reading access logs...")
+	fmt.Println("💃 generating a browser report...")
 
-	accessLogRecords := readAccessLogService.Read(reportConfig.LogFile)
-
-	fmt.Println("💃 saving the browser report...")
-
-	browserReportService.GenerateReport(reportConfig.ReportFile, accessLogRecords)
+	records := readAccessLogService.Read(reportConfig.LogFile)
+	browserReportService.GenerateReport(reportConfig.ReportFile, records)
 
 	fmt.Println("🎉 browser report has been generated")
 

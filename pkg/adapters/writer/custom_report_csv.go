@@ -30,7 +30,7 @@ func NewCustomReportCsvWriter(writeBufferSize int) *CustomReportCsvWriter {
 }
 
 // Save writes a custom report to a CSV file.
-func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.AccessLogRecord) {
+func (w *CustomReportCsvWriter) Save(filePath string, accessLogs <-chan entity.AccessLogRecord) {
 	file, err := os.Create(filePath)
 	if err != nil {
 		log.Fatal("Error on writing custom report: ", err)
@@ -54,7 +54,7 @@ func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.Access
 
 	// Body
 	row := make([]string, 6)
-	for _, accessLog := range accessLogs {
+	for accessLog := range accessLogs {
 		row[0] = accessLog.Time.Format(timeFormat)
 		row[1] = accessLog.IP
 		row[2] = accessLog.URI

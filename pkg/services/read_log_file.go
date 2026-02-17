@@ -42,8 +42,8 @@ func NewReadAccessLogService(
 	}
 }
 
-// Read parses access logs and converts them to AccessLogRecord slices.
-func (u *ReadAccessLogService) Read(filePath string) []entity.AccessLogRecord {
+// Read parses access logs and streams AccessLogRecords through a channel.
+func (u *ReadAccessLogService) Read(filePath string) <-chan entity.AccessLogRecord {
 	numWorkers := u.pipelineConfig.Workers
 	if numWorkers <= 1 {
 		return u.readSequential(filePath)
@@ -53,40 +53,40 @@ func (u *ReadAccessLogService) Read(filePath string) []entity.AccessLogRecord {
 }
 
 // readSequential preserves the original single-threaded behavior.
-func (u *ReadAccessLogService) readSequential(filePath string) []entity.AccessLogRecord {
-	accessRecords := make([]entity.AccessLogRecord, 0, 1024)
+func (u *ReadAccessLogService) readSequential(filePath string) <-chan entity.AccessLogRecord {
+	out := make(chan entity.AccessLogRecord, 1024)
 
-	u.accessLogReader.Read(filePath, func(accessLogRecord string, bytes int) {
-		accessRecord, err := u.parser(accessLogRecord)
-		if err != nil {
-			// skip unparseable lines (e.g. malformed log entries)
-			return
-		}
+	go func() {
+		defer close(out)
 
-		// process parsed access log record
-		accessRecord = u.ipProcessor.Process(accessRecord)
+		u.accessLogReader.Read(filePath, func(accessLogRecord string, bytes int) {
+			record, err := u.parser(accessLogRecord)
+			if err != nil {
+				return
+			}
 
-		// filter/skip parsed access log record if needed
-		if u.filterAccessLogService.Filter(accessRecord) {
-			return
-		}
+			record = u.ipProcessor.Process(record)
 
-		accessRecords = append(
-			accessRecords,
-			accessRecord,
-		)
-	})
+			if u.filterAccessLogService.Filter(record) {
+				return
+			}
 
-	return accessRecords
+			out <- record
+		})
+	}()
+
+	return out
 }
 
 const lineBatchSize = 256
+const resultBatchSize = 256
 
 // readConcurrent uses a fan-out/fan-in pipeline with goroutines and channels.
-// Lines and results are batched to reduce channel contention.
-func (u *ReadAccessLogService) readConcurrent(filePath string, numWorkers int) []entity.AccessLogRecord {
+// Both input lines and output records are batched to reduce channel contention.
+func (u *ReadAccessLogService) readConcurrent(filePath string, numWorkers int) <-chan entity.AccessLogRecord {
 	linesCh := make(chan []string, numWorkers*4)
-	resultsCh := make(chan []entity.AccessLogRecord, numWorkers*4)
+	batchesCh := make(chan []entity.AccessLogRecord, numWorkers*4)
+	out := make(chan entity.AccessLogRecord, 1024)
 
 	// Stage 1: Reader goroutine - reads file and sends batches of raw lines to workers
 	go func() {
@@ -106,15 +106,15 @@ func (u *ReadAccessLogService) readConcurrent(filePath string, numWorkers int) [
 		}
 	}()
 
-	// Stage 2: Worker goroutines - parse, process, and filter record batches
+	// Stage 2: Worker goroutines - parse, process, filter, and send result batches
 	var workersWg sync.WaitGroup
 	for i := 0; i < numWorkers; i++ {
 		workersWg.Add(1)
 		go func() {
 			defer workersWg.Done()
-			for lines := range linesCh {
-				results := make([]entity.AccessLogRecord, 0, len(lines))
+			results := make([]entity.AccessLogRecord, 0, resultBatchSize)
 
+			for lines := range linesCh {
 				for _, line := range lines {
 					record, err := u.parser(line)
 					if err != nil {
@@ -128,26 +128,34 @@ func (u *ReadAccessLogService) readConcurrent(filePath string, numWorkers int) [
 					}
 
 					results = append(results, record)
+					if len(results) >= resultBatchSize {
+						batchesCh <- results
+						results = make([]entity.AccessLogRecord, 0, resultBatchSize)
+					}
 				}
+			}
 
-				if len(results) > 0 {
-					resultsCh <- results
-				}
+			if len(results) > 0 {
+				batchesCh <- results
 			}
 		}()
 	}
 
-	// Close results channel when all workers finish
+	// Close batches channel when all workers finish
 	go func() {
 		workersWg.Wait()
-		close(resultsCh)
+		close(batchesCh)
 	}()
 
-	// Stage 3: Aggregator - collect processed record batches
-	accessRecords := make([]entity.AccessLogRecord, 0, 1024)
-	for batch := range resultsCh {
-		accessRecords = append(accessRecords, batch...)
-	}
+	// Stage 3: Unbatcher - flatten batches into individual records for consumers
+	go func() {
+		defer close(out)
+		for batch := range batchesCh {
+			for _, record := range batch {
+				out <- record
+			}
+		}
+	}()
 
-	return accessRecords
+	return out
 }

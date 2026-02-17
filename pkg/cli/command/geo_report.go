@@ -34,14 +34,10 @@ func GeoReportCommand(cliContext *cli.Context) error {
 
 	geoReportService := di.InitGeoReportService(geoLibPath, pipelineConfig.WriteBufferSize)
 
-	fmt.Println("💃 started to generate a geo report...")
-	fmt.Println("💃 reading access logs...")
+	fmt.Println("💃 generating a geo report...")
 
-	accessLogRecords := readAccessLogService.Read(reportConfig.LogFile)
-
-	fmt.Println("💃 saving the geo report...")
-
-	geoReportService.GenerateReport(reportConfig.ReportFile, accessLogRecords)
+	records := readAccessLogService.Read(reportConfig.LogFile)
+	geoReportService.GenerateReport(reportConfig.ReportFile, records)
 
 	fmt.Println("🎉 geo report has been generated")
 
