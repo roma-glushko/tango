@@ -40,7 +40,11 @@ func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.Access
 	defer func() { _ = file.Close() }()
 
 	writer, buffered := newBufferedCsvWriter(file, w.writeBufferSize)
-	defer buffered.Flush()
+	defer func() {
+		if err := buffered.Flush(); err != nil {
+			log.Println("Error flushing custom report buffer: ", err)
+		}
+	}()
 	defer writer.Flush()
 
 	// Header

@@ -35,7 +35,11 @@ func (w *RequestReportCsvWriter) Save(filePath string, requestReport map[string]
 	defer func() { _ = file.Close() }()
 
 	writer, buffered := newBufferedCsvWriter(file, w.writeBufferSize)
-	defer buffered.Flush()
+	defer func() {
+		if err := buffered.Flush(); err != nil {
+			log.Println("Error flushing request report buffer: ", err)
+		}
+	}()
 	defer writer.Flush()
 
 	// Header

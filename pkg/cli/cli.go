@@ -234,7 +234,7 @@ func NewTangoCli(version string, commit string) TangoCli {
 				return fmt.Errorf("could not create CPU profile: %w", err)
 			}
 			if err := pprof.StartCPUProfile(f); err != nil {
-				f.Close()
+				log.Println("Error closing CPU profile file: ", f.Close())
 				return fmt.Errorf("could not start CPU profile: %w", err)
 			}
 		}

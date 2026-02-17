@@ -71,7 +71,11 @@ func (w *BrowserReportCsvWriter) Save(reportPath string, browserReport map[strin
 	defer func() { _ = file.Close() }()
 
 	writer, buffered := newBufferedCsvWriter(file, w.writeBufferSize)
-	defer buffered.Flush()
+	defer func() {
+		if err := buffered.Flush(); err != nil {
+			log.Println("Error flushing browser report buffer: ", err)
+		}
+	}()
 	defer writer.Flush()
 
 	// Header

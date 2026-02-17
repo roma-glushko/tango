@@ -38,7 +38,11 @@ func (w *GeoReportCsvWriter) Save(filePath string, geolocationReport map[string]
 	defer func() { _ = file.Close() }()
 
 	writer, buffered := newBufferedCsvWriter(file, w.writeBufferSize)
-	defer buffered.Flush()
+	defer func() {
+		if err := buffered.Flush(); err != nil {
+			log.Println("Error flushing geo report buffer: ", err)
+		}
+	}()
 	defer writer.Flush()
 
 	// Header
