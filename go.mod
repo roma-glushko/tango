@@ -1,6 +1,6 @@
 module tango
 
-go 1.18
+go 1.26
 
 require github.com/cheggaaa/pb v0.0.0-20190702094313-40231cf7fa00
 
