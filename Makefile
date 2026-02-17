@@ -36,6 +36,10 @@ run: ## Run tango in dev mode
 
 .PHONY: test
 test: ## Run tests
+	@go test ./test/ -run 'TestCreate(Custom|Browser)Report'
+
+.PHONY: test-all
+test-all: ## Run all tests (requires GeoIP database)
 	@go test ./test/
 
 .PHONY: clean
