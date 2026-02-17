@@ -15,31 +15,24 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Snapcraft
-        run: |
-          sudo snap install snapcraft --classic
-          echo "$SNAP_TOKEN" | snapcraft login --with -
-        env:
-          SNAP_TOKEN: ${{secrets.SNAP_TOKEN}}
-          SNAPCRAFT_BUILD_ENVIRONMENT: host
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: "1.26"
-
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
 
       - name: Fetch all tags
         run: git fetch --force --tags
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
-          version: latest
-          args: release --rm-dist
+          version: "~> v2"
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
