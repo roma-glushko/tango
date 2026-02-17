@@ -20,11 +20,9 @@ var CustomReportHeader = []string{
 	"User Agent",
 }
 
-//
 type CustomReportCsvWriter struct {
 }
 
-//
 func NewCustomReportCsvWriter() *CustomReportCsvWriter {
 	return &CustomReportCsvWriter{}
 }
@@ -36,6 +34,8 @@ func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.Access
 	if err != nil {
 		log.Fatal("Error on writing custom report: ", err)
 	}
+
+	defer file.Close()
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()

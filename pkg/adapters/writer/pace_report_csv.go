@@ -34,6 +34,8 @@ func (w *PaceReportCsvWriter) Save(filePath string, paceReport []*report.PaceHou
 		log.Fatal("Error on writing request report: ", err)
 	}
 
+	defer file.Close()
+
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 

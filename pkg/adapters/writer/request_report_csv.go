@@ -18,7 +18,6 @@ var RequestReportHeaders = []string{
 type RequestReportCsvWriter struct {
 }
 
-//
 func NewRequestReportCsvWriter() *RequestReportCsvWriter {
 	return &RequestReportCsvWriter{}
 }
@@ -30,6 +29,8 @@ func (w *RequestReportCsvWriter) Save(filePath string, requestReport map[string]
 	if err != nil {
 		log.Fatal("Error on writing request report: ", err)
 	}
+
+	defer file.Close()
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()

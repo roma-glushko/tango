@@ -21,7 +21,6 @@ var GeoReportHeader = []string{
 type GeoReportCsvWriter struct {
 }
 
-//
 func NewGeoReportCsvWriter() *GeoReportCsvWriter {
 	return &GeoReportCsvWriter{}
 }
@@ -33,6 +32,8 @@ func (w *GeoReportCsvWriter) Save(filePath string, geolocationReport map[string]
 	if err != nil {
 		log.Fatal("Error on writing geo report: ", err)
 	}
+
+	defer file.Close()
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()

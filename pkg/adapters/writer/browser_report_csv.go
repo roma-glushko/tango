@@ -18,16 +18,13 @@ var BrowserReportHeader = []string{
 	"User Agents",
 }
 
-//
 type BrowserReportCsvWriter struct {
 }
 
-//
 func NewBrowserReportCsvWriter() *BrowserReportCsvWriter {
 	return &BrowserReportCsvWriter{}
 }
 
-//
 func byteCountDecimal(b uint64) string {
 	const unit = 1000
 
@@ -67,6 +64,8 @@ func (w *BrowserReportCsvWriter) Save(reportPath string, browserReport map[strin
 	if err != nil {
 		log.Fatal("Error on writing browser report: ", err)
 	}
+
+	defer file.Close()
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
