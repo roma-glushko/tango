@@ -34,7 +34,10 @@ func (r *AccessLogReader) Read(filePath string, readAccessLogFunc services.ReadA
 	}
 
 	for scanner.Scan() {
-		readAccessLogFunc(scanner.Text(), len(scanner.Bytes()))
+		line := scanner.Bytes()
+		lineCopy := make([]byte, len(line))
+		copy(lineCopy, line)
+		readAccessLogFunc(lineCopy, len(line))
 	}
 
 	if err := scanner.Err(); err != nil {

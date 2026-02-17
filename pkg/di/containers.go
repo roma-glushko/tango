@@ -92,7 +92,7 @@ func InitPipelineConfig(cliContext *cli.Context) config.PipelineConfig {
 
 // InitReadAccessLogService inits a services
 func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig, pipelineConfig config.PipelineConfig) (*services.ReadAccessLogService, error) {
-	accessLogReader := reader.NewAccessLogReader(pipelineConfig.ReadBufferSize)
+	accessLogReader := reader.NewMmapAccessLogReader()
 	readerProgressDecorator := component.NewReaderProgressDecorator(accessLogReader)
 	ipProcessor, err := InitIPProcessor(processorConfig)
 	if err != nil {

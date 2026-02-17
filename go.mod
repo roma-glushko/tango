@@ -4,6 +4,7 @@ go 1.26
 
 require (
 	github.com/cheggaaa/pb v0.0.0-20190702094313-40231cf7fa00
+	github.com/edsrzf/mmap-go v1.2.0
 	github.com/google/uuid v1.6.0
 )
 

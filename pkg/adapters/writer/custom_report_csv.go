@@ -30,7 +30,7 @@ func NewCustomReportCsvWriter(writeBufferSize int) *CustomReportCsvWriter {
 }
 
 // Save writes a custom report to a CSV file.
-func (w *CustomReportCsvWriter) Save(filePath string, accessLogs <-chan entity.AccessLogRecord) {
+func (w *CustomReportCsvWriter) Save(filePath string, accessLogs <-chan []entity.AccessLogRecord) {
 	file, err := os.Create(filePath)
 	if err != nil {
 		log.Fatal("Error on writing custom report: ", err)
@@ -54,17 +54,19 @@ func (w *CustomReportCsvWriter) Save(filePath string, accessLogs <-chan entity.A
 
 	// Body
 	row := make([]string, 6)
-	for accessLog := range accessLogs {
-		row[0] = accessLog.Time.Format(timeFormat)
-		row[1] = accessLog.IP
-		row[2] = accessLog.URI
-		row[3] = accessLog.RefererURL
-		row[4] = strconv.FormatUint(accessLog.ResponseCode, 10)
-		row[5] = accessLog.UserAgent
+	for batch := range accessLogs {
+		for _, accessLog := range batch {
+			row[0] = accessLog.Time.Format(timeFormat)
+			row[1] = accessLog.IP
+			row[2] = accessLog.URI
+			row[3] = accessLog.RefererURL
+			row[4] = strconv.FormatUint(accessLog.ResponseCode, 10)
+			row[5] = accessLog.UserAgent
 
-		if err := writer.Write(row); err != nil {
-			log.Println("Error on writing custom report: ", err)
-			return
+			if err := writer.Write(row); err != nil {
+				log.Println("Error on writing custom report: ", err)
+				return
+			}
 		}
 	}
 }

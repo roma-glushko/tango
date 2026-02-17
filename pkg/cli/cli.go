@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"runtime/pprof"
 	"tango/pkg/cli/command"
 	"tango/pkg/cli/component"
@@ -177,6 +178,7 @@ func getTangoGlobalFlags() []cli.Flag {
 
 		// profiling
 		cli.StringFlag{Name: "cpu-profile", Usage: "Write CPU profile to file"},
+		cli.StringFlag{Name: "mem-profile", Usage: "Write memory profile to file"},
 
 		// pipeline
 		altsrc.NewIntFlag(cli.IntFlag{Name: "workers, w", Usage: "Number of parallel workers for log processing (default: number of CPUs)", Value: 0}),
@@ -244,6 +246,19 @@ func NewTangoCli(version string, commit string) TangoCli {
 
 	cliApp.After = func(ctx *cli.Context) error {
 		pprof.StopCPUProfile()
+
+		if profilePath := ctx.GlobalString("mem-profile"); profilePath != "" {
+			f, err := os.Create(profilePath)
+			if err != nil {
+				return fmt.Errorf("could not create memory profile: %w", err)
+			}
+			defer f.Close()
+			runtime.GC()
+			if err := pprof.WriteHeapProfile(f); err != nil {
+				return fmt.Errorf("could not write memory profile: %w", err)
+			}
+		}
+
 		return nil
 	}
 

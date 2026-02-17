@@ -16,7 +16,7 @@
   <img src="https://raw.githubusercontent.com/roma-glushko/tango/master/doc/tango.gif" width="500px" />
 </p>
 
-Tango is a CLI tool that turns raw server access logs into actionable reports. It uses a concurrent fan-out/fan-in streaming pipeline to process large log files across all available CPU cores, reaching **1M+ lines/sec** on commodity hardware.
+Tango is a CLI tool that turns raw server access logs into actionable reports. It uses memory-mapped I/O and a partitioned parallel pipeline to process large log files across all available CPU cores, reaching **1M+ lines/sec** on commodity hardware.
 
 ## Installation
 
@@ -158,47 +158,40 @@ All filters are global flags placed **before** the subcommand.
 
 ## Pipeline Architecture
 
-Tango processes logs through a streaming fan-out/fan-in pipeline. Records flow through channels without accumulating in memory, keeping heap usage minimal regardless of file size.
+Tango memory-maps the log file and partitions it across N workers. Each worker independently parses, filters, and streams results.
 
 ```mermaid
 graph LR
-    subgraph "Stage 1: Read"
-        R[Reader]
+    subgraph "Stage 1: mmap"
+        M[Memory-Mapped File]
     end
 
-    subgraph "Stage 2: Process (N workers)"
-        W1[Worker 1]
-        W2[Worker 2]
-        Wn[Worker N]
+    subgraph "Stage 2: Partitioned Workers"
+        W1["Worker 1<br/>chunk [0, K)"]
+        W2["Worker 2<br/>chunk [K, 2K)"]
+        Wn["Worker N<br/>chunk [(N-1)K, EOF)"]
     end
 
-    subgraph "Stage 3: Unbatch"
-        U[Unbatcher]
-    end
-
-    subgraph "Stage 4: Report"
+    subgraph "Stage 3: Report"
         A[Report Service]
     end
 
-    R -- "[]string batches" --> W1
-    R -- "[]string batches" --> W2
-    R -- "[]string batches" --> Wn
+    M -. "zero-copy []byte" .-> W1
+    M -. "zero-copy []byte" .-> W2
+    M -. "zero-copy []byte" .-> Wn
 
-    W1 -- "[]Record batches" --> U
-    W2 -- "[]Record batches" --> U
-    Wn -- "[]Record batches" --> U
-
-    U -- "Record stream" --> A
+    W1 -- "[]Record batches" --> A
+    W2 -- "[]Record batches" --> A
+    Wn -- "[]Record batches" --> A
 ```
 
-Each worker independently parses log lines, strips proxy IPs, and applies filters. Batching on both input and output channels minimizes contention. The report service consumes records one at a time from the stream — aggregating reports build in-memory maps, while custom reports write directly to CSV.
+Each worker gets a slice of the mmap'd file at newline boundaries. Workers parse `[]byte` directly from mapped memory, apply IP stripping and filters, then send batched results to the report service. Aggregating reports (browser, geo, request, pace) build in-memory maps; custom reports write directly to CSV.
 
 ### Pipeline Options
 
 | Flag | Default | Description |
 |---|---|---|
 | `--workers, -w` | Number of CPUs | Parallel workers for log processing |
-| `--read-buffer-size` | 256KB | Buffer size for reading log files |
 | `--write-buffer-size` | 256KB | Buffer size for writing reports |
 | `--log-format` | `apache-combined` | Log format (`apache-combined`, `apache-common`) |
 | `--cpu-profile` | | Write CPU profile to file for performance analysis |

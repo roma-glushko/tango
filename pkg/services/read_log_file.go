@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"sync"
 	"tango/pkg/entity"
 	"tango/pkg/services/config"
@@ -9,11 +10,16 @@ import (
 )
 
 // ReadAccessLogFunc is a callback function for processing access log lines.
-type ReadAccessLogFunc func(accessLogRecord string, bytes int)
+type ReadAccessLogFunc func(line []byte, n int)
 
 // AccessLogReader defines the interface for reading access log files.
 type AccessLogReader interface {
 	Read(filePath string, readAccessLogFunc ReadAccessLogFunc)
+}
+
+// MappableReader can memory-map a file for direct zero-copy access.
+type MappableReader interface {
+	Map(filePath string) (data []byte, cleanup func(), err error)
 }
 
 // ReadAccessLogService reads access logs, processes and filters them.
@@ -42,25 +48,64 @@ func NewReadAccessLogService(
 	}
 }
 
-// Read parses access logs and streams AccessLogRecords through a channel.
-func (u *ReadAccessLogService) Read(filePath string) <-chan entity.AccessLogRecord {
-	numWorkers := u.pipelineConfig.Workers
-	if numWorkers <= 1 {
-		return u.readSequential(filePath)
+// Read parses access logs and streams batches of AccessLogRecords through a merged channel.
+func (u *ReadAccessLogService) Read(filePath string) <-chan []entity.AccessLogRecord {
+	partitions := u.ReadPartitions(filePath)
+
+	if len(partitions) == 1 {
+		return partitions[0]
 	}
 
-	return u.readConcurrent(filePath, numWorkers)
+	// Merge all partition channels into one
+	out := make(chan []entity.AccessLogRecord, len(partitions)*4)
+	var wg sync.WaitGroup
+	for _, ch := range partitions {
+		wg.Add(1)
+		go func(c <-chan []entity.AccessLogRecord) {
+			defer wg.Done()
+			for batch := range c {
+				out <- batch
+			}
+		}(ch)
+	}
+	go func() {
+		wg.Wait()
+		close(out)
+	}()
+
+	return out
+}
+
+const resultBatchSize = 256
+
+// ReadPartitions returns one channel per worker for independent parallel consumption.
+func (u *ReadAccessLogService) ReadPartitions(filePath string) []<-chan []entity.AccessLogRecord {
+	numWorkers := u.pipelineConfig.Workers
+	if numWorkers <= 1 {
+		return []<-chan []entity.AccessLogRecord{u.readSequential(filePath)}
+	}
+
+	if mr, ok := u.accessLogReader.(MappableReader); ok {
+		data, cleanup, err := mr.Map(filePath)
+		if err == nil {
+			return u.readPartitioned(data, cleanup, numWorkers)
+		}
+	}
+
+	// Fallback: single merged channel
+	return []<-chan []entity.AccessLogRecord{u.readChannelBased(filePath, numWorkers)}
 }
 
 // readSequential preserves the original single-threaded behavior.
-func (u *ReadAccessLogService) readSequential(filePath string) <-chan entity.AccessLogRecord {
-	out := make(chan entity.AccessLogRecord, 1024)
+func (u *ReadAccessLogService) readSequential(filePath string) <-chan []entity.AccessLogRecord {
+	out := make(chan []entity.AccessLogRecord, 16)
 
 	go func() {
 		defer close(out)
+		batch := make([]entity.AccessLogRecord, 0, resultBatchSize)
 
-		u.accessLogReader.Read(filePath, func(accessLogRecord string, bytes int) {
-			record, err := u.parser(accessLogRecord)
+		u.accessLogReader.Read(filePath, func(line []byte, n int) {
+			record, err := u.parser(line)
 			if err != nil {
 				return
 			}
@@ -71,33 +116,130 @@ func (u *ReadAccessLogService) readSequential(filePath string) <-chan entity.Acc
 				return
 			}
 
-			out <- record
+			batch = append(batch, record)
+			if len(batch) >= resultBatchSize {
+				out <- batch
+				batch = make([]entity.AccessLogRecord, 0, resultBatchSize)
+			}
 		})
+
+		if len(batch) > 0 {
+			out <- batch
+		}
 	}()
 
 	return out
 }
 
-const lineBatchSize = 256
-const resultBatchSize = 256
+// readPartitioned splits mmap'd data into N chunks at newline boundaries.
+// Returns one channel per worker — each worker parses its chunk independently.
+func (u *ReadAccessLogService) readPartitioned(data []byte, cleanup func(), numWorkers int) []<-chan []entity.AccessLogRecord {
+	channels := make([]<-chan []entity.AccessLogRecord, 0, numWorkers)
 
-// readConcurrent uses a fan-out/fan-in pipeline with goroutines and channels.
-// Both input lines and output records are batched to reduce channel contention.
-func (u *ReadAccessLogService) readConcurrent(filePath string, numWorkers int) <-chan entity.AccessLogRecord {
-	linesCh := make(chan []string, numWorkers*4)
-	batchesCh := make(chan []entity.AccessLogRecord, numWorkers*4)
-	out := make(chan entity.AccessLogRecord, 1024)
+	chunkSize := len(data) / numWorkers
 
-	// Stage 1: Reader goroutine - reads file and sends batches of raw lines to workers
+	var workersWg sync.WaitGroup
+	for i := 0; i < numWorkers; i++ {
+		start := i * chunkSize
+		end := (i + 1) * chunkSize
+
+		if i == numWorkers-1 {
+			end = len(data)
+		} else {
+			nl := bytes.IndexByte(data[end:], '\n')
+			if nl >= 0 {
+				end += nl + 1
+			} else {
+				end = len(data)
+			}
+		}
+
+		if i > 0 {
+			nl := bytes.IndexByte(data[start:end], '\n')
+			if nl >= 0 {
+				start += nl + 1
+			} else {
+				continue
+			}
+		}
+
+		ch := make(chan []entity.AccessLogRecord, 4)
+		channels = append(channels, ch)
+
+		workersWg.Add(1)
+		go func(chunk []byte, out chan<- []entity.AccessLogRecord) {
+			defer workersWg.Done()
+			defer close(out)
+			results := make([]entity.AccessLogRecord, 0, resultBatchSize)
+
+			offset := 0
+			for offset < len(chunk) {
+				nl := bytes.IndexByte(chunk[offset:], '\n')
+				var line []byte
+				if nl < 0 {
+					line = chunk[offset:]
+					offset = len(chunk)
+				} else {
+					line = chunk[offset : offset+nl]
+					offset += nl + 1
+				}
+				if len(line) > 0 && line[len(line)-1] == '\r' {
+					line = line[:len(line)-1]
+				}
+				if len(line) == 0 {
+					continue
+				}
+
+				record, err := u.parser(line)
+				if err != nil {
+					continue
+				}
+
+				record = u.ipProcessor.Process(record)
+
+				if u.filterAccessLogService.Filter(record) {
+					continue
+				}
+
+				results = append(results, record)
+				if len(results) >= resultBatchSize {
+					out <- results
+					results = make([]entity.AccessLogRecord, 0, resultBatchSize)
+				}
+			}
+
+			if len(results) > 0 {
+				out <- results
+			}
+		}(data[start:end], ch)
+	}
+
+	// Release mmap after all workers finish
+	go func() {
+		workersWg.Wait()
+		cleanup()
+	}()
+
+	return channels
+}
+
+// readChannelBased is the fallback fan-out/fan-in pipeline for non-mappable readers.
+func (u *ReadAccessLogService) readChannelBased(filePath string, numWorkers int) <-chan []entity.AccessLogRecord {
+	const lineBatchSize = 256
+	linesCh := make(chan [][]byte, numWorkers*4)
+	out := make(chan []entity.AccessLogRecord, numWorkers*4)
+
 	go func() {
 		defer close(linesCh)
-		batch := make([]string, 0, lineBatchSize)
+		batch := make([][]byte, 0, lineBatchSize)
 
-		u.accessLogReader.Read(filePath, func(line string, bytes int) {
-			batch = append(batch, line)
+		u.accessLogReader.Read(filePath, func(line []byte, n int) {
+			lineCopy := make([]byte, len(line))
+			copy(lineCopy, line)
+			batch = append(batch, lineCopy)
 			if len(batch) >= lineBatchSize {
 				linesCh <- batch
-				batch = make([]string, 0, lineBatchSize)
+				batch = make([][]byte, 0, lineBatchSize)
 			}
 		})
 
@@ -106,7 +248,6 @@ func (u *ReadAccessLogService) readConcurrent(filePath string, numWorkers int) <
 		}
 	}()
 
-	// Stage 2: Worker goroutines - parse, process, filter, and send result batches
 	var workersWg sync.WaitGroup
 	for i := 0; i < numWorkers; i++ {
 		workersWg.Add(1)
@@ -129,32 +270,21 @@ func (u *ReadAccessLogService) readConcurrent(filePath string, numWorkers int) <
 
 					results = append(results, record)
 					if len(results) >= resultBatchSize {
-						batchesCh <- results
+						out <- results
 						results = make([]entity.AccessLogRecord, 0, resultBatchSize)
 					}
 				}
 			}
 
 			if len(results) > 0 {
-				batchesCh <- results
+				out <- results
 			}
 		}()
 	}
 
-	// Close batches channel when all workers finish
 	go func() {
 		workersWg.Wait()
-		close(batchesCh)
-	}()
-
-	// Stage 3: Unbatcher - flatten batches into individual records for consumers
-	go func() {
-		defer close(out)
-		for batch := range batchesCh {
-			for _, record := range batch {
-				out <- record
-			}
-		}
+		close(out)
 	}()
 
 	return out

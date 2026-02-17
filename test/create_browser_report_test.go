@@ -18,6 +18,8 @@ func TestCreateBrowserReport(t *testing.T) {
 		"main",
 		"-c",
 		"fixture/.tango.empty.yaml",
+		"-w",
+		"1",
 		"browser",
 		"-l",
 		"fixture/apache-combined-access-log-jul-200rec-with-timezone.log",

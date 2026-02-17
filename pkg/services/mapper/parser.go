@@ -6,7 +6,7 @@ import (
 )
 
 // AccessLogParser parses a raw log line into an AccessLogRecord.
-type AccessLogParser func(line string) (entity.AccessLogRecord, error)
+type AccessLogParser func(line []byte) (entity.AccessLogRecord, error)
 
 // Supported log format names.
 const (

@@ -6,7 +6,7 @@ import (
 
 // CustomReportWriter is an interface for saving custom reports.
 type CustomReportWriter interface {
-	Save(reportPath string, accessLogs <-chan entity.AccessLogRecord)
+	Save(reportPath string, accessLogs <-chan []entity.AccessLogRecord)
 }
 
 // CustomReportService knows how to generate custom reports.
@@ -22,6 +22,6 @@ func NewCustomReportService(customReportWriter CustomReportWriter) *CustomReport
 }
 
 // GenerateReport saves a custom log based on access logs.
-func (u *CustomReportService) GenerateReport(reportPath string, accessRecords <-chan entity.AccessLogRecord) {
+func (u *CustomReportService) GenerateReport(reportPath string, accessRecords <-chan []entity.AccessLogRecord) {
 	u.customReportWriter.Save(reportPath, accessRecords)
 }
