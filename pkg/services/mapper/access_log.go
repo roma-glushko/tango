@@ -56,14 +56,20 @@ func MapAccessLogRecord(accessLogRecord string) (entity.AccessLogRecord, error) 
 		return entity.AccessLogRecord{}, fmt.Errorf("failed to parse time %q: %w", accessRecordInformation["time"], err)
 	}
 
-	responseCode, err := strconv.ParseUint(accessRecordInformation["response_code"], 10, 64)
-	if err != nil {
-		return entity.AccessLogRecord{}, fmt.Errorf("failed to parse response code %q: %w", accessRecordInformation["response_code"], err)
+	var responseCode uint64
+	if accessRecordInformation["response_code"] != "-" {
+		responseCode, err = strconv.ParseUint(accessRecordInformation["response_code"], 10, 64)
+		if err != nil {
+			return entity.AccessLogRecord{}, fmt.Errorf("failed to parse response code %q: %w", accessRecordInformation["response_code"], err)
+		}
 	}
 
-	responseSize, err := strconv.ParseUint(accessRecordInformation["response_size"], 10, 64)
-	if err != nil {
-		return entity.AccessLogRecord{}, fmt.Errorf("failed to parse response size %q: %w", accessRecordInformation["response_size"], err)
+	var responseSize uint64
+	if accessRecordInformation["response_size"] != "-" {
+		responseSize, err = strconv.ParseUint(accessRecordInformation["response_size"], 10, 64)
+		if err != nil {
+			return entity.AccessLogRecord{}, fmt.Errorf("failed to parse response size %q: %w", accessRecordInformation["response_size"], err)
+		}
 	}
 
 	return entity.AccessLogRecord{

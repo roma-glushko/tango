@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateCustomReportWithoutFilters(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	reportFilePath := "results/custom-report-keep-ip-filter.csv"
@@ -33,12 +33,12 @@ func TestCreateCustomReportWithoutFilters(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
-	assert.Len(reportBody, 200, "Report file should be as full as original input file")
+	require.Equal(reportHeader, writer.CustomReportHeader)
+	require.Len(reportBody, 200)
 }
 
 func TestCreateCustomReportWithKeepIPFilter(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	sampleIP := "130.93.253.236"
@@ -61,16 +61,16 @@ func TestCreateCustomReportWithKeepIPFilter(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
-	assert.Equal(18, len(reportBody), "Report File should contain 18 records")
+	require.Equal(reportHeader, writer.CustomReportHeader)
+	require.Equal(18, len(reportBody))
 
 	for _, reportItem := range reportBody {
-		assert.Contains(reportItem[1], sampleIP, "Report Item should contain needed IP")
+		require.Contains(reportItem[1], sampleIP)
 	}
 }
 
 func TestCreateCustomReportWithKeepUAFilter(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	sampleUserAgent := "iPhone OS 12_3_1 like Mac OS X"
@@ -93,16 +93,16 @@ func TestCreateCustomReportWithKeepUAFilter(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
-	assert.Equal(len(reportBody), 50, "Report File should contain 50 records")
+	require.Equal(reportHeader, writer.CustomReportHeader)
+	require.Equal(len(reportBody), 50)
 
 	for _, reportItem := range reportBody {
-		assert.Contains(reportItem[5], sampleUserAgent, "Report Item should contain needed User Agent")
+		require.Contains(reportItem[5], sampleUserAgent)
 	}
 }
 
 func TestCreateCustomReportWithUAFilter(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	sampleUserAgent := "iPhone OS 12_3_1 like Mac OS X"
@@ -123,15 +123,15 @@ func TestCreateCustomReportWithUAFilter(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+	require.Equal(reportHeader, writer.CustomReportHeader)
 
 	for _, reportItem := range reportBody {
-		assert.NotContains(reportItem[5], sampleUserAgent, "Needed user agent should be filtered")
+		require.NotContains(reportItem[5], sampleUserAgent)
 	}
 }
 
 func TestCreateCustomReportWithKeepUriFilter(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	sampleURI := "/category200"
@@ -152,16 +152,16 @@ func TestCreateCustomReportWithKeepUriFilter(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
-	assert.Equal(len(reportBody), 2, "Report File should contain 2 records")
+	require.Equal(reportHeader, writer.CustomReportHeader)
+	require.Equal(len(reportBody), 2)
 
 	for _, reportItem := range reportBody {
-		assert.Contains(reportItem[2], sampleURI, "Report Item should contain required URI")
+		require.Contains(reportItem[2], sampleURI)
 	}
 }
 
 func TestCreateCustomReportWithUriFilter(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	sampleURI := "/category200"
@@ -182,15 +182,15 @@ func TestCreateCustomReportWithUriFilter(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+	require.Equal(reportHeader, writer.CustomReportHeader)
 
 	for _, reportItem := range reportBody {
-		assert.NotContains(reportItem[2], sampleURI, "Needed URI should be filtered")
+		require.NotContains(reportItem[2], sampleURI)
 	}
 }
 
 func TestCreateCustomReportWithMultipleAssetFilters(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	assetPattern1 := "/pub/static/"
@@ -215,16 +215,16 @@ func TestCreateCustomReportWithMultipleAssetFilters(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+	require.Equal(reportHeader, writer.CustomReportHeader)
 
 	for _, reportItem := range reportBody {
-		assert.NotContains(reportItem[2], assetPattern1, "Assets should be filtered")
-		assert.NotContains(reportItem[2], assetPattern2, "Assets should be filtered")
+		require.NotContains(reportItem[2], assetPattern1)
+		require.NotContains(reportItem[2], assetPattern2)
 	}
 }
 
 func TestCreateCustomReportWithKeepTimeFilter(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	testPeriodStart := "2019-07-08 00:00:00 -0200"
@@ -249,20 +249,20 @@ func TestCreateCustomReportWithKeepTimeFilter(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+	require.Equal(reportHeader, writer.CustomReportHeader)
 
 	timeFrameStart, _ := time.Parse(filter.EuropeFormat, testPeriodStart)
 	timeFrameEnd, _ := time.Parse(filter.EuropeFormat, testPeriodFrameEnd)
 
 	for _, reportItem := range reportBody {
-		reportItemTime, _ := time.Parse(filter.EuropeFormat, reportItem[0]) // todo: do we need this exactly format?
+		reportItemTime, _ := time.Parse(filter.EuropeFormat, reportItem[0])
 
-		assert.True(reportItemTime.After(timeFrameStart) && reportItemTime.Before(timeFrameEnd), "Time of Report Item should within the test duration")
+		require.True(reportItemTime.After(timeFrameStart) && reportItemTime.Before(timeFrameEnd))
 	}
 }
 
 func TestCreateCustomReportWithMultipleSystemIpProcessor(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	reportFilePath := "results/custom-report-with-system-ips-processor.csv"
@@ -286,25 +286,24 @@ func TestCreateCustomReportWithMultipleSystemIpProcessor(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+	require.Equal(reportHeader, writer.CustomReportHeader)
 
 	_, IPSubnet1, _ := net.ParseCIDR(systemIPSubnet1)
 
-	// Check if IP patterns work in the output report
 	for _, reportItem := range reportBody {
 		ipList := strings.Split(reportItem[1], ", ")
 
 		for _, ip := range ipList {
 			parsedIP := net.ParseIP(ip)
 
-			assert.NotEqual(systemIP2, ip, "Single IP pattern should filter all related IPs")
-			assert.False(IPSubnet1.Contains(parsedIP), "Subnet IP pattern should filter all related IPs")
+			require.NotEqual(systemIP2, ip)
+			require.False(IPSubnet1.Contains(parsedIP))
 		}
 	}
 }
 
 func TestCreateCustomReportWithSubnetSystemIpProcessor(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	reportFilePath := "results/custom-report-with-system-ips-processor.csv"
@@ -325,24 +324,23 @@ func TestCreateCustomReportWithSubnetSystemIpProcessor(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+	require.Equal(reportHeader, writer.CustomReportHeader)
 
 	_, IPSubnet, _ := net.ParseCIDR(systemIPSubnet)
 
-	// Check if IP pattern works in the output report
 	for _, reportItem := range reportBody {
 		ipList := strings.Split(reportItem[1], ", ")
 
 		for _, ip := range ipList {
 			parsedIP := net.ParseIP(ip)
 
-			assert.False(IPSubnet.Contains(parsedIP), "Subnet IP pattern should filter all related IPs")
+			require.False(IPSubnet.Contains(parsedIP))
 		}
 	}
 }
 
 func TestCreateCustomReportWithSingleSystemIpProcessor(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 	tangoCli := cli.NewTangoCli("0.0.0-test", "dummycommithash")
 
 	reportFilePath := "results/custom-report-with-system-ips-processor.csv"
@@ -363,14 +361,13 @@ func TestCreateCustomReportWithSingleSystemIpProcessor(t *testing.T) {
 
 	reportHeader, reportBody := testReport[0], testReport[1:]
 
-	assert.Equal(reportHeader, writer.CustomReportHeader, "Custom Report Header is not the same")
+	require.Equal(reportHeader, writer.CustomReportHeader)
 
-	// Check if IP pattern works in the output report
 	for _, reportItem := range reportBody {
 		ipList := strings.Split(reportItem[1], ", ")
 
 		for _, ip := range ipList {
-			assert.NotEqual(systemIP, ip, "Single IP pattern should filter all related IPs")
+			require.NotEqual(systemIP, ip)
 		}
 	}
 }
