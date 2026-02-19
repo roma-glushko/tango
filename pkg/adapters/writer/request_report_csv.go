@@ -1,7 +1,6 @@
 package writer
 
 import (
-	"encoding/csv"
 	"log"
 	"os"
 	"strconv"
@@ -18,11 +17,12 @@ var RequestReportHeaders = []string{
 
 // RequestReportCsvWriter writes request reports to CSV files.
 type RequestReportCsvWriter struct {
+	writeBufferSize int
 }
 
 // NewRequestReportCsvWriter creates a new RequestReportCsvWriter instance.
-func NewRequestReportCsvWriter() *RequestReportCsvWriter {
-	return &RequestReportCsvWriter{}
+func NewRequestReportCsvWriter(writeBufferSize int) *RequestReportCsvWriter {
+	return &RequestReportCsvWriter{writeBufferSize: writeBufferSize}
 }
 
 // Save writes a request report to a CSV file.
@@ -34,7 +34,12 @@ func (w *RequestReportCsvWriter) Save(filePath string, requestReport map[string]
 
 	defer func() { _ = file.Close() }()
 
-	writer := csv.NewWriter(file)
+	writer, buffered := newBufferedCsvWriter(file, w.writeBufferSize)
+	defer func() {
+		if err := buffered.Flush(); err != nil {
+			log.Println("Error flushing request report buffer: ", err)
+		}
+	}()
 	defer writer.Flush()
 
 	// Header
@@ -44,15 +49,14 @@ func (w *RequestReportCsvWriter) Save(filePath string, requestReport map[string]
 	}
 
 	// Body
+	row := make([]string, 4)
 	for _, requestReportItem := range requestReport {
-		err := writer.Write([]string{
-			requestReportItem.Path,
-			strconv.FormatUint(requestReportItem.Requests, 10),
-			strconv.FormatUint(requestReportItem.ResponseCode, 10),
-			newLineSeparated(requestReportItem.RefererURLs),
-		})
+		row[0] = requestReportItem.Path
+		row[1] = strconv.FormatUint(requestReportItem.Requests, 10)
+		row[2] = strconv.FormatUint(requestReportItem.ResponseCode, 10)
+		row[3] = newLineSeparated(requestReportItem.RefererURLs)
 
-		if err != nil {
+		if err := writer.Write(row); err != nil {
 			log.Println("Error on writing request report: ", err)
 			return
 		}

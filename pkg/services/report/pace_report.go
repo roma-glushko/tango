@@ -46,32 +46,33 @@ func NewPaceReportService(paceReportWriter PaceReportWriter) *PaceReportService 
 }
 
 // GenerateReport processes access logs and collects request pace reports.
-func (u *PaceReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *PaceReportService) GenerateReport(reportPath string, accessRecords <-chan []entity.AccessLogRecord) {
 	var paceReport = make([]*PaceHourReportItem, 0)
 
-	for _, accessRecord := range accessRecords {
-		ipList := accessRecord.IP
-		browser := accessRecord.UserAgent
-		hourTimeGroup := accessRecord.Time.Format(hourTimeFormat)
-		minuteTimeGroup := accessRecord.Time.Format(minuteTimeFormat)
+	for batch := range accessRecords {
+		for _, accessRecord := range batch {
+			browser := accessRecord.UserAgent
+			hourTimeGroup := accessRecord.Time.Format(hourTimeFormat)
+			minuteTimeGroup := accessRecord.Time.Format(minuteTimeFormat)
 
-		lastHourReportItem := u.findPaceHourReportItem(&paceReport, hourTimeGroup)
-		lastMinuteReportItem := u.findPaceMinuteReportItem(&lastHourReportItem.MinutePaceItems, minuteTimeGroup)
+			lastHourReportItem := u.findPaceHourReportItem(&paceReport, hourTimeGroup)
+			lastMinuteReportItem := u.findPaceMinuteReportItem(&lastHourReportItem.MinutePaceItems, minuteTimeGroup)
 
-		for _, ip := range ipList {
-			if _, found := lastMinuteReportItem.IPPaces[ip]; !found {
-				lastMinuteReportItem.IPPaces[ip] = &PaceIPReportItem{
-					IP:       ip,
-					Requests: 0,
-					Browser:  browser,
+			for _, ip := range accessRecord.SplitIPs() {
+				if _, found := lastMinuteReportItem.IPPaces[ip]; !found {
+					lastMinuteReportItem.IPPaces[ip] = &PaceIPReportItem{
+						IP:       ip,
+						Requests: 0,
+						Browser:  browser,
+					}
 				}
+
+				lastMinuteReportItem.IPPaces[ip].Requests++
 			}
 
-			lastMinuteReportItem.IPPaces[ip].Requests++
+			lastMinuteReportItem.Requests++
+			lastHourReportItem.Requests++
 		}
-
-		lastMinuteReportItem.Requests++
-		lastHourReportItem.Requests++
 	}
 
 	u.paceReportWriter.Save(reportPath, paceReport)

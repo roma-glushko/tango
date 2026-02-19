@@ -45,26 +45,28 @@ func NewGeoReportService(geoLocationProvider GeoLocationProvider, geoReportWrite
 }
 
 // GenerateReport processes access logs and collect geo reports
-func (u *GeoReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *GeoReportService) GenerateReport(reportPath string, accessRecords <-chan []entity.AccessLogRecord) {
 	var geoReport = make(map[string]*Geolocation)
 
 	defer func() { _ = u.geoLocationProvider.Close() }()
 
-	for _, accessRecord := range accessRecords {
-		for _, ip := range accessRecord.IP {
+	for batch := range accessRecords {
+		for _, accessRecord := range batch {
+			for _, ip := range accessRecord.SplitIPs() {
 
-			if _, ok := geoReport[ip]; ok {
-				geoReport[ip].Requests++
-				continue
-			}
+				if _, ok := geoReport[ip]; ok {
+					geoReport[ip].Requests++
+					continue
+				}
 
-			geoData := u.geoLocationProvider.GetGeoDataByIP(ip)
+				geoData := u.geoLocationProvider.GetGeoDataByIP(ip)
 
-			geoReport[ip] = &Geolocation{
-				GeoData:       geoData,
-				SampleRequest: accessRecord.URI,
-				BrowserAgent:  accessRecord.UserAgent,
-				Requests:      1,
+				geoReport[ip] = &Geolocation{
+					GeoData:       geoData,
+					SampleRequest: accessRecord.URI,
+					BrowserAgent:  accessRecord.UserAgent,
+					Requests:      1,
+				}
 			}
 		}
 	}

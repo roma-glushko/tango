@@ -13,7 +13,8 @@ func JourneyReportCommand(cliContext *cli.Context) error {
 	generalConfig := di.InitGeneralConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
 	processorConfig := di.InitProcessorConfig(cliContext)
-	readAccessLogService, err := di.InitReadAccessLogService(processorConfig, filterConfig)
+	pipelineConfig := di.InitPipelineConfig(cliContext)
+	readAccessLogService, err := di.InitReadAccessLogService(processorConfig, filterConfig, pipelineConfig)
 	if err != nil {
 		return err
 	}
@@ -21,14 +22,10 @@ func JourneyReportCommand(cliContext *cli.Context) error {
 	journeyReportService := di.InitJourneyReportService(generalConfig)
 
 	fmt.Println("💃 Tango is on the scene!")
-	fmt.Println("💃 started to generate a visitor's journey report...")
-	fmt.Println("💃 reading access logs...")
+	fmt.Println("💃 generating a visitor's journey report...")
 
-	accessLogRecords := readAccessLogService.Read(reportConfig.LogFile)
-
-	fmt.Println("💃 saving visitor's journey report...")
-
-	journeyReportService.GenerateReport(reportConfig.ReportFile, accessLogRecords)
+	records := readAccessLogService.Read(reportConfig.LogFile)
+	journeyReportService.GenerateReport(reportConfig.ReportFile, records)
 
 	fmt.Println("🎉 visitor's journey report has been generated")
 

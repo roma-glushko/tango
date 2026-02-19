@@ -1,7 +1,6 @@
 package writer
 
 import (
-	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
@@ -22,11 +21,12 @@ var BrowserReportHeader = []string{
 
 // BrowserReportCsvWriter writes browser reports to CSV files.
 type BrowserReportCsvWriter struct {
+	writeBufferSize int
 }
 
 // NewBrowserReportCsvWriter creates a new BrowserReportCsvWriter instance.
-func NewBrowserReportCsvWriter() *BrowserReportCsvWriter {
-	return &BrowserReportCsvWriter{}
+func NewBrowserReportCsvWriter(writeBufferSize int) *BrowserReportCsvWriter {
+	return &BrowserReportCsvWriter{writeBufferSize: writeBufferSize}
 }
 
 func byteCountDecimal(b uint64) string {
@@ -70,7 +70,12 @@ func (w *BrowserReportCsvWriter) Save(reportPath string, browserReport map[strin
 
 	defer func() { _ = file.Close() }()
 
-	writer := csv.NewWriter(file)
+	writer, buffered := newBufferedCsvWriter(file, w.writeBufferSize)
+	defer func() {
+		if err := buffered.Flush(); err != nil {
+			log.Println("Error flushing browser report buffer: ", err)
+		}
+	}()
 	defer writer.Flush()
 
 	// Header
@@ -80,17 +85,16 @@ func (w *BrowserReportCsvWriter) Save(reportPath string, browserReport map[strin
 	}
 
 	// Body
+	row := make([]string, 6)
 	for _, browserReportItem := range browserReport {
-		err := writer.Write([]string{
-			browserReportItem.Category,
-			browserReportItem.Browser,
-			strconv.FormatUint(browserReportItem.Requests, 10),
-			byteCountDecimal(browserReportItem.Bandwidth),
-			browserReportItem.SampleURL,
-			newLineSeparated(browserReportItem.UserAgents),
-		})
+		row[0] = browserReportItem.Category
+		row[1] = browserReportItem.Browser
+		row[2] = strconv.FormatUint(browserReportItem.Requests, 10)
+		row[3] = byteCountDecimal(browserReportItem.Bandwidth)
+		row[4] = browserReportItem.SampleURL
+		row[5] = newLineSeparated(browserReportItem.UserAgents)
 
-		if err != nil {
+		if err := writer.Write(row); err != nil {
 			log.Println("Error on writing browser report: ", err)
 			return
 		}

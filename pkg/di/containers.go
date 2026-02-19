@@ -11,6 +11,7 @@ import (
 	"tango/pkg/services/config"
 	"tango/pkg/services/filter"
 	"tango/pkg/services/geodata"
+	"tango/pkg/services/mapper"
 	"tango/pkg/services/processor"
 	"tango/pkg/services/report"
 
@@ -84,9 +85,14 @@ func InitGenerateMaxmindConfService() *geodata.GenerateMaxmindConfService {
 	return geodata.NewGenerateMaxmindConfService()
 }
 
+// InitPipelineConfig inits pipeline config
+func InitPipelineConfig(cliContext *cli.Context) config.PipelineConfig {
+	return factory.NewPipelineConfig(cliContext)
+}
+
 // InitReadAccessLogService inits a services
-func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig) (*services.ReadAccessLogService, error) {
-	accessLogReader := reader.NewAccessLogReader()
+func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConfig config.FilterConfig, pipelineConfig config.PipelineConfig) (*services.ReadAccessLogService, error) {
+	accessLogReader := reader.NewMmapAccessLogReader()
 	readerProgressDecorator := component.NewReaderProgressDecorator(accessLogReader)
 	ipProcessor, err := InitIPProcessor(processorConfig)
 	if err != nil {
@@ -94,34 +100,39 @@ func InitReadAccessLogService(processorConfig config.ProcessorConfig, filterConf
 	}
 	filterAccessLogService := InitFilterAccessLogService(filterConfig)
 
-	return services.NewReadAccessLogService(readerProgressDecorator, filterAccessLogService, ipProcessor), nil
+	parser, err := mapper.NewAccessLogParser(pipelineConfig.LogFormat)
+	if err != nil {
+		return nil, err
+	}
+
+	return services.NewReadAccessLogService(readerProgressDecorator, filterAccessLogService, ipProcessor, pipelineConfig, parser), nil
 }
 
 // InitGeoReportService inits a services
-func InitGeoReportService(maxmindGeoLibPath string) *report.GeoReportService {
+func InitGeoReportService(maxmindGeoLibPath string, writeBufferSize int) *report.GeoReportService {
 	geoProvider := geo.NewMaxMindGeoProvider(maxmindGeoLibPath)
-	geoReportWriter := writer.NewGeoReportCsvWriter()
+	geoReportWriter := writer.NewGeoReportCsvWriter(writeBufferSize)
 
 	return report.NewGeoReportService(geoProvider, geoReportWriter)
 }
 
 // InitBrowserReportService inits a services
-func InitBrowserReportService() *report.BrowserReportService {
-	browserReportWriter := writer.NewBrowserReportCsvWriter()
+func InitBrowserReportService(writeBufferSize int) *report.BrowserReportService {
+	browserReportWriter := writer.NewBrowserReportCsvWriter(writeBufferSize)
 
 	return report.NewBrowserReportService(browserReportWriter)
 }
 
 // InitRequestReportService inits a services
-func InitRequestReportService() *report.RequestReportService {
-	requestReportWriter := writer.NewRequestReportCsvWriter()
+func InitRequestReportService(writeBufferSize int) *report.RequestReportService {
+	requestReportWriter := writer.NewRequestReportCsvWriter(writeBufferSize)
 
 	return report.NewRequestReportService(requestReportWriter)
 }
 
 // InitPaceReportService inits a services
-func InitPaceReportService() *report.PaceReportService {
-	paceReportWriter := writer.NewPaceReportCsvWriter()
+func InitPaceReportService(writeBufferSize int) *report.PaceReportService {
+	paceReportWriter := writer.NewPaceReportCsvWriter(writeBufferSize)
 
 	return report.NewPaceReportService(paceReportWriter)
 }
@@ -134,8 +145,8 @@ func InitJourneyReportService(generalConfig config.GeneralConfig) *report.Journe
 }
 
 // InitCustomReportService inits a services
-func InitCustomReportService() *report.CustomReportService {
-	customReportWriter := writer.NewCustomReportCsvWriter()
+func InitCustomReportService(writeBufferSize int) *report.CustomReportService {
+	customReportWriter := writer.NewCustomReportCsvWriter(writeBufferSize)
 
 	return report.NewCustomReportService(customReportWriter)
 }

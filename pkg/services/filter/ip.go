@@ -1,6 +1,7 @@
 package filter
 
 import (
+	"strings"
 	"tango/pkg/entity"
 	"tango/pkg/services/config"
 )
@@ -19,9 +20,14 @@ func NewIPFilter(filterConfig config.FilterConfig) *IPFilter {
 	}
 }
 
-func contains(ipList []string, ip string) bool {
-	for _, ipItem := range ipList {
-		if ipItem == ip {
+func containsIP(ipField string, ip string) bool {
+	// Fast path: single IP (no space separator)
+	if ipField == ip {
+		return true
+	}
+
+	for _, part := range strings.Split(ipField, " ") {
+		if part == ip {
 			return true
 		}
 	}
@@ -34,12 +40,12 @@ func (f *IPFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
 		return false
 	}
 
-	ipList := accessLogRecord.IP
+	ip := accessLogRecord.IP
 
 	// if keep filter is enabled, than keep only specified
 	if len(f.keepIPFilters) > 0 {
 		for _, keepIP := range f.keepIPFilters {
-			if contains(ipList, keepIP) {
+			if containsIP(ip, keepIP) {
 				return false
 			}
 		}
@@ -48,8 +54,8 @@ func (f *IPFilter) Filter(accessLogRecord entity.AccessLogRecord) bool {
 	}
 
 	// if keep filter is not enabled, then try to filter ips
-	for _, ip := range f.ipFilters {
-		if contains(ipList, ip) {
+	for _, filterIP := range f.ipFilters {
+		if containsIP(ip, filterIP) {
 			return true
 		}
 	}

@@ -13,7 +13,8 @@ func GeoReportCommand(cliContext *cli.Context) error {
 	reportConfig := di.InitReportConfig(cliContext)
 	filterConfig := di.InitFilterConfig(cliContext)
 	processorConfig := di.InitProcessorConfig(cliContext)
-	readAccessLogService, err := di.InitReadAccessLogService(processorConfig, filterConfig)
+	pipelineConfig := di.InitPipelineConfig(cliContext)
+	readAccessLogService, err := di.InitReadAccessLogService(processorConfig, filterConfig, pipelineConfig)
 	if err != nil {
 		return err
 	}
@@ -31,16 +32,12 @@ func GeoReportCommand(cliContext *cli.Context) error {
 		return nil
 	}
 
-	geoReportService := di.InitGeoReportService(geoLibPath)
+	geoReportService := di.InitGeoReportService(geoLibPath, pipelineConfig.WriteBufferSize)
 
-	fmt.Println("💃 started to generate a geo report...")
-	fmt.Println("💃 reading access logs...")
+	fmt.Println("💃 generating a geo report...")
 
-	accessLogRecords := readAccessLogService.Read(reportConfig.LogFile)
-
-	fmt.Println("💃 saving the geo report...")
-
-	geoReportService.GenerateReport(reportConfig.ReportFile, accessLogRecords)
+	records := readAccessLogService.Read(reportConfig.LogFile)
+	geoReportService.GenerateReport(reportConfig.ReportFile, records)
 
 	fmt.Println("🎉 geo report has been generated")
 

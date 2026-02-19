@@ -1,9 +1,9 @@
 package component
 
 import (
+	"fmt"
 	"log"
 	"os"
-	"tango/pkg/adapters/reader"
 	"tango/pkg/services"
 
 	"github.com/cheggaaa/pb"
@@ -11,14 +11,14 @@ import (
 
 // ReaderProgressDecorator decorates an AccessLogReader with a progress bar.
 type ReaderProgressDecorator struct {
-	accessLogReader reader.AccessLogReader
+	accessLogReader services.AccessLogReader
 	progressBar     *pb.ProgressBar
 }
 
 // NewReaderProgressDecorator creates a new ReaderProgressDecorator instance.
-func NewReaderProgressDecorator(accessLogReader *reader.AccessLogReader) *ReaderProgressDecorator {
+func NewReaderProgressDecorator(accessLogReader services.AccessLogReader) *ReaderProgressDecorator {
 	return &ReaderProgressDecorator{
-		accessLogReader: *accessLogReader,
+		accessLogReader: accessLogReader,
 		progressBar:     nil,
 	}
 }
@@ -49,13 +49,21 @@ func (r *ReaderProgressDecorator) Read(filePath string, readAccessLogFunc servic
 
 	r.start()
 
-	r.accessLogReader.Read(filePath, func(accessLogRecord string, byteCount int) {
-		readAccessLogFunc(accessLogRecord, byteCount)
+	r.accessLogReader.Read(filePath, func(line []byte, byteCount int) {
+		readAccessLogFunc(line, byteCount)
 
 		r.update(byteCount)
 	})
 
 	r.progressBar.Finish()
+}
+
+// Map delegates to the underlying reader if it supports memory mapping.
+func (r *ReaderProgressDecorator) Map(filePath string) ([]byte, func(), error) {
+	if mr, ok := r.accessLogReader.(services.MappableReader); ok {
+		return mr.Map(filePath)
+	}
+	return nil, nil, fmt.Errorf("underlying reader does not support mapping")
 }
 
 func (r *ReaderProgressDecorator) start() {

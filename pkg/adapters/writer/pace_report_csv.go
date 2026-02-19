@@ -1,7 +1,6 @@
 package writer
 
 import (
-	"encoding/csv"
 	"log"
 	"os"
 	"strconv"
@@ -20,11 +19,12 @@ var PaceReportHeader = []string{
 
 // PaceReportCsvWriter writes pace reports to CSV files.
 type PaceReportCsvWriter struct {
+	writeBufferSize int
 }
 
 // NewPaceReportCsvWriter creates a new PaceReportCsvWriter instance.
-func NewPaceReportCsvWriter() *PaceReportCsvWriter {
-	return &PaceReportCsvWriter{}
+func NewPaceReportCsvWriter(writeBufferSize int) *PaceReportCsvWriter {
+	return &PaceReportCsvWriter{writeBufferSize: writeBufferSize}
 }
 
 // Save writes a pace report to a CSV file.
@@ -36,7 +36,12 @@ func (w *PaceReportCsvWriter) Save(filePath string, paceReport []*report.PaceHou
 
 	defer func() { _ = file.Close() }()
 
-	writer := csv.NewWriter(file)
+	writer, buffered := newBufferedCsvWriter(file, w.writeBufferSize)
+	defer func() {
+		if err := buffered.Flush(); err != nil {
+			log.Println("Error flushing pace report buffer: ", err)
+		}
+	}()
 	defer writer.Flush()
 
 	// Header
@@ -46,82 +51,73 @@ func (w *PaceReportCsvWriter) Save(filePath string, paceReport []*report.PaceHou
 	}
 
 	// Body
+	row := make([]string, 6)
 	for _, hourPaceItem := range paceReport {
-		// render minute interval header
-		err := writer.Write([]string{
-			hourPaceItem.Time,
-			"",
-			"",
-			"",
-			"",
-			strconv.FormatUint(hourPaceItem.Requests, 10),
-		})
+		// render hour interval header
+		row[0] = hourPaceItem.Time
+		row[1] = ""
+		row[2] = ""
+		row[3] = ""
+		row[4] = ""
+		row[5] = strconv.FormatUint(hourPaceItem.Requests, 10)
 
-		if err != nil {
+		if err := writer.Write(row); err != nil {
 			log.Println("Error on writing request report: ", err)
 			return
 		}
 
 		for _, paceMinuteItem := range hourPaceItem.MinutePaceItems {
 			// render minute interval header
-			err := writer.Write([]string{
-				"",
-				paceMinuteItem.Time,
-				"",
-				"",
-				strconv.FormatUint(paceMinuteItem.Requests, 10),
-				"",
-			})
+			row[0] = ""
+			row[1] = paceMinuteItem.Time
+			row[2] = ""
+			row[3] = ""
+			row[4] = strconv.FormatUint(paceMinuteItem.Requests, 10)
+			row[5] = ""
 
-			if err != nil {
+			if err := writer.Write(row); err != nil {
 				log.Println("Error on writing request report: ", err)
 				return
 			}
 
 			for ip, ipPaceItem := range paceMinuteItem.IPPaces {
 				// render ip paces
-				err = writer.Write([]string{
-					"",
-					"",
-					ip,
-					ipPaceItem.Browser,
-					strconv.FormatUint(ipPaceItem.Requests, 10),
-					"",
-				})
+				row[0] = ""
+				row[1] = ""
+				row[2] = ip
+				row[3] = ipPaceItem.Browser
+				row[4] = strconv.FormatUint(ipPaceItem.Requests, 10)
+				row[5] = ""
 
-				if err != nil {
+				if err := writer.Write(row); err != nil {
 					log.Println("Error on writing request report: ", err)
 					return
 				}
 			}
 
 			// render minute interval summary footer
-			err = writer.Write([]string{
-				"",
-				paceMinuteItem.Time,
-				"",
-				"",
-				strconv.FormatUint(paceMinuteItem.Requests, 10),
-				"",
-			})
+			row[0] = ""
+			row[1] = paceMinuteItem.Time
+			row[2] = ""
+			row[3] = ""
+			row[4] = strconv.FormatUint(paceMinuteItem.Requests, 10)
+			row[5] = ""
 
-			if err != nil {
+			if err := writer.Write(row); err != nil {
 				log.Println("Error on writing request report: ", err)
 				return
 			}
 		}
 
 		// render hour interval summary footer
-		err = writer.Write([]string{
-			hourPaceItem.Time,
-			"",
-			"",
-			"",
-			"",
-			strconv.FormatUint(hourPaceItem.Requests, 10),
-		})
+		row[0] = hourPaceItem.Time
+		row[1] = ""
+		row[2] = ""
+		row[3] = ""
+		row[4] = ""
+		row[5] = strconv.FormatUint(hourPaceItem.Requests, 10)
 
-		if err != nil {
+		if err := writer.Write(row); err != nil {
 			log.Println("Error on writing request report: ", err)
 			return
 		}

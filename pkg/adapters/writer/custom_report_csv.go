@@ -1,11 +1,9 @@
 package writer
 
 import (
-	"encoding/csv"
 	"log"
 	"os"
 	"strconv"
-	"strings"
 	"tango/pkg/entity"
 )
 
@@ -23,15 +21,16 @@ var CustomReportHeader = []string{
 
 // CustomReportCsvWriter writes custom reports to CSV files.
 type CustomReportCsvWriter struct {
+	writeBufferSize int
 }
 
 // NewCustomReportCsvWriter creates a new CustomReportCsvWriter instance.
-func NewCustomReportCsvWriter() *CustomReportCsvWriter {
-	return &CustomReportCsvWriter{}
+func NewCustomReportCsvWriter(writeBufferSize int) *CustomReportCsvWriter {
+	return &CustomReportCsvWriter{writeBufferSize: writeBufferSize}
 }
 
 // Save writes a custom report to a CSV file.
-func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.AccessLogRecord) {
+func (w *CustomReportCsvWriter) Save(filePath string, accessLogs <-chan []entity.AccessLogRecord) {
 	file, err := os.Create(filePath)
 	if err != nil {
 		log.Fatal("Error on writing custom report: ", err)
@@ -39,7 +38,12 @@ func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.Access
 
 	defer func() { _ = file.Close() }()
 
-	writer := csv.NewWriter(file)
+	writer, buffered := newBufferedCsvWriter(file, w.writeBufferSize)
+	defer func() {
+		if err := buffered.Flush(); err != nil {
+			log.Println("Error flushing custom report buffer: ", err)
+		}
+	}()
 	defer writer.Flush()
 
 	// Header
@@ -49,19 +53,20 @@ func (w *CustomReportCsvWriter) Save(filePath string, accessLogs []entity.Access
 	}
 
 	// Body
-	for _, accessLog := range accessLogs {
-		err := writer.Write([]string{
-			accessLog.Time.Format(timeFormat),
-			strings.Join(accessLog.IP, ", "),
-			accessLog.URI,
-			accessLog.RefererURL,
-			strconv.FormatUint(accessLog.ResponseCode, 10),
-			accessLog.UserAgent,
-		})
+	row := make([]string, 6)
+	for batch := range accessLogs {
+		for _, accessLog := range batch {
+			row[0] = accessLog.Time.Format(timeFormat)
+			row[1] = accessLog.IP
+			row[2] = accessLog.URI
+			row[3] = accessLog.RefererURL
+			row[4] = strconv.FormatUint(accessLog.ResponseCode, 10)
+			row[5] = accessLog.UserAgent
 
-		if err != nil {
-			log.Println("Error on writing custom report: ", err)
-			return
+			if err := writer.Write(row); err != nil {
+				log.Println("Error on writing custom report: ", err)
+				return
+			}
 		}
 	}
 }

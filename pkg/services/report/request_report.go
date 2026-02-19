@@ -41,7 +41,7 @@ func NewRequestReportService(requestReportWriter RequestReportWriter) *RequestRe
 }
 
 // GenerateReport processes access logs and collect request reports
-func (u *RequestReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *RequestReportService) GenerateReport(reportPath string, accessRecords <-chan []entity.AccessLogRecord) {
 	var requestReport = make(map[string]*RequestReportItem)
 
 	pathFilters := make([]*regexp.Regexp, 0, len(u.queryStripPatterns))
@@ -57,42 +57,44 @@ func (u *RequestReportService) GenerateReport(reportPath string, accessRecords [
 		pathFilters = append(pathFilters, filter)
 	}
 
-	for _, accessRecord := range accessRecords {
-		requestURI := accessRecord.URI
-		refererURL := accessRecord.RefererURL
+	for batch := range accessRecords {
+		for _, accessRecord := range batch {
+			requestURI := accessRecord.URI
+			refererURL := accessRecord.RefererURL
 
-		parsedURI, err := url.Parse(requestURI)
+			parsedURI, err := url.Parse(requestURI)
 
-		path := ""
+			path := ""
 
-		if err != nil {
-			// during security scans it's possible to submit a request which triggers a panic in url.Parse()
-			// in that case, just use the original URI
-			path = requestURI
-		} else {
-			path = parsedURI.Path
-		}
-
-		for _, filter := range pathFilters {
-			path = filter.ReplaceAllString(path, "")
-		}
-
-		if _, ok := requestReport[path]; ok {
-			requestReport[path].Requests++
-
-			// collect referer URLs
-			if _, found := requestReport[path].RefererURLs[refererURL]; !found {
-				requestReport[path].RefererURLs[refererURL] = true
+			if err != nil {
+				// during security scans it's possible to submit a request which triggers a panic in url.Parse()
+				// in that case, just use the original URI
+				path = requestURI
+			} else {
+				path = parsedURI.Path
 			}
 
-			continue
-		}
+			for _, filter := range pathFilters {
+				path = filter.ReplaceAllString(path, "")
+			}
 
-		requestReport[path] = &RequestReportItem{
-			Path:         path,
-			Requests:     1,
-			ResponseCode: accessRecord.ResponseCode,
-			RefererURLs:  map[string]bool{refererURL: true},
+			if _, ok := requestReport[path]; ok {
+				requestReport[path].Requests++
+
+				// collect referer URLs
+				if _, found := requestReport[path].RefererURLs[refererURL]; !found {
+					requestReport[path].RefererURLs[refererURL] = true
+				}
+
+				continue
+			}
+
+			requestReport[path] = &RequestReportItem{
+				Path:         path,
+				Requests:     1,
+				ResponseCode: accessRecord.ResponseCode,
+				RefererURLs:  map[string]bool{refererURL: true},
+			}
 		}
 	}
 

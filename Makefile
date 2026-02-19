@@ -22,7 +22,7 @@ lint: tools ## Lint the codebase
 	@$(TMP_DIR)/golangci-lint run ./...
 
 .PHONY: build
-build: lint ## Build tango binary
+build: ## Build tango binary
 	@go build -o bin/tango
 
 .PHONY: release

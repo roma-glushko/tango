@@ -38,21 +38,21 @@ func getUUID() string {
 }
 
 // GenerateReport processes access logs and determine visitor's journeys on the website
-func (u *JourneyReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *JourneyReportService) GenerateReport(reportPath string, accessRecords <-chan []entity.AccessLogRecord) {
 	journeyReport := make(map[string]*entity.Journey, 0)
 
-	for _, accessRecord := range accessRecords {
-		ipList := accessRecord.IP
-
-		for _, ip := range ipList {
-			if _, ok := journeyReport[ip]; !ok {
-				journeyReport[ip] = &entity.Journey{
-					ID: getUUID(),
-					IP: ip,
+	for batch := range accessRecords {
+		for _, accessRecord := range batch {
+			for _, ip := range accessRecord.SplitIPs() {
+				if _, ok := journeyReport[ip]; !ok {
+					journeyReport[ip] = &entity.Journey{
+						ID: getUUID(),
+						IP: ip,
+					}
 				}
-			}
 
-			u.addPlace(journeyReport[ip], accessRecord)
+				u.addPlace(journeyReport[ip], accessRecord)
+			}
 		}
 	}
 

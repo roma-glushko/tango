@@ -33,45 +33,47 @@ func NewBrowserReportService(browserReportWriter BrowserReportWriter) *BrowserRe
 }
 
 // GenerateReport processes access logs and collects browser reports.
-func (u *BrowserReportService) GenerateReport(reportPath string, accessRecords []entity.AccessLogRecord) {
+func (u *BrowserReportService) GenerateReport(reportPath string, accessRecords <-chan []entity.AccessLogRecord) {
 	var browserReport = make(map[string]*BrowserReportItem)
 	var browserCategories = entity.GetBrowserClassification()
 
-	for _, accessRecord := range accessRecords {
-		userAgent := accessRecord.UserAgent
+	for batch := range accessRecords {
+		for _, accessRecord := range batch {
+			userAgent := accessRecord.UserAgent
 
-		browserAgent := userAgent
-		browserCategory := "Unknown"
+			browserAgent := userAgent
+			browserCategory := "Unknown"
 
-		// classify the current browser
-		for _, browserCategoryItem := range browserCategories {
-			if strings.Contains(userAgent, browserCategoryItem.Agent) {
-				browserAgent = browserCategoryItem.Agent
-				browserCategory = browserCategoryItem.Category
+			// classify the current browser
+			for _, browserCategoryItem := range browserCategories {
+				if strings.Contains(userAgent, browserCategoryItem.Agent) {
+					browserAgent = browserCategoryItem.Agent
+					browserCategory = browserCategoryItem.Category
 
-				break
-			}
-		}
-
-		if _, ok := browserReport[browserAgent]; ok {
-			browserReport[browserAgent].Requests++
-			browserReport[browserAgent].Bandwidth += accessRecord.ResponseSize
-
-			// add a new unique occurrence of user agent
-			if _, found := browserReport[browserAgent].UserAgents[userAgent]; !found {
-				browserReport[browserAgent].UserAgents[userAgent] = true
+					break
+				}
 			}
 
-			continue
-		}
+			if _, ok := browserReport[browserAgent]; ok {
+				browserReport[browserAgent].Requests++
+				browserReport[browserAgent].Bandwidth += accessRecord.ResponseSize
 
-		browserReport[browserAgent] = &BrowserReportItem{
-			Browser:    browserAgent,
-			Category:   browserCategory,
-			SampleURL:  accessRecord.URI,
-			Requests:   1,
-			Bandwidth:  accessRecord.ResponseSize,
-			UserAgents: map[string]bool{userAgent: true},
+				// add a new unique occurrence of user agent
+				if _, found := browserReport[browserAgent].UserAgents[userAgent]; !found {
+					browserReport[browserAgent].UserAgents[userAgent] = true
+				}
+
+				continue
+			}
+
+			browserReport[browserAgent] = &BrowserReportItem{
+				Browser:    browserAgent,
+				Category:   browserCategory,
+				SampleURL:  accessRecord.URI,
+				Requests:   1,
+				Bandwidth:  accessRecord.ResponseSize,
+				UserAgents: map[string]bool{userAgent: true},
+			}
 		}
 	}
 
