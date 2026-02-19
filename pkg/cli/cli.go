@@ -252,7 +252,11 @@ func NewTangoCli(version string, commit string) TangoCli {
 			if err != nil {
 				return fmt.Errorf("could not create memory profile: %w", err)
 			}
-			defer f.Close()
+			defer func() {
+				if err := f.Close(); err != nil {
+					log.Println("Error closing profile file:", err)
+				}
+			}()
 			runtime.GC()
 			if err := pprof.WriteHeapProfile(f); err != nil {
 				return fmt.Errorf("could not write memory profile: %w", err)

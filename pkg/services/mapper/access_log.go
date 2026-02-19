@@ -208,7 +208,7 @@ func cleanIPList(raw []byte) string {
 	parts := bytes.Split(normalized, []byte(" "))
 	var b bytes.Buffer
 	for _, p := range parts {
-		if len(p) > 0 && !(len(p) == 1 && p[0] == '-') {
+		if len(p) > 0 && (len(p) != 1 || p[0] != '-') {
 			if b.Len() > 0 {
 				b.WriteByte(' ')
 			}

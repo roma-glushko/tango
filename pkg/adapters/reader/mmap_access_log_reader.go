@@ -26,13 +26,19 @@ func (r *MmapAccessLogReader) Map(filePath string) ([]byte, func(), error) {
 
 	data, err := mmap.Map(f, mmap.RDONLY, 0)
 	if err != nil {
-		f.Close()
+		if cerr := f.Close(); cerr != nil {
+			log.Println("Error closing file:", cerr)
+		}
 		return nil, nil, err
 	}
 
 	cleanup := func() {
-		data.Unmap()
-		f.Close()
+		if err := data.Unmap(); err != nil {
+			log.Println("Error unmapping file:", err)
+		}
+		if err := f.Close(); err != nil {
+			log.Println("Error closing file:", err)
+		}
 	}
 
 	return data, cleanup, nil
@@ -44,15 +50,20 @@ func (r *MmapAccessLogReader) Read(filePath string, readAccessLogFunc services.R
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func() { _ = f.Close() }()
 
 	data, err := mmap.Map(f, mmap.RDONLY, 0)
 	if err != nil {
+		if cerr := f.Close(); cerr != nil {
+			log.Println("Error closing file:", cerr)
+		}
 		log.Fatal(err)
 	}
 	defer func() {
 		if err := data.Unmap(); err != nil {
 			log.Println("Error unmapping file:", err)
+		}
+		if err := f.Close(); err != nil {
+			log.Println("Error closing file:", err)
 		}
 	}()
 
